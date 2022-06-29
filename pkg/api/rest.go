@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"path"
@@ -18,7 +17,7 @@ type RequestInfo struct {
 	provider    string
 	apiVersion  string
 	resource    string
-	subResource map[string]string
+	subResource []string
 	queryArgs   map[string]string
 }
 
@@ -29,11 +28,8 @@ func (r *RequestInfo) makeBaseURL() string {
 	}
 
 	if len(r.subResource) != 0 {
-		subP := []string{p}
-		for key, value := range r.subResource {
-			subP = append(subP, key, value)
-		}
-		p = path.Join(subP...)
+		subP := path.Join(r.subResource...)
+		p = path.Join(p, subP)
 	}
 	return p
 }
@@ -49,10 +45,11 @@ func (r *RequestInfo) GetQueryString() string {
 }
 
 type RESTOptions struct {
-	Protocol   string
-	ServerIP   string
-	ServerPort int16
-	Timeout    int16
+	PrintOption string
+	Protocol    string
+	ServerIP    string
+	ServerPort  int16
+	Timeout     int16
 }
 
 type RESTClient struct {
@@ -68,48 +65,24 @@ func (r *RESTClient) GetHost() string {
 	return fmt.Sprintf("%s:%d", r.Options.ServerIP, int(r.Options.ServerPort))
 }
 
-func (r *RESTClient) POST(ctx context.Context, postURL string, body []byte) error {
+func (r *RESTClient) POST(ctx context.Context, postURL string, body []byte) (*http.Response, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, postURL, bytes.NewBuffer(body))
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	// move RESTOptions
 	req.Header.Set("Content-Type", "application/json")
-	resp, err := r.Client.Do(req)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	result, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return err
-	}
-
-	fmt.Printf("post success: %v", string(result))
-	return nil
+	return r.Client.Do(req)
 }
 
-func (r *RESTClient) DELETE(ctx context.Context, deleteURL string) error {
+func (r *RESTClient) DELETE(ctx context.Context, deleteURL string) (*http.Response, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, deleteURL, nil)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	// move RESTOptions
 	req.Header.Set("Content-Type", "application/json")
-	resp, err := r.Client.Do(req)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	result, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return err
-	}
-
-	fmt.Printf("delete success: %v", string(result))
-	return nil
+	return r.Client.Do(req)
 }

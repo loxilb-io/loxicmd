@@ -2,9 +2,12 @@ package create
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"loxicmd/pkg/api"
+	"net/http"
 	"strconv"
 	"strings"
 	"time"
@@ -17,6 +20,12 @@ type CreateLoadBalancerOptions struct {
 	TCP        []string
 	Endpoints  []string
 }
+
+type CreateLoadBalancerResult struct {
+	Result string `json:"result"`
+}
+
+const CreateLoadBalancerSuccess = "success"
 
 func ReadCreateLoadBalancerOptions(o *CreateLoadBalancerOptions, args []string) error {
 	if len(args) > 1 {
@@ -41,11 +50,9 @@ func NewCreateLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 	what the hell!!`,
 		Run: func(cmd *cobra.Command, args []string) {
 			if err := ReadCreateLoadBalancerOptions(&o, args); err != nil {
-				fmt.Println("개같이 멸망")
+				fmt.Printf("Error: %s\n", err.Error())
 				return
 			}
-			fmt.Println("create lb called")
-			fmt.Printf("ExternalIP: %s, tcp: %v, endpoints: %v\n", o.ExternalIP, o.TCP, o.Endpoints)
 
 			portPair, err := GetPortPairList(o.TCP)
 			if err != nil {
@@ -82,9 +89,16 @@ func NewCreateLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 					lbModel.Endpoints = append(lbModel.Endpoints, ep)
 				}
 
-				err := client.LoadBalancer().Create(ctx, lbModel)
+				resp, err := client.LoadBalancer().Create(ctx, lbModel)
 				if err != nil {
-					fmt.Printf("Error: %s", err.Error())
+					fmt.Printf("Error: %s\n", err.Error())
+					return
+				}
+				defer resp.Body.Close()
+
+				fmt.Printf("Debug: response.StatusCode: %d\n", resp.StatusCode)
+				if resp.StatusCode != http.StatusOK {
+					PrintCreateLbResult(resp, *restOptions)
 					return
 				}
 			}
@@ -96,6 +110,30 @@ func NewCreateLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 	//createLbCmd.Flags().StringVar(&o.ExternalIP, "lb", o.ExternalIP, "Assign your own LoadBalancer external IP")
 
 	return createLbCmd
+}
+
+func PrintCreateLbResult(resp *http.Response, o api.RESTOptions) {
+	result := CreateLoadBalancerResult{}
+	resultByte, err := ioutil.ReadAll(resp.Body)
+	fmt.Printf("Debug: response.Body: %s\n", string(resultByte))
+
+	if err != nil {
+		fmt.Printf("Error: Failed to read HTTP response: (%s)\n", err.Error())
+		return
+	}
+	if err := json.Unmarshal(resultByte, &result); err != nil {
+		fmt.Printf("Error: Failed to unmarshal HTTP response: (%s)\n", err.Error())
+		return
+	}
+
+	if o.PrintOption == "json" {
+		// TODO: need to test MarshalIndent
+		resultIndent, _ := json.MarshalIndent(resp.Body, "", "\t")
+		fmt.Println(string(resultIndent))
+		return
+	}
+
+	fmt.Printf("%s\n", result.Result)
 }
 
 // need to validation check

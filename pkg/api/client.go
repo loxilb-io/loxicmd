@@ -32,7 +32,7 @@ func (l *LoxiClient) LoadBalancer() *LoadBalancer {
 		requestInfo: RequestInfo{
 			provider:   loxiProvider,
 			apiVersion: loxiApiVersion,
-			resource:   "config/loadBalancer",
+			resource:   "config/loadbalancer",
 		},
 	}
 }

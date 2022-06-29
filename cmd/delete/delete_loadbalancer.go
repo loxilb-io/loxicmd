@@ -17,8 +17,11 @@ package delete
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
+	"net/http"
 	"strconv"
 	"time"
 
@@ -26,6 +29,10 @@ import (
 
 	"github.com/spf13/cobra"
 )
+
+type DeleteLoadBalancerResult struct {
+	Result string `json:"result"`
+}
 
 func validation(args []string) error {
 	if len(args) > 1 {
@@ -56,9 +63,6 @@ func NewDeleteLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 			}
 			externalIP = args[0]
 
-			fmt.Println("delete lb called")
-			fmt.Printf("ExternalIP: %s, tcp: %v", externalIP, tcpPortNumberList)
-
 			client := api.NewLoxiClient(restOptions)
 			ctx := context.TODO()
 			var cancel context.CancelFunc
@@ -74,9 +78,15 @@ func NewDeleteLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 					"port", strconv.Itoa(portNum),
 					"protocol", "tcp",
 				}
-				err := client.LoadBalancer().SubResources(subResources).Delete(ctx)
+				resp, err := client.LoadBalancer().SubResources(subResources).Delete(ctx)
 				if err != nil {
 					fmt.Printf("Error: Failed to delete LoadBalancer(ExternalIP: %s, Protocol:%s, Port:%d)", externalIP, "tcp", portNum)
+					return
+				}
+				defer resp.Body.Close()
+				fmt.Printf("Debug: response.StatusCode: %d\n", resp.StatusCode)
+				if resp.StatusCode != http.StatusOK {
+					PrintDeleteLbResult(resp, *restOptions)
 					return
 				}
 			}
@@ -85,5 +95,28 @@ func NewDeleteLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 	}
 
 	deleteLbCmd.Flags().IntSliceVar(&tcpPortNumberList, "tcp", tcpPortNumberList, "TCP port list can be specified as '<port>,<port>...'")
-	return nil
+	return deleteLbCmd
+}
+
+func PrintDeleteLbResult(resp *http.Response, o api.RESTOptions) {
+	result := DeleteLoadBalancerResult{}
+	resultByte, err := ioutil.ReadAll(resp.Body)
+	fmt.Printf("Debug: response.Body: %s\n", string(resultByte))
+
+	if err != nil {
+		fmt.Printf("Error: Failed to read HTTP response: (%s)\n", err.Error())
+		return
+	}
+	if err := json.Unmarshal(resultByte, &result); err != nil {
+		fmt.Printf("Error: Failed to unmarshal HTTP response: (%s)\n", err.Error())
+		return
+	}
+
+	if o.PrintOption == "json" {
+		resultIndent, _ := json.MarshalIndent(resp.Body, "", "\t")
+		fmt.Println(string(resultIndent))
+		return
+	}
+
+	fmt.Printf("%s\n", result.Result)
 }

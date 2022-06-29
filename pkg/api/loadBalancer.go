@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	_ "fmt"
+	"net/http"
 	"net/url"
 )
 
@@ -35,29 +36,19 @@ func (l *LoadBalancer) GetUrlString() string {
 	return lbURL.String()
 }
 
-func (l *LoadBalancer) Create(ctx context.Context, lbModel LoadBalancerModel) error {
+func (l *LoadBalancer) Create(ctx context.Context, lbModel LoadBalancerModel) (*http.Response, error) {
 	body, err := json.Marshal(lbModel)
 	if err != nil {
 		// need validation check
-		//fmt.Println("LoadBalancer Create: Failed marshaling. lbModel:")
-		//fmt.Println(lbModel)
-		return err
+		return nil, err
 	}
-	//fmt.Println("LoadBalancer Create: Success marshaling. Body:")
-	//fmt.Println(string(body))
 	createURL := l.GetUrlString()
-	if err := l.restClient.POST(ctx, createURL, body); err != nil {
-		return err
-	}
-	return nil
+	return l.restClient.POST(ctx, createURL, body)
 }
 
-func (l *LoadBalancer) Delete(ctx context.Context) error {
+func (l *LoadBalancer) Delete(ctx context.Context) (*http.Response, error) {
 	deleteURL := l.GetUrlString()
-	if err := l.restClient.DELETE(ctx, deleteURL); err != nil {
-		return err
-	}
-	return nil
+	return l.restClient.DELETE(ctx, deleteURL)
 }
 
 func (l *LoadBalancer) Get(ctx context.Context) error {
