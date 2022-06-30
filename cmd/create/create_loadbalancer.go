@@ -74,12 +74,13 @@ func NewCreateLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 			}
 
 			for port, targetPort := range portPair {
-				lbModel := api.LoadBalancerModel{
+				lbModel := api.LoadBalancerModel{}
+				lbService := api.LoadBalancerService{
 					ExternalIP: o.ExternalIP,
 					Protocol:   protocol,
 					Port:       port,
 				}
-
+				lbModel.Service = lbService
 				for endpoint, weight := range endpointPair {
 					ep := api.LoadBalancerEndpoint{
 						EndpointIP: endpoint,

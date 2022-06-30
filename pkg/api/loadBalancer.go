@@ -14,14 +14,18 @@ type LoadBalancer struct {
 }
 
 type LoadBalancerModel struct {
-	ExternalIP string                 `json:"external_ip_address"`
-	Port       int16                  `json:"port"`
-	Protocol   string                 `json:"protocol"`
-	Endpoints  []LoadBalancerEndpoint `json:"endpoints"`
+	Service   LoadBalancerService    `json:"serviceArguments"`
+	Endpoints []LoadBalancerEndpoint `json:"endpoints"`
+}
+
+type LoadBalancerService struct {
+	ExternalIP string `json:"externalIP"`
+	Port       int16  `json:"port"`
+	Protocol   string `json:"protocol"`
 }
 
 type LoadBalancerEndpoint struct {
-	EndpointIP string `json:"endpoint_ip_address"`
+	EndpointIP string `json:"endpointIP"`
 	TargetPort int16  `json:"targetPort"`
 	Weight     int8   `json:"weight"`
 }
