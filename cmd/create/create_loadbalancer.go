@@ -138,8 +138,8 @@ func PrintCreateLbResult(resp *http.Response, o api.RESTOptions) {
 }
 
 // need to validation check
-func GetPortPairList(portPairStrList []string) (map[int16]int16, error) {
-	result := make(map[int16]int16)
+func GetPortPairList(portPairStrList []string) (map[uint16]uint16, error) {
+	result := make(map[uint16]uint16)
 	for _, portPairStr := range portPairStrList {
 		portPair := strings.Split(portPairStr, ":")
 		if len(portPair) != 2 {
@@ -156,15 +156,15 @@ func GetPortPairList(portPairStrList []string) (map[int16]int16, error) {
 			return nil, fmt.Errorf("targetPort '%s' is not integer", portPair[1])
 		}
 
-		result[int16(port)] = int16(targetPort)
+		result[uint16(port)] = uint16(targetPort)
 	}
 
 	return result, nil
 }
 
 // need to validation check
-func GetEndpointWeightPairList(endpointsList []string) (map[string]int8, error) {
-	result := make(map[string]int8)
+func GetEndpointWeightPairList(endpointsList []string) (map[string]uint8, error) {
+	result := make(map[string]uint8)
 	for _, endpointStr := range endpointsList {
 		endpointPair := strings.Split(endpointStr, ":")
 		if len(endpointPair) != 2 {
@@ -175,7 +175,7 @@ func GetEndpointWeightPairList(endpointsList []string) (map[string]int8, error) 
 		if err != nil {
 			return nil, fmt.Errorf("endpoint's weight '%s' is invalid format", endpointPair[1])
 		}
-		result[endpointPair[0]] = int8(weight)
+		result[endpointPair[0]] = uint8(weight)
 	}
 
 	return result, nil
