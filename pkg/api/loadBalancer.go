@@ -13,21 +13,31 @@ type LoadBalancer struct {
 	requestInfo RequestInfo
 }
 
+type EpSelect uint
+
+type LbRuleModGet struct {
+	LbRules []LoadBalancerModel `json:"Lbrules"`
+}
+type AttrResponse struct {
+	Attr LbRuleModGet `json:"attr"`
+}
+
 type LoadBalancerModel struct {
 	Service   LoadBalancerService    `json:"serviceArguments"`
 	Endpoints []LoadBalancerEndpoint `json:"endpoints"`
 }
 
 type LoadBalancerService struct {
-	ExternalIP string `json:"externalIP"`
-	Port       int16  `json:"port"`
-	Protocol   string `json:"protocol"`
+	ExternalIP string   `json:"externalIP"`
+	Port       uint16   `json:"port"`
+	Protocol   string   `json:"protocol"`
+	Sel        EpSelect `json:"sel"`
 }
 
 type LoadBalancerEndpoint struct {
 	EndpointIP string `json:"endpointIP"`
-	TargetPort int16  `json:"targetPort"`
-	Weight     int8   `json:"weight"`
+	TargetPort uint16 `json:"targetPort"`
+	Weight     uint8  `json:"weight"`
 }
 
 func (l *LoadBalancer) GetUrlString() string {
@@ -55,11 +65,17 @@ func (l *LoadBalancer) Delete(ctx context.Context) (*http.Response, error) {
 	return l.restClient.DELETE(ctx, deleteURL)
 }
 
-func (l *LoadBalancer) Get(ctx context.Context) error {
-	return nil
+func (l *LoadBalancer) Get(ctx context.Context) (*http.Response, error) {
+	getURL := l.GetUrlString()
+	return l.restClient.GET(ctx, getURL)
 }
 
 func (l *LoadBalancer) SubResources(resourceList []string) *LoadBalancer {
 	l.requestInfo.subResource = append(l.requestInfo.subResource, resourceList...)
+	return l
+}
+
+func (l *LoadBalancer) SetUrl(url string) *LoadBalancer {
+	l.requestInfo.resource = url
 	return l
 }
