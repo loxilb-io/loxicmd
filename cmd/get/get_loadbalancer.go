@@ -45,7 +45,7 @@ func NewGetLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 }
 
 func PrintGetLbResult(resp *http.Response, o api.RESTOptions) {
-	lbresp := api.AttrResponse{}
+	lbresp := api.LbRuleModGet{}
 	var data [][]string
 	resultByte, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
@@ -71,7 +71,7 @@ func PrintGetLbResult(resp *http.Response, o api.RESTOptions) {
 	table.SetCenterSeparator("|")
 
 	// Making load balance data
-	for _, lbrule := range lbresp.Attr.LbRules {
+	for _, lbrule := range lbresp.LbRules {
 		if o.PrintOption == "wide" {
 			table.SetHeader([]string{"ExternalIP", "Port", "Protocol", "Select", "EndpointIP", "TargetPort", "Weight"})
 			for i, eps := range lbrule.Endpoints {
