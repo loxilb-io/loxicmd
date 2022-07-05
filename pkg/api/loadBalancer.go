@@ -16,8 +16,7 @@ type LoadBalancer struct {
 type EpSelect uint
 
 type LbRuleModGet struct {
-	LbRules []LoadBalancerModel    `json:"lbAttr"`
-	CtInfos []ConntrackInformation `json:"conntrackAttr`
+	LbRules []LoadBalancerModel `json:"lbAttr"`
 }
 
 type LoadBalancerModel struct {
@@ -36,16 +35,6 @@ type LoadBalancerEndpoint struct {
 	EndpointIP string `json:"endpointIP"`
 	TargetPort uint16 `json:"targetPort"`
 	Weight     uint8  `json:"weight"`
-}
-
-type ConntrackInformation struct {
-	Dip    string `json:"destinationIP"`
-	Sip    string `json:"sourceIP"`
-	Dport  uint16 `json:"destinationPort"`
-	Sport  uint16 `json:"sourcePort"`
-	Proto  string `json:"protocol"`
-	CState string `json:"conntrackState"`
-	CAct   string `json:"conntrackAct"`
 }
 
 func (l *LoadBalancer) GetUrlString() string {
