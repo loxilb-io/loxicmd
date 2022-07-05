@@ -28,5 +28,6 @@ func GetCmd(restOptions *api.RESTOptions) *cobra.Command {
 	}
 
 	GetCmd.AddCommand(NewGetLoadBalancerCmd(restOptions))
+	GetCmd.AddCommand(NewGetConntrackCmd(restOptions))
 	return GetCmd
 }

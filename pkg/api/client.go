@@ -36,3 +36,14 @@ func (l *LoxiClient) LoadBalancer() *LoadBalancer {
 		},
 	}
 }
+
+func (l *LoxiClient) Conntrack() *Conntrack {
+	return &Conntrack{
+		restClient: &l.restClient,
+		requestInfo: RequestInfo{
+			provider:   loxiProvider,
+			apiVersion: loxiApiVersion,
+			resource:   "config/conntrack/all",
+		},
+	}
+}
