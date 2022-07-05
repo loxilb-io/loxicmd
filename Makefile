@@ -13,3 +13,5 @@ check:
 run:
 	./$(bin)
 
+install:
+	cp loxicmd /usr/local/sbin/
