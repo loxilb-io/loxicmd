@@ -6,8 +6,10 @@ import (
 )
 
 const (
-	loxiProvider   = "netlox"
-	loxiApiVersion = "v1"
+	loxiProvider             = "netlox"
+	loxiApiVersion           = "v1"
+	loxiLoadBalancerResource = "config/loadbalancer"
+	loxiConntrackResource    = "config/conntrack/all"
 )
 
 type LoxiClient struct {
@@ -28,22 +30,26 @@ func NewLoxiClient(o *RESTOptions) *LoxiClient {
 
 func (l *LoxiClient) LoadBalancer() *LoadBalancer {
 	return &LoadBalancer{
-		restClient: &l.restClient,
-		requestInfo: RequestInfo{
-			provider:   loxiProvider,
-			apiVersion: loxiApiVersion,
-			resource:   "config/loadbalancer",
+		CommonAPI: CommonAPI{
+			restClient: &l.restClient,
+			requestInfo: RequestInfo{
+				provider:   loxiProvider,
+				apiVersion: loxiApiVersion,
+				resource:   loxiLoadBalancerResource,
+			},
 		},
 	}
 }
 
 func (l *LoxiClient) Conntrack() *Conntrack {
 	return &Conntrack{
-		restClient: &l.restClient,
-		requestInfo: RequestInfo{
-			provider:   loxiProvider,
-			apiVersion: loxiApiVersion,
-			resource:   "config/conntrack/all",
+		CommonAPI: CommonAPI{
+			restClient: &l.restClient,
+			requestInfo: RequestInfo{
+				provider:   loxiProvider,
+				apiVersion: loxiApiVersion,
+				resource:   loxiConntrackResource,
+			},
 		},
 	}
 }
