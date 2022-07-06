@@ -17,9 +17,10 @@ import (
 
 func NewGetConntrackCmd(restOptions *api.RESTOptions) *cobra.Command {
 	var GetctCmd = &cobra.Command{
-		Use:   "conntrack",
-		Short: "Get a Conntrack",
-		Long:  `It shows connection track Information`,
+		Use:     "conntrack",
+		Aliases: []string{"ct", "conntracks", "cts"},
+		Short:   "Get a Conntrack",
+		Long:    `It shows connection track Information`,
 		Run: func(cmd *cobra.Command, args []string) {
 			client := api.NewLoxiClient(restOptions)
 			ctx := context.TODO()

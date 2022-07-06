@@ -17,9 +17,10 @@ import (
 
 func NewGetLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 	var GetLbCmd = &cobra.Command{
-		Use:   "lb",
-		Short: "Get a LoadBalancer",
-		Long:  `It shows Load balancer Information`,
+		Use:     "loadbalancer",
+		Short:   "Get a LoadBalancer",
+		Aliases: []string{"lb", "loadbalancers", "lbs"},
+		Long:    `It shows Load balancer Information`,
 		Run: func(cmd *cobra.Command, args []string) {
 			client := api.NewLoxiClient(restOptions)
 			ctx := context.TODO()
