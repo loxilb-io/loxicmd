@@ -46,8 +46,7 @@ func NewCreateLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 	var createLbCmd = &cobra.Command{
 		Use:   "lb IP [--tcp=<port>:<targetPort>] [--endpoints=<ip>:<weight>]",
 		Short: "Create a LoadBalancer",
-		Long: `Create a LoadBalancer. what the hell!!
-	what the hell!!`,
+		Long: `Create a LoadBalance`,
 		Run: func(cmd *cobra.Command, args []string) {
 			if err := ReadCreateLoadBalancerOptions(&o, args); err != nil {
 				fmt.Printf("Error: %s\n", err.Error())
