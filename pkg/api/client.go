@@ -10,6 +10,7 @@ const (
 	loxiApiVersion           = "v1"
 	loxiLoadBalancerResource = "config/loadbalancer"
 	loxiConntrackResource    = "config/conntrack/all"
+	loxiPortResource         = "config/port/all"
 )
 
 type LoxiClient struct {
@@ -49,6 +50,19 @@ func (l *LoxiClient) Conntrack() *Conntrack {
 				provider:   loxiProvider,
 				apiVersion: loxiApiVersion,
 				resource:   loxiConntrackResource,
+			},
+		},
+	}
+}
+
+func (l *LoxiClient) Port() *Port {
+	return &Port{
+		CommonAPI: CommonAPI{
+			restClient: &l.restClient,
+			requestInfo: RequestInfo{
+				provider:   loxiProvider,
+				apiVersion: loxiApiVersion,
+				resource:   loxiPortResource,
 			},
 		},
 	}
