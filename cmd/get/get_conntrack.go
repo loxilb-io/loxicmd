@@ -8,10 +8,8 @@ import (
 	"io/ioutil"
 	"loxicmd/pkg/api"
 	"net/http"
-	"os"
 	"time"
 
-	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
 )
 
@@ -67,17 +65,26 @@ func PrintGetCTResult(resp *http.Response, o api.RESTOptions) {
 	}
 
 	// Table Init
-	table := tablewriter.NewWriter(os.Stdout)
-	table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
-	table.SetCenterSeparator("|")
-
+	table := TableInit()
+	table.SetHeader([]string{"destinationIP", "sourceIP", "destinationPort", "sourcePort", "protocol", "state", "act"})
 	// Making load balance data
-	for _, conntrack := range ctresp.CtInfo {
-		table.SetHeader([]string{"destinationIP", "sourceIP", "destinationPort", "sourcePort", "protocol", "state", "act"})
-		data = append(data, []string{conntrack.Dip, conntrack.Sip, fmt.Sprintf("%d", conntrack.Dport), fmt.Sprintf("%d", conntrack.Sport), conntrack.Proto, conntrack.CState, conntrack.CAct})
-	}
+	data = makeConntrackData(ctresp)
 
 	// Rendering the load balance data to table
-	table.AppendBulk(data)
-	table.Render()
+	TableShow(data, table)
+}
+
+func makeConntrackData(ctresp api.CtInformationGet) (data [][]string) {
+	for _, conntrack := range ctresp.CtInfo {
+		data = append(data, []string{
+			conntrack.Dip,
+			conntrack.Sip,
+			fmt.Sprintf("%d", conntrack.Dport),
+			fmt.Sprintf("%d", conntrack.Sport),
+			conntrack.Proto,
+			conntrack.CState,
+			conntrack.CAct,
+		})
+	}
+	return data
 }

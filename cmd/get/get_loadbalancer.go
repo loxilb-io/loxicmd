@@ -8,10 +8,8 @@ import (
 	"io/ioutil"
 	"loxicmd/pkg/api"
 	"net/http"
-	"os"
 	"time"
 
-	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
 )
 
@@ -67,9 +65,7 @@ func PrintGetLbResult(resp *http.Response, o api.RESTOptions) {
 	}
 
 	// Table Init
-	table := tablewriter.NewWriter(os.Stdout)
-	table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
-	table.SetCenterSeparator("|")
+	table := TableInit()
 
 	// Making load balance data
 	for _, lbrule := range lbresp.LbRules {
@@ -90,6 +86,5 @@ func PrintGetLbResult(resp *http.Response, o api.RESTOptions) {
 	}
 
 	// Rendering the load balance data to table
-	table.AppendBulk(data)
-	table.Render()
+	TableShow(data, table)
 }

@@ -6,9 +6,11 @@ package get
 
 import (
 	"fmt"
+	"os"
 
 	"loxicmd/pkg/api"
 
+	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
 )
 
@@ -29,5 +31,19 @@ func GetCmd(restOptions *api.RESTOptions) *cobra.Command {
 
 	GetCmd.AddCommand(NewGetLoadBalancerCmd(restOptions))
 	GetCmd.AddCommand(NewGetConntrackCmd(restOptions))
+	GetCmd.AddCommand(NewGetPortCmd(restOptions))
 	return GetCmd
+}
+
+func TableInit() *tablewriter.Table {
+	// Table Init
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
+	table.SetCenterSeparator("|")
+	return table
+}
+
+func TableShow(data [][]string, table *tablewriter.Table) {
+	table.AppendBulk(data)
+	table.Render()
 }
