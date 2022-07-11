@@ -54,8 +54,7 @@ func NewDeleteLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 	var deleteLbCmd = &cobra.Command{
 		Use:   "lb EXTERNAL-IP [--tcp=<port>:<targetPort>] [--endpoints=<ip>:<weight>]",
 		Short: "Delete a LoadBalancer",
-		Long: `Delete a LoadBalancer. what the hell!!
-	what the hell!!`,
+		Long:  `Delete a LoadBalancer.`,
 		Run: func(cmd *cobra.Command, args []string) {
 			if err := validation(args); err != nil {
 				fmt.Println("not valid EXTERNAL-IP")
