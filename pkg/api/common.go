@@ -22,8 +22,8 @@ func (l *CommonAPI) GetUrlString() string {
 	return lbURL.String()
 }
 
-func (l *CommonAPI) Create(ctx context.Context, lbModel interface{}) (*http.Response, error) {
-	body, err := json.Marshal(lbModel)
+func (l *CommonAPI) Create(ctx context.Context, modelbody interface{}) (*http.Response, error) {
+	body, err := json.Marshal(modelbody)
 	if err != nil {
 		// need validation check
 		return nil, err

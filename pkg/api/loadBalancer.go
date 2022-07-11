@@ -1,10 +1,7 @@
 package api
 
 import (
-	"context"
-	"encoding/json"
 	_ "fmt"
-	"net/http"
 )
 
 type LoadBalancer struct {
@@ -33,14 +30,4 @@ type LoadBalancerEndpoint struct {
 	EndpointIP string `json:"endpointIP"`
 	TargetPort uint16 `json:"targetPort"`
 	Weight     uint8  `json:"weight"`
-}
-
-func (l *LoadBalancer) Create(ctx context.Context, lbModel LoadBalancerModel) (*http.Response, error) {
-	body, err := json.Marshal(lbModel)
-	if err != nil {
-		// need validation check
-		return nil, err
-	}
-	createURL := l.GetUrlString()
-	return l.restClient.POST(ctx, createURL, body)
 }
