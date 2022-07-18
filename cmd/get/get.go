@@ -25,6 +25,8 @@ func GetCmd(restOptions *api.RESTOptions) *cobra.Command {
 	This application is a tool to generate the needed files
 	to quickly Get a Cobra application.`,
 		Run: func(cmd *cobra.Command, args []string) {
+			_ = cmd
+			_ = args
 			fmt.Println("Get called")
 		},
 	}

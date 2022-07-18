@@ -20,6 +20,8 @@ func NewGetConntrackCmd(restOptions *api.RESTOptions) *cobra.Command {
 		Short:   "Get a Conntrack",
 		Long:    `It shows connection track Information`,
 		Run: func(cmd *cobra.Command, args []string) {
+			_ = cmd
+			_ = args
 			client := api.NewLoxiClient(restOptions)
 			ctx := context.TODO()
 			var cancel context.CancelFunc

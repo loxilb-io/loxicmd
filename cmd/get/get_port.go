@@ -20,6 +20,8 @@ func NewGetPortCmd(restOptions *api.RESTOptions) *cobra.Command {
 		Short: "Get a Port dump",
 		Long:  `It shows port dump Information`,
 		Run: func(cmd *cobra.Command, args []string) {
+			_ = cmd
+			_ = args
 			client := api.NewLoxiClient(restOptions)
 			ctx := context.TODO()
 			var cancel context.CancelFunc

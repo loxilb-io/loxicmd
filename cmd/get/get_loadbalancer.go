@@ -20,6 +20,8 @@ func NewGetLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 		Aliases: []string{"lb", "loadbalancers", "lbs"},
 		Long:    `It shows Load balancer Information`,
 		Run: func(cmd *cobra.Command, args []string) {
+			_ = cmd
+			_ = args
 			client := api.NewLoxiClient(restOptions)
 			ctx := context.TODO()
 			var cancel context.CancelFunc
