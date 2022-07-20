@@ -46,7 +46,7 @@ func NewCreateLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 	var createLbCmd = &cobra.Command{
 		Use:   "lb IP [--tcp=<port>:<targetPort>] [--endpoints=<ip>:<weight>]",
 		Short: "Create a LoadBalancer",
-		Long: `Create a LoadBalance`,
+		Long:  `Create a LoadBalancer`,
 		Run: func(cmd *cobra.Command, args []string) {
 			if err := ReadCreateLoadBalancerOptions(&o, args); err != nil {
 				fmt.Printf("Error: %s\n", err.Error())
@@ -64,13 +64,6 @@ func NewCreateLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 				return
 			}
 			protocol := GetProtocol(o)
-			client := api.NewLoxiClient(restOptions)
-			ctx := context.TODO()
-			var cancel context.CancelFunc
-			if restOptions.Timeout > 0 {
-				ctx, cancel = context.WithTimeout(context.TODO(), time.Duration(restOptions.Timeout)*time.Second)
-				defer cancel()
-			}
 
 			for port, targetPort := range portPair {
 				lbModel := api.LoadBalancerModel{}
@@ -89,7 +82,7 @@ func NewCreateLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 					lbModel.Endpoints = append(lbModel.Endpoints, ep)
 				}
 
-				resp, err := client.LoadBalancer().Create(ctx, lbModel)
+				resp, err := LoadbalancerAPICall(restOptions, lbModel)
 				if err != nil {
 					fmt.Printf("Error: %s\n", err.Error())
 					return
@@ -186,4 +179,16 @@ func GetProtocol(o CreateLoadBalancerOptions) string {
 	}
 
 	return "udp"
+}
+
+func LoadbalancerAPICall(restOptions *api.RESTOptions, lbModel api.LoadBalancerModel) (*http.Response, error) {
+	client := api.NewLoxiClient(restOptions)
+	ctx := context.TODO()
+	var cancel context.CancelFunc
+	if restOptions.Timeout > 0 {
+		ctx, cancel = context.WithTimeout(context.TODO(), time.Duration(restOptions.Timeout)*time.Second)
+		defer cancel()
+	}
+
+	return client.LoadBalancer().Create(ctx, lbModel)
 }
