@@ -17,7 +17,6 @@ type LoxiClient struct {
 	restClient RESTClient
 }
 
-// 나중에는 options 보고 httpClient 생성하도록 바꿉시다.
 func NewLoxiClient(o *RESTOptions) *LoxiClient {
 	return &LoxiClient{
 		restClient: RESTClient{
