@@ -20,14 +20,13 @@ import (
 
 	"loxicmd/cmd/create"
 	"loxicmd/cmd/delete"
-	"loxicmd/cmd/get"
 	"loxicmd/cmd/dump"
+	"loxicmd/cmd/get"
 
 	"loxicmd/pkg/api"
 
 	"github.com/spf13/cobra"
 )
-
 
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
@@ -45,7 +44,7 @@ func Execute() {
 
 	restOptions := &api.RESTOptions{}
 	saveOptions := &dump.SaveOptions{}
-	applyFiles := &dump.ConfigFiles {}
+	applyFiles := &dump.ConfigFiles{}
 
 	rootCmd.PersistentFlags().Int16VarP(&restOptions.Timeout, "timeout", "t", 5, "Set timeout")
 	rootCmd.PersistentFlags().StringVarP(&restOptions.Protocol, "protocol", "", "http", "Set API server http/https")
@@ -57,8 +56,8 @@ func Execute() {
 	rootCmd.AddCommand(create.CreateCmd(restOptions))
 	rootCmd.AddCommand(delete.DeleteCmd(restOptions))
 
-	saveCmd := dump.SaveCmd(saveOptions)
-	applyCmd := dump.ApplyCmd(applyFiles)
+	saveCmd := dump.SaveCmd(saveOptions, restOptions)
+	applyCmd := dump.ApplyCmd(applyFiles, restOptions)
 
 	saveCmd.Flags().BoolVarP(&saveOptions.SaveAllConfig, "all", "a", false, "Saves all loxilb configuration")
 	saveCmd.Flags().BoolVarP(&saveOptions.SaveIpConfig, "ip", "i", false, "Saves IP configuration")

@@ -18,30 +18,39 @@ package dump
 import (
 	"fmt"
 	get "loxicmd/cmd/get"
+	"loxicmd/pkg/api"
+
 	"github.com/spf13/cobra"
 )
+
 type SaveOptions struct {
-	SaveIpConfig bool
-	SaveLBConfig bool
+	SaveIpConfig  bool
+	SaveLBConfig  bool
 	SaveAllConfig bool
 }
+
 // saveCmd represents the save command
-func SaveCmd(saveOpts *SaveOptions) *cobra.Command {
+func SaveCmd(saveOpts *SaveOptions, restOptions *api.RESTOptions) *cobra.Command {
 	saveCmd := &cobra.Command{
-	Use:   "save",
-	Short: "saves current configuration",
-	Long:  `saves current configuration in text file`,
-	Run: func(cmd *cobra.Command, args []string) {
-		_ = cmd
-		_ = args
-		if saveOpts.SaveIpConfig || saveOpts.SaveAllConfig {
-			file := get.Nlpdump()
-			fmt.Println("IP Configuration saved in", file)
-		}
-		if saveOpts.SaveLBConfig || saveOpts.SaveAllConfig {
-			fmt.Println("Dumping LB Configuration not implemented yet!")
-		}
-	},
+		Use:   "save",
+		Short: "saves current configuration",
+		Long:  `saves current configuration in text file`,
+		Run: func(cmd *cobra.Command, args []string) {
+			_ = cmd
+			_ = args
+			if saveOpts.SaveIpConfig || saveOpts.SaveAllConfig {
+				file := get.Nlpdump()
+				fmt.Println("IP Configuration saved in", file)
+			}
+			if saveOpts.SaveLBConfig || saveOpts.SaveAllConfig {
+				lbfile, err := get.Lbdump(restOptions)
+				if err != nil {
+					fmt.Println(err.Error())
+					return
+				}
+				fmt.Println("LB Configuration saved in", lbfile)
+			}
+		},
 	}
-	return saveCmd;
+	return saveCmd
 }
