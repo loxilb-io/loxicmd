@@ -51,7 +51,7 @@ func Execute() {
 	rootCmd.PersistentFlags().StringVarP(&restOptions.Protocol, "protocol", "", "http", "Set API server http/https")
 	rootCmd.PersistentFlags().StringVarP(&restOptions.PrintOption, "output", "o", "", "Set output layer (ex.) wide, json)")
 	rootCmd.PersistentFlags().StringVarP(&restOptions.ServerIP, "apiserver", "s", "127.0.0.1", "Set API server IP address")
-	rootCmd.PersistentFlags().Int16VarP(&restOptions.ServerPort, "port", "p", 8081, "Set API server port number")
+	rootCmd.PersistentFlags().Int16VarP(&restOptions.ServerPort, "port", "p", 11111, "Set API server port number")
 
 	rootCmd.AddCommand(get.GetCmd(restOptions))
 	rootCmd.AddCommand(create.CreateCmd(restOptions))
