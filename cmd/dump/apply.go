@@ -29,8 +29,10 @@ import (
 )
 
 type ConfigFiles struct {
-	IpConfigFile string
-	LBConfigFile string
+	IpConfigFile          string
+	LBConfigFile          string
+	SessionConfigFile     string
+	SessionUlClConfigFile string
 }
 
 // applyCmd represents the save command
@@ -42,7 +44,7 @@ func ApplyCmd(cfgFiles *ConfigFiles, restOptions *api.RESTOptions) *cobra.Comman
 		Run: func(cmd *cobra.Command, args []string) {
 			_ = cmd
 			_ = args
-			if len(cfgFiles.IpConfigFile) == 0 && len(cfgFiles.LBConfigFile) == 0 {
+			if len(cfgFiles.IpConfigFile) == 0 && len(cfgFiles.LBConfigFile) == 0 && len(cfgFiles.SessionConfigFile) == 0 && len(cfgFiles.SessionUlClConfigFile) == 0 {
 				fmt.Println("Provide valid filename")
 				return
 			}
@@ -53,6 +55,14 @@ func ApplyCmd(cfgFiles *ConfigFiles, restOptions *api.RESTOptions) *cobra.Comman
 			if len(cfgFiles.LBConfigFile) > 0 {
 				ApplyLbConfig(cfgFiles.LBConfigFile, restOptions)
 				fmt.Printf("Configuration applied - %s\n", cfgFiles.LBConfigFile)
+			}
+			if len(cfgFiles.SessionConfigFile) > 0 {
+				ApplySessionConfig(cfgFiles.SessionConfigFile, restOptions)
+				fmt.Printf("Configuration applied - %s\n", cfgFiles.SessionConfigFile)
+			}
+			if len(cfgFiles.SessionUlClConfigFile) > 0 {
+				ApplySessionUlClConfig(cfgFiles.SessionUlClConfigFile, restOptions)
+				fmt.Printf("Configuration applied - %s\n", cfgFiles.SessionUlClConfigFile)
 			}
 		},
 	}
@@ -124,6 +134,59 @@ func ApplyLbConfig(file string, restOptions *api.RESTOptions) {
 		}
 
 		resp, err := create.LoadbalancerAPICall(restOptions, lbModel)
+		if err != nil {
+			fmt.Printf("Error: %s\n", err.Error())
+			return
+		}
+		defer resp.Body.Close()
+	}
+}
+
+func ApplySessionConfig(file string, restOptions *api.RESTOptions) {
+	// open file
+	var resp api.SessionInformationGet
+	byteBuf, err := ioutil.ReadFile(file)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	// Unmashal to Json
+	if err := json.Unmarshal(byteBuf, &resp); err != nil {
+		fmt.Printf("Error: Failed to unmarshal File: (%s)\n", err.Error())
+		return
+	}
+
+	// POST the dump
+	for _, sess := range resp.SessionInfo {
+		resp, err := create.SessionAPICall(restOptions, sess)
+		if err != nil {
+			fmt.Printf("Error: %s\n", err.Error())
+			return
+		}
+		defer resp.Body.Close()
+	}
+}
+
+func ApplySessionUlClConfig(file string, restOptions *api.RESTOptions) {
+	// open file
+	var resp api.UlclInformationGet
+	byteBuf, err := ioutil.ReadFile(file)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	// Unmashal to Json
+	if err := json.Unmarshal(byteBuf, &resp); err != nil {
+		fmt.Printf("Error: Failed to unmarshal File: (%s)\n", err.Error())
+		return
+	}
+
+	// POST the dump
+	for _, ulcl := range resp.UlclInfo {
+		fmt.Printf("ulcl: %v\n", ulcl)
+		resp, err := create.SessionUlClAPICall(restOptions, ulcl)
 		if err != nil {
 			fmt.Printf("Error: %s\n", err.Error())
 			return

@@ -62,10 +62,14 @@ func Execute() {
 	saveCmd.Flags().BoolVarP(&saveOptions.SaveAllConfig, "all", "a", false, "Saves all loxilb configuration")
 	saveCmd.Flags().BoolVarP(&saveOptions.SaveIpConfig, "ip", "i", false, "Saves IP configuration")
 	saveCmd.Flags().BoolVarP(&saveOptions.SaveLBConfig, "lb", "l", false, "Saves Load Balancer rules configuration")
-	saveCmd.MarkFlagsMutuallyExclusive("all", "ip", "lb")
+	saveCmd.Flags().BoolVarP(&saveOptions.SaveSessionConfig, "session", "", false, "Saves session configuration")
+	saveCmd.Flags().BoolVarP(&saveOptions.SaveUlClConfig, "ulcl", "", false, "Saves ulcl configuration")
+	saveCmd.MarkFlagsMutuallyExclusive("all", "ip", "lb", "session", "ulcl")
 
 	applyCmd.Flags().StringVarP(&applyFiles.IpConfigFile, "ip", "i", "", "IP config file to apply")
 	applyCmd.Flags().StringVarP(&applyFiles.LBConfigFile, "lb", "l", "", "Load Balancer config file to apply")
+	applyCmd.Flags().StringVarP(&applyFiles.SessionConfigFile, "session", "", "", "Session config file to apply")
+	applyCmd.Flags().StringVarP(&applyFiles.SessionUlClConfigFile, "ulcl", "", "", "Ulcl config file to apply")
 
 	rootCmd.AddCommand(saveCmd)
 	rootCmd.AddCommand(applyCmd)

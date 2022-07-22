@@ -24,9 +24,11 @@ import (
 )
 
 type SaveOptions struct {
-	SaveIpConfig  bool
-	SaveLBConfig  bool
-	SaveAllConfig bool
+	SaveIpConfig      bool
+	SaveLBConfig      bool
+	SaveSessionConfig bool
+	SaveUlClConfig    bool
+	SaveAllConfig     bool
 }
 
 // saveCmd represents the save command
@@ -50,6 +52,23 @@ func SaveCmd(saveOpts *SaveOptions, restOptions *api.RESTOptions) *cobra.Command
 				}
 				fmt.Println("LB Configuration saved in", lbfile)
 			}
+			if saveOpts.SaveSessionConfig || saveOpts.SaveAllConfig {
+				sessionFile, err := get.Sessiondump(restOptions)
+				if err != nil {
+					fmt.Println(err.Error())
+					return
+				}
+				fmt.Println("Session Configuration saved in", sessionFile)
+			}
+			if saveOpts.SaveUlClConfig || saveOpts.SaveAllConfig {
+				ulclFile, err := get.SessionUlCldump(restOptions)
+				if err != nil {
+					fmt.Println(err.Error())
+					return
+				}
+				fmt.Println("UlCl Configuration saved in", ulclFile)
+			}
+
 		},
 	}
 	return saveCmd
