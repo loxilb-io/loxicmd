@@ -16,4 +16,6 @@ type ConntrackInformation struct {
 	Proto  string `json:"protocol"`
 	CState string `json:"conntrackState"`
 	CAct   string `json:"conntrackAct"`
+	Pkts   uint64 `json:"packets"`
+	Bytes  uint64 `json:"bytes"`
 }
