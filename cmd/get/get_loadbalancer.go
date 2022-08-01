@@ -1,4 +1,18 @@
-// Author: Inho gog <inhogog2@netlox.io>
+/*
+ * Copyright (c) 2022 NetLOX Inc
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at:
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package get
 
 import (
@@ -67,7 +81,7 @@ func PrintGetLbResult(resp *http.Response, o api.RESTOptions) {
 	// Making load balance data
 	for _, lbrule := range lbresp.LbRules {
 		if o.PrintOption == "wide" {
-			table.SetHeader([]string{"ExternalIP", "Port", "Protocol", "Select", "EndpointIP", "TargetPort", "Weight"})
+			table.SetHeader(LOADBALANCER_WIDE_TITLE)
 			for i, eps := range lbrule.Endpoints {
 				if i == 0 {
 					data = append(data, []string{lbrule.Service.ExternalIP, fmt.Sprintf("%d", lbrule.Service.Port), lbrule.Service.Protocol, fmt.Sprintf("%d", lbrule.Service.Sel),
@@ -77,7 +91,7 @@ func PrintGetLbResult(resp *http.Response, o api.RESTOptions) {
 				}
 			}
 		} else {
-			table.SetHeader([]string{"ExternalIP", "Port", "Protocol", "Select", "# of Endpoints"})
+			table.SetHeader(LOADBALANCER_TITLE)
 			data = append(data, []string{lbrule.Service.ExternalIP, fmt.Sprintf("%d", lbrule.Service.Port), lbrule.Service.Protocol, fmt.Sprintf("%d", lbrule.Service.Sel), fmt.Sprintf("%d", len(lbrule.Endpoints))})
 		}
 	}
