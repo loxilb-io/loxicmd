@@ -1,9 +1,9 @@
 ## What is loxicmd
 
-loxicmd is command tools for loxilb. loxicmd provide the following :
+loxicmd is command tools for loxilb. It is "kubectl" for loxilb. loxicmd provides the following (currently) :
 
 - Add/Delete/Get about the service type external load-balancer 
-- Get Port(interface) dump
+- Get Port(interface) dump used by loxilb or its docker
 - Get Connection track information
 
 loxicmd aim to provide all of the configuation for the loxilb.
