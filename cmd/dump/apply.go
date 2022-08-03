@@ -24,19 +24,23 @@ import (
 	"loxicmd/pkg/api"
 	"os"
 	"os/exec"
-
+	"strings"
+	"errors"
 	"github.com/spf13/cobra"
 )
 
-type ConfigFiles struct {
+type ApplyOptions struct {
 	IpConfigFile          string
 	LBConfigFile          string
 	SessionConfigFile     string
 	SessionUlClConfigFile string
+	Intf				  string
+	ConfigPath			  string
+	Route				  bool
 }
 
 // applyCmd represents the save command
-func ApplyCmd(cfgFiles *ConfigFiles, restOptions *api.RESTOptions) *cobra.Command {
+func ApplyCmd(options *ApplyOptions, restOptions *api.RESTOptions) *cobra.Command {
 	applyCmd := &cobra.Command{
 		Use:   "apply",
 		Short: "Apply configuration",
@@ -44,25 +48,40 @@ func ApplyCmd(cfgFiles *ConfigFiles, restOptions *api.RESTOptions) *cobra.Comman
 		Run: func(cmd *cobra.Command, args []string) {
 			_ = cmd
 			_ = args
-			if len(cfgFiles.IpConfigFile) == 0 && len(cfgFiles.LBConfigFile) == 0 && len(cfgFiles.SessionConfigFile) == 0 && len(cfgFiles.SessionUlClConfigFile) == 0 {
-				fmt.Println("Provide valid filename")
+			if len(options.IpConfigFile) == 0 && 
+			   len(options.LBConfigFile) == 0 && 
+			   len(options.SessionConfigFile) == 0 && 
+			   len(options.SessionUlClConfigFile) == 0 &&
+			   len(options.Intf) == 0 {
+				fmt.Println("Provide valid options")
 				return
 			}
-			if len(cfgFiles.IpConfigFile) > 0 {
-				ApplyIpConfig(cfgFiles.IpConfigFile)
-				fmt.Printf("Configuration applied - %s\n", cfgFiles.IpConfigFile)
+			if len(options.IpConfigFile) > 0 {
+				ApplyIpConfig(options.IpConfigFile)
+				fmt.Printf("Configuration applied - %s\n", options.IpConfigFile)
 			}
-			if len(cfgFiles.LBConfigFile) > 0 {
-				ApplyLbConfig(cfgFiles.LBConfigFile, restOptions)
-				fmt.Printf("Configuration applied - %s\n", cfgFiles.LBConfigFile)
+			
+			if options.Route && len(options.Intf) > 0 {
+				addRoute(options.ConfigPath, options.Intf)
+				fmt.Printf("Route Configuration applied for - %s\n", options.Intf)
+				return
 			}
-			if len(cfgFiles.SessionConfigFile) > 0 {
-				ApplySessionConfig(cfgFiles.SessionConfigFile, restOptions)
-				fmt.Printf("Configuration applied - %s\n", cfgFiles.SessionConfigFile)
+			if len(options.Intf) > 0 {
+				ApplyIpConfigPerInterface(options.ConfigPath, options.Intf)
+				fmt.Printf("Configuration applied for - %s\n", options.Intf)
 			}
-			if len(cfgFiles.SessionUlClConfigFile) > 0 {
-				ApplySessionUlClConfig(cfgFiles.SessionUlClConfigFile, restOptions)
-				fmt.Printf("Configuration applied - %s\n", cfgFiles.SessionUlClConfigFile)
+
+			if len(options.LBConfigFile) > 0 {
+				ApplyLbConfig(options.LBConfigFile, restOptions)
+				fmt.Printf("Configuration applied - %s\n", options.LBConfigFile)
+			}
+			if len(options.SessionConfigFile) > 0 {
+				ApplySessionConfig(options.SessionConfigFile, restOptions)
+				fmt.Printf("Configuration applied - %s\n", options.SessionConfigFile)
+			}
+			if len(options.SessionUlClConfigFile) > 0 {
+				ApplySessionUlClConfig(options.SessionUlClConfigFile, restOptions)
+				fmt.Printf("Configuration applied - %s\n", options.SessionUlClConfigFile)
 			}
 		},
 	}
@@ -96,6 +115,422 @@ func ApplyIpConfig(file string) {
 
 	if err := scanner.Err(); err != nil {
 		fmt.Println(err)
+	}
+}
+
+func bashCommand(command string) {
+	fmt.Println(command)
+	cmd := exec.Command("bash", "-c", command)
+	output, err := cmd.Output()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Printf("%v\n", string(output))
+}
+
+func getType(path string, intf string) (string, error) {
+	file := path+"/"+intf+"/type"
+	var text string
+	// open file
+	f, err := os.Open(file)
+	if err != nil {
+		fmt.Println(err)
+	}
+	// remember to close the file at the end of the program
+	defer f.Close()
+
+	// read the file line by line using scanner
+	scanner := bufio.NewScanner(f)
+
+	for scanner.Scan() {
+		// do something with a line
+		text = scanner.Text()
+		break;
+	}
+
+	if err := scanner.Err(); err != nil {
+		return "", err
+	}
+	return text, nil;
+}
+
+func getBondMode(path string, intf string) (string, error) {
+	file := path+"/"+intf+"/mode"
+	var text string
+	// open file
+	f, err := os.Open(file)
+	if err != nil {
+		fmt.Println(err)
+	}
+	// remember to close the file at the end of the program
+	defer f.Close()
+
+	// read the file line by line using scanner
+	scanner := bufio.NewScanner(f)
+
+	for scanner.Scan() {
+		// do something with a line
+		text = scanner.Text()
+		break;
+	}
+
+	if err := scanner.Err(); err != nil {
+		return "", err
+	}
+	return text, nil;
+}
+
+func addMTU(path string, intf string) {
+	// open file
+	file := path+"/"+intf+"/mtu"
+	if _, err := os.Stat(file); errors.Is(err, os.ErrNotExist) {
+		return
+	}
+	f, err := os.Open(file)
+	if err != nil {
+		fmt.Println(err)
+	}
+	// remember to close the file at the end of the program
+	defer f.Close()
+
+	// read the file line by line using scanner
+	scanner := bufio.NewScanner(f)
+
+	for scanner.Scan() {
+		// do something with a line
+		//fmt.Printf("%s\n", scanner.Text())
+		command :="ip link set dev "+intf+" mtu "+scanner.Text()
+		bashCommand(command)
+		break
+	}
+
+	if err := scanner.Err(); err != nil {
+		fmt.Println(err)
+	}
+}
+
+func addIpAddr(path string, intf string) {
+	// open file
+	file := path+"/"+intf+"/ipv4addr"
+	if _, err := os.Stat(file); errors.Is(err, os.ErrNotExist) {
+		return
+	}
+
+	f, err := os.Open(file)
+	if err != nil {
+		fmt.Println(err)
+	}
+	// remember to close the file at the end of the program
+	defer f.Close()
+
+	// read the file line by line using scanner
+	scanner := bufio.NewScanner(f)
+
+	for scanner.Scan() {
+		// do something with a line
+		//fmt.Printf("%s\n", scanner.Text())
+		command :="ip addr add "+scanner.Text()+ " dev "+intf
+		bashCommand(command)
+	}
+
+	if err := scanner.Err(); err != nil {
+		fmt.Println(err)
+	}
+}
+
+func addL2FDBs(path string, intf string) {
+	// open file
+	file := path+"/"+intf+"/l2fdbs"
+	if _, err := os.Stat(file); errors.Is(err, os.ErrNotExist) {
+		return
+	}
+
+	f, err := os.Open(file)
+	if err != nil {
+		fmt.Println(err)
+	}
+	// remember to close the file at the end of the program
+	defer f.Close()
+
+	// read the file line by line using scanner
+	scanner := bufio.NewScanner(f)
+
+	for scanner.Scan() {
+		// do something with a line
+		//fmt.Printf("%s\n", scanner.Text())
+		command :="bridge fdb add "+scanner.Text()+ " dev "+ intf + " permanent"
+		bashCommand(command)
+	}
+
+	if err := scanner.Err(); err != nil {
+		fmt.Println(err)
+	}
+}
+
+func addVxFDBs(path string, intf string) {
+	// open file
+	file := path+"/"+intf+"/vxfdbs"
+	if _, err := os.Stat(file); errors.Is(err, os.ErrNotExist) {
+		return
+	}
+	f, err := os.Open(file)
+	if err != nil {
+		fmt.Println(err)
+	}
+	// remember to close the file at the end of the program
+	defer f.Close()
+
+	// read the file line by line using scanner
+	scanner := bufio.NewScanner(f)
+
+	for scanner.Scan() {
+		// do something with a line
+		//fmt.Printf("%s\n", scanner.Text())
+		command :="bridge fdb append "+scanner.Text()+ " dev "+ intf + " permanent"
+		bashCommand(command)
+	}
+
+	if err := scanner.Err(); err != nil {
+		fmt.Println(err)
+	}
+}
+
+func addNeigh(path string, intf string) {
+	// open file
+	file := path+"/"+intf+"/ipv4neigh"
+	if _, err := os.Stat(file); errors.Is(err, os.ErrNotExist) {
+		return
+	}
+	f, err := os.Open(file)
+	if err != nil {
+		fmt.Println(err)
+	}
+	// remember to close the file at the end of the program
+	defer f.Close()
+
+	// read the file line by line using scanner
+	scanner := bufio.NewScanner(f)
+
+	for scanner.Scan() {
+		// do something with a line
+		//fmt.Printf("%s\n", scanner.Text())
+		command :="ip neigh add "+scanner.Text()+ " dev "+ intf + " permanent"
+		bashCommand(command)
+	}
+
+	if err := scanner.Err(); err != nil {
+		fmt.Println(err)
+	}
+}
+
+func addRoute(path string, intf string) {
+	// open file
+	file := path+"/"+intf+"/ipv4route"
+	if _, err := os.Stat(file); errors.Is(err, os.ErrNotExist) {
+		return
+	}
+	f, err := os.Open(file)
+	if err != nil {
+		fmt.Println(err)
+	}
+	// remember to close the file at the end of the program
+	defer f.Close()
+
+	// read the file line by line using scanner
+	scanner := bufio.NewScanner(f)
+
+	for scanner.Scan() {
+		// do something with a line
+		//fmt.Printf("%s\n", scanner.Text())
+		command :="ip route replace "+scanner.Text()+ " proto static"
+		bashCommand(command)
+	}
+
+	if err := scanner.Err(); err != nil {
+		fmt.Println(err)
+	}
+}
+
+func addSubIntf(path string, intf string) {
+	// open file
+	file := path+"/"+intf+"/subintf"
+	if _, err := os.Stat(file); errors.Is(err, os.ErrNotExist) {
+		return
+	}
+	f, err := os.Open(file)
+	if err != nil {
+		fmt.Println(err)
+	}
+	// remember to close the file at the end of the program
+	defer f.Close()
+
+	// read the file line by line using scanner
+	scanner := bufio.NewScanner(f)
+
+	for scanner.Scan() {
+		// do something with a line
+		//fmt.Printf("%s\n", scanner.Text())
+		token := strings.Split(scanner.Text(), "|")
+
+		command :="ip link add "+ token[0] + " link " + token[1] + " type vlan id " + token[2]
+		bashCommand(command)
+
+		command ="ip link set " + token[0] + " up"
+		bashCommand(command)
+	}
+
+	if err := scanner.Err(); err != nil {
+		fmt.Println(err)
+	}
+}
+
+func addBridge(intf string) {
+	
+	command :="ip link add "+ intf + " type bridge "
+	bashCommand(command)
+	command ="ip link set " + intf + " up"
+	bashCommand(command)
+}
+
+func addBond(path string, intf string) {
+	
+	command :="ip link add "+ intf + " type bond "
+	bashCommand(command)
+	mode,err := getBondMode(path, intf)
+	if (err == nil) {
+		command = "ip link set " + intf + " type bond mode " + mode
+		bashCommand(command)
+	}
+	command ="ip link set " + intf + " up"
+	bashCommand(command)
+}
+
+func addVxlan(path string, intf string) {
+	// open file
+	file := path+"/"+intf+"/info"
+	if _, err := os.Stat(file); errors.Is(err, os.ErrNotExist) {
+		return
+	}
+	f, err := os.Open(file)
+	if err != nil {
+		fmt.Println(err)
+	}
+	// remember to close the file at the end of the program
+	defer f.Close()
+
+	// read the file line by line using scanner
+	scanner := bufio.NewScanner(f)
+
+	for scanner.Scan() {
+		// do something with a line
+		//fmt.Printf("%s\n", scanner.Text())
+		token := strings.Split(scanner.Text(), "|")
+
+		command :="ip link add "+ intf + " type vxlan id " + token[0] + 
+				  " local " + token[1] + " dev " + token[2] + " dst 4789"
+		bashCommand(command)
+
+		command ="ip link set " + intf + " up"
+		bashCommand(command)
+	}
+
+	if err := scanner.Err(); err != nil {
+		fmt.Println(err)
+	}
+}
+
+func setMaster(intf string, master string) {
+	
+	command :="ip link set "+ intf + " down"
+	bashCommand(command)
+	command ="ip link set "+ intf + " master " + master
+	bashCommand(command)
+	command ="ip link set "+ intf + " up"
+	bashCommand(command)
+}
+
+func setDev(intf string) {
+	
+	command :="ip link set "+ intf + " up"
+	bashCommand(command)
+}
+
+func addMaster(path string, intf string) {
+	// open file
+	file := path+"/"+intf+"/master"
+	if _, err := os.Stat(file); errors.Is(err, os.ErrNotExist) {
+		return
+	}
+	f, err := os.Open(file)
+	if err != nil {
+		fmt.Println(err)
+	}
+	// remember to close the file at the end of the program
+	defer f.Close()
+
+	// read the file line by line using scanner
+	scanner := bufio.NewScanner(f)
+
+	for scanner.Scan() {
+		// do something with a line
+		//fmt.Printf("%s\n", scanner.Text())
+		token := strings.Split(scanner.Text(), "|")
+
+		if token[1] == "bridge" {
+			addBridge(token[0])
+			setMaster(intf, token[0])
+		} else if token[1] == "vxlan" {
+			addVxlan(path, token[0])
+		} else if token[1] == "bond" {
+			addBond(path, token[0])
+			setMaster(intf, token[0])
+		}
+		break;
+	}
+
+	if err := scanner.Err(); err != nil {
+		fmt.Println(err)
+	}
+}
+
+func ApplyIpConfigPerInterface(path string, intf string) {
+	
+	itype,err := getType(path , intf);
+	if (err == nil) {
+		if itype == "phy" || itype == "bond" {
+			setDev(intf)
+			addMTU(path, intf)
+			addIpAddr(path, intf)
+			addL2FDBs(path, intf)
+			addNeigh(path, intf)
+			addRoute(path, intf)
+			addSubIntf(path, intf)
+			addMaster(path, intf)
+		} else if (itype == "subintf") {
+			setDev(intf)
+			addIpAddr(path, intf)
+			addNeigh(path, intf)
+			addRoute(path, intf)
+			addSubIntf(path, intf)
+			addMaster(path, intf)
+		} else if (itype == "bridge") {
+			setDev(intf)
+			addIpAddr(path, intf)
+			addNeigh(path, intf)
+			addRoute(path, intf)
+			addMaster(path, intf)
+		} else if (itype == "vxlan") {
+			setDev(intf)
+			addIpAddr(path, intf)
+			addVxFDBs(path, intf)
+			addNeigh(path, intf)
+			addRoute(path, intf)
+			addMaster(path, intf)
+		}
+	} else {
+		fmt.Printf("Unable to get type of intf(%v)", err)
+		return
 	}
 }
 

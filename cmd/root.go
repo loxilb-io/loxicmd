@@ -44,7 +44,7 @@ func Execute() {
 
 	restOptions := &api.RESTOptions{}
 	saveOptions := &dump.SaveOptions{}
-	applyFiles := &dump.ConfigFiles{}
+	applyOptions := &dump.ApplyOptions{}
 
 	rootCmd.PersistentFlags().Int16VarP(&restOptions.Timeout, "timeout", "t", 5, "Set timeout")
 	rootCmd.PersistentFlags().StringVarP(&restOptions.Protocol, "protocol", "", "http", "Set API server http/https")
@@ -57,7 +57,7 @@ func Execute() {
 	rootCmd.AddCommand(delete.DeleteCmd(restOptions))
 
 	saveCmd := dump.SaveCmd(saveOptions, restOptions)
-	applyCmd := dump.ApplyCmd(applyFiles, restOptions)
+	applyCmd := dump.ApplyCmd(applyOptions, restOptions)
 
 	saveCmd.Flags().BoolVarP(&saveOptions.SaveAllConfig, "all", "a", false, "Saves all loxilb configuration")
 	saveCmd.Flags().BoolVarP(&saveOptions.SaveIpConfig, "ip", "i", false, "Saves IP configuration")
@@ -66,10 +66,13 @@ func Execute() {
 	saveCmd.Flags().BoolVarP(&saveOptions.SaveUlClConfig, "ulcl", "", false, "Saves ulcl configuration")
 	saveCmd.MarkFlagsMutuallyExclusive("all", "ip", "lb", "session", "ulcl")
 
-	applyCmd.Flags().StringVarP(&applyFiles.IpConfigFile, "ip", "i", "", "IP config file to apply")
-	applyCmd.Flags().StringVarP(&applyFiles.LBConfigFile, "lb", "l", "", "Load Balancer config file to apply")
-	applyCmd.Flags().StringVarP(&applyFiles.SessionConfigFile, "session", "", "", "Session config file to apply")
-	applyCmd.Flags().StringVarP(&applyFiles.SessionUlClConfigFile, "ulcl", "", "", "Ulcl config file to apply")
+	applyCmd.Flags().StringVarP(&applyOptions.IpConfigFile, "ip", "i", "", "IP config file to apply")
+	applyCmd.Flags().StringVarP(&applyOptions.Intf, "per-intf", "","", "Apply configuration only for specific interface")
+	applyCmd.Flags().BoolVarP(&applyOptions.Route, "ipv4route", "r", false, "Apply route configuration only for specific interface")
+	applyCmd.Flags().StringVarP(&applyOptions.ConfigPath, "config-path", "c", "/opt/loxilb/ipconfig/", "Configuration path only for applying per interface config")
+	applyCmd.Flags().StringVarP(&applyOptions.LBConfigFile, "lb", "l", "", "Load Balancer config file to apply")
+	applyCmd.Flags().StringVarP(&applyOptions.SessionConfigFile, "session", "", "", "Session config file to apply")
+	applyCmd.Flags().StringVarP(&applyOptions.SessionUlClConfigFile, "ulcl", "", "", "Ulcl config file to apply")
 
 	rootCmd.AddCommand(saveCmd)
 	rootCmd.AddCommand(applyCmd)
