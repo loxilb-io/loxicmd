@@ -91,7 +91,7 @@ func PrintGetPortResult(resp *http.Response, o api.RESTOptions) {
 	// Making Port data
 	for _, port := range portresp.Ports {
 		if o.PrintOption == "wide" {
-			table.SetHeader([]string{"index", "portname", "MAC", "link/state", "mtu", "isActive/bpf", "Statistics", "L3Info", "L2Info", "Sync"})
+			table.SetHeader(PORT_WIDE_TITLE)
 			data = append(data, []string{fmt.Sprintf("%d", port.PortNo), port.Name, // Default Info
 				port.HInfo.MacAddrStr, fmt.Sprintf("%v/%v", port.HInfo.Link, port.HInfo.State), fmt.Sprintf("%d", port.HInfo.Mtu), // HW info
 				fmt.Sprintf("%v/%v", port.SInfo.PortActive, port.SInfo.BpfLoaded), // SW info
@@ -104,7 +104,7 @@ func PrintGetPortResult(resp *http.Response, o api.RESTOptions) {
 				fmt.Sprintf("%v", port.Sync),
 			})
 		} else {
-			table.SetHeader([]string{"index", "portname", "MAC", "link/state", "L3Info", "L2Info"})
+			table.SetHeader(PORT_TITLE)
 			data = append(data, []string{fmt.Sprintf("%d", port.PortNo), port.Name,
 				port.HInfo.MacAddrStr, fmt.Sprintf("%v/%v", port.HInfo.Link, port.HInfo.State),
 				MakeL3InfoRoString(port.L3), MakeL2InfoRoString(port.L2)})
