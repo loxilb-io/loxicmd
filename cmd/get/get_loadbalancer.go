@@ -18,11 +18,13 @@ package get
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"loxicmd/pkg/api"
 	"net/http"
 	"os"
+	"os/exec"
 	"strings"
 	"time"
 
@@ -140,5 +142,25 @@ func Lbdump(restOptions *api.RESTOptions) (string, error) {
 	// Write
 	f.Write(resultByte)
 
+	if _, err := os.Stat("/opt/loxilb/lbconfig.txt"); errors.Is(err, os.ErrNotExist) {
+		if err != nil {
+			fmt.Println("There is no saved config file")
+		}
+	} else {
+		command := "mv /opt/loxilb/lbconfig.txt /opt/loxilb/lbconfig.txt.bk"
+		cmd := exec.Command("bash", "-c", command)
+		_, err := cmd.Output()
+		if err != nil {
+			fmt.Println("Can't backup /opt/loxilb/lbconfig.txt")
+			return file, err
+		}
+	}
+	command := "cp -R " + file + " /opt/loxilb/lbconfig.txt"
+	cmd := exec.Command("bash", "-c", command)
+	fmt.Println(cmd)
+	_, err = cmd.Output()
+	if err != nil {
+		fmt.Println(err)
+	}
 	return file, nil
 }

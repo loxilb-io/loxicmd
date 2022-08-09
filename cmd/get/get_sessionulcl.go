@@ -18,11 +18,13 @@ package get
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"loxicmd/pkg/api"
 	"net/http"
 	"os"
+	"os/exec"
 	"strings"
 	"time"
 
@@ -142,5 +144,25 @@ func SessionUlCldump(restOptions *api.RESTOptions) (string, error) {
 	// Write
 	f.Write(resultByte)
 
+	if _, err := os.Stat("/opt/loxilb/sessionulclconfig.txt"); errors.Is(err, os.ErrNotExist) {
+		if err != nil {
+			fmt.Println("There is no saved config file")
+		}
+	} else {
+		command := "mv /opt/loxilb/sessionulclconfig.txt /opt/loxilb/sessionulclconfig.txt.bk"
+		cmd := exec.Command("bash", "-c", command)
+		_, err := cmd.Output()
+		if err != nil {
+			fmt.Println("Can't backup /opt/loxilb/sessionulclconfig.txt")
+			return file, err
+		}
+	}
+	command := "cp -R " + file + " /opt/loxilb/sessionulclconfig.txt"
+	cmd := exec.Command("bash", "-c", command)
+	fmt.Println(cmd)
+	_, err = cmd.Output()
+	if err != nil {
+		fmt.Println(err)
+	}
 	return file, nil
 }
