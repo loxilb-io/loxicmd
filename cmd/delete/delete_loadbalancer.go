@@ -48,11 +48,14 @@ func validation(args []string) error {
 
 func NewDeleteLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 	var tcpPortNumberList []int
+	var udpPortNumberList []int
+	var sctpPortNumberList []int
+	var icmpPortNumberList bool
 	var externalIP string
 	//var endpointList []string
 
 	var deleteLbCmd = &cobra.Command{
-		Use:   "lb EXTERNAL-IP [--tcp=<port>:<targetPort>] [--endpoints=<ip>:<weight>]",
+		Use:   "lb EXTERNAL-IP [--tcp portNumber] [--udp portNumber] [--sctp portNumber] [--icmp portNumber]",
 		Short: "Delete a LoadBalancer",
 		Long:  `Delete a LoadBalancer.`,
 		Run: func(cmd *cobra.Command, args []string) {
@@ -61,7 +64,7 @@ func NewDeleteLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 				return
 			}
 			externalIP = args[0]
-
+			PortNumberList := make(map[string][]int)
 			client := api.NewLoxiClient(restOptions)
 			ctx := context.TODO()
 			var cancel context.CancelFunc
@@ -70,30 +73,49 @@ func NewDeleteLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 				defer cancel()
 			}
 
-			for _, portNum := range tcpPortNumberList {
-				// TODO: need validation check
-				subResources := []string{
-					"externalipaddress", externalIP,
-					"port", strconv.Itoa(portNum),
-					"protocol", "tcp",
+			if len(tcpPortNumberList) > 0 {
+				PortNumberList["tcp"] = tcpPortNumberList
+			}
+			if len(udpPortNumberList) > 0 {
+				PortNumberList["udp"] = udpPortNumberList
+			}
+			if len(sctpPortNumberList) > 0 {
+				PortNumberList["sctp"] = sctpPortNumberList
+			}
+			if icmpPortNumberList {
+				PortNumberList["icmp"] = []int{0}
+			}
+			fmt.Printf("PortNumberList: %v\n", PortNumberList)
+			for proto, portNum := range PortNumberList {
+				for _, port := range portNum {
+					subResources := []string{
+						"externalipaddress", externalIP,
+						"port", strconv.Itoa(port),
+						"protocol", proto,
+					}
+					fmt.Printf("subResources: %v\n", subResources)
+					resp, err := client.LoadBalancer().SubResources(subResources).Delete(ctx)
+					if err != nil {
+						fmt.Printf("Error: Failed to delete LoadBalancer(ExternalIP: %s, Protocol:%s, Port:%d)", externalIP, "tcp", portNum)
+						return
+					}
+					defer resp.Body.Close()
+					fmt.Printf("Debug: response.StatusCode: %d\n", resp.StatusCode)
+					if resp.StatusCode != http.StatusOK {
+						PrintDeleteLbResult(resp, *restOptions)
+						return
+					}
 				}
-				resp, err := client.LoadBalancer().SubResources(subResources).Delete(ctx)
-				if err != nil {
-					fmt.Printf("Error: Failed to delete LoadBalancer(ExternalIP: %s, Protocol:%s, Port:%d)", externalIP, "tcp", portNum)
-					return
-				}
-				defer resp.Body.Close()
-				fmt.Printf("Debug: response.StatusCode: %d\n", resp.StatusCode)
-				if resp.StatusCode != http.StatusOK {
-					PrintDeleteLbResult(resp, *restOptions)
-					return
-				}
+
 			}
 			return
 		},
 	}
 
 	deleteLbCmd.Flags().IntSliceVar(&tcpPortNumberList, "tcp", tcpPortNumberList, "TCP port list can be specified as '<port>,<port>...'")
+	deleteLbCmd.Flags().IntSliceVar(&udpPortNumberList, "udp", udpPortNumberList, "UDP port list can be specified as '<port>,<port>...'")
+	deleteLbCmd.Flags().IntSliceVar(&sctpPortNumberList, "sctp", sctpPortNumberList, "SCTP port list can be specified as '<port>,<port>...'")
+	deleteLbCmd.Flags().BoolVarP(&icmpPortNumberList, "icmp", "", false, "ICMP port list can be specified as '<port>,<port>...'")
 	return deleteLbCmd
 }
 

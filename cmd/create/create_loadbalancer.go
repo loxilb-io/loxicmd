@@ -33,6 +33,9 @@ import (
 type CreateLoadBalancerOptions struct {
 	ExternalIP string
 	TCP        []string
+	UDP        []string
+	ICMP       bool
+	SCTP       []string
 	Endpoints  []string
 }
 
@@ -59,7 +62,7 @@ func NewCreateLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 	o := CreateLoadBalancerOptions{}
 
 	var createLbCmd = &cobra.Command{
-		Use:   "lb IP [--tcp=<port>:<targetPort>] [--endpoints=<ip>:<weight>]",
+		Use:   "lb IP [--tcp=<port>:<targetPort>] [--udp=<port>:<targetPort>] [--sctp=<port>:<targetPort>] [--icmp] [--endpoints=<ip>:<weight>,]",
 		Short: "Create a LoadBalancer",
 		Long:  `Create a LoadBalancer`,
 		Run: func(cmd *cobra.Command, args []string) {
@@ -68,54 +71,74 @@ func NewCreateLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 				return
 			}
 
-			portPair, err := GetPortPairList(o.TCP)
-			if err != nil {
-				fmt.Printf("Error: %s\n", err.Error())
-				return
+			ProtoPortpair := make(map[string][]string)
+			// TCP LoadBalancer
+			if len(o.TCP) > 0 {
+				ProtoPortpair["tcp"] = o.TCP
 			}
+			if len(o.UDP) > 0 {
+				ProtoPortpair["udp"] = o.UDP
+			}
+			if len(o.SCTP) > 0 {
+				ProtoPortpair["sctp"] = o.SCTP
+			}
+			if o.ICMP {
+				//icmpProtoPortpair := make(map[string][]string)
+				ProtoPortpair["icmp"] = []string{"0:0"}
+			}
+			fmt.Printf("ProtoPortpair: %v\n", ProtoPortpair)
+			// Commom Part of the load balancer.
 			endpointPair, err := GetEndpointWeightPairList(o.Endpoints)
 			if err != nil {
 				fmt.Printf("Error: %s\n", err.Error())
 				return
 			}
-			protocol := GetProtocol(o)
-
-			for port, targetPort := range portPair {
-				lbModel := api.LoadBalancerModel{}
-				lbService := api.LoadBalancerService{
-					ExternalIP: o.ExternalIP,
-					Protocol:   protocol,
-					Port:       port,
-				}
-				lbModel.Service = lbService
-				for endpoint, weight := range endpointPair {
-					ep := api.LoadBalancerEndpoint{
-						EndpointIP: endpoint,
-						TargetPort: targetPort,
-						Weight:     weight,
-					}
-					lbModel.Endpoints = append(lbModel.Endpoints, ep)
-				}
-
-				resp, err := LoadbalancerAPICall(restOptions, lbModel)
+			for proto, portPairList := range ProtoPortpair {
+				portPair, err := GetPortPairList(portPairList)
 				if err != nil {
 					fmt.Printf("Error: %s\n", err.Error())
 					return
 				}
-				defer resp.Body.Close()
+				for port, targetPort := range portPair {
+					lbModel := api.LoadBalancerModel{}
+					lbService := api.LoadBalancerService{
+						ExternalIP: o.ExternalIP,
+						Protocol:   proto,
+						Port:       port,
+					}
+					lbModel.Service = lbService
+					for endpoint, weight := range endpointPair {
+						ep := api.LoadBalancerEndpoint{
+							EndpointIP: endpoint,
+							TargetPort: targetPort,
+							Weight:     weight,
+						}
+						lbModel.Endpoints = append(lbModel.Endpoints, ep)
+					}
 
-				fmt.Printf("Debug: response.StatusCode: %d\n", resp.StatusCode)
-				if resp.StatusCode != http.StatusOK {
-					PrintCreateLbResult(resp, *restOptions)
-					return
+					resp, err := LoadbalancerAPICall(restOptions, lbModel)
+					if err != nil {
+						fmt.Printf("Error: %s\n", err.Error())
+						return
+					}
+					defer resp.Body.Close()
+
+					fmt.Printf("Debug: response.StatusCode: %d\n", resp.StatusCode)
+					if resp.StatusCode != http.StatusOK {
+						PrintCreateLbResult(resp, *restOptions)
+						return
+					}
 				}
 			}
+
 		},
 	}
 
 	createLbCmd.Flags().StringSliceVar(&o.TCP, "tcp", o.TCP, "Port pairs can be specified as '<port>:<targetPort>'")
+	createLbCmd.Flags().StringSliceVar(&o.UDP, "udp", o.UDP, "Port pairs can be specified as '<port>:<targetPort>'")
+	createLbCmd.Flags().StringSliceVar(&o.SCTP, "sctp", o.SCTP, "Port pairs can be specified as '<port>:<targetPort>'")
+	createLbCmd.Flags().BoolVarP(&o.ICMP, "icmp", "", false, "ICMP Ping packet Load balancer")
 	createLbCmd.Flags().StringSliceVar(&o.Endpoints, "endpoints", o.Endpoints, "Endpoints is pairs that can be specified as '<endpointIP>:<Weight>'")
-	//createLbCmd.Flags().StringVar(&o.ExternalIP, "lb", o.ExternalIP, "Assign your own LoadBalancer external IP")
 
 	return createLbCmd
 }
@@ -186,14 +209,6 @@ func GetEndpointWeightPairList(endpointsList []string) (map[string]uint8, error)
 	}
 
 	return result, nil
-}
-
-func GetProtocol(o CreateLoadBalancerOptions) string {
-	if len(o.TCP) > 0 {
-		return "tcp"
-	}
-
-	return "udp"
 }
 
 func LoadbalancerAPICall(restOptions *api.RESTOptions, lbModel api.LoadBalancerModel) (*http.Response, error) {
