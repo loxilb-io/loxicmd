@@ -39,10 +39,9 @@ func validation(args []string) error {
 		fmt.Println("create lb command get so many args")
 		fmt.Println(args)
 	} else if len(args) <= 0 {
-		return errors.New("delete lb need EXTERNAL-IP args")
+		return errors.New("delete lb need <EXTERNAL-IP> args")
 	}
 
-	// TODO: need validation check
 	return nil
 }
 
@@ -55,7 +54,7 @@ func NewDeleteLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 	//var endpointList []string
 
 	var deleteLbCmd = &cobra.Command{
-		Use:   "lb EXTERNAL-IP [--tcp portNumber] [--udp portNumber] [--sctp portNumber] [--icmp portNumber]",
+		Use:   "lb <EXTERNAL-IP> [--tcp portNumber] [--udp portNumber] [--sctp portNumber] [--icmp portNumber]",
 		Short: "Delete a LoadBalancer",
 		Long:  `Delete a LoadBalancer.`,
 		Run: func(cmd *cobra.Command, args []string) {

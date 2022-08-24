@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"loxicmd/pkg/api"
+	"net"
 	"net/http"
 	"strconv"
 	"strings"
@@ -53,8 +54,11 @@ func ReadCreateLoadBalancerOptions(o *CreateLoadBalancerOptions, args []string) 
 		return errors.New("create lb need EXTERNAL-IP args")
 	}
 
-	// TODO: need validation check
-	o.ExternalIP = args[0]
+	if val := net.ParseIP(args[0]); val != nil {
+		o.ExternalIP = args[0]
+	} else {
+		return fmt.Errorf("Externel IP '%s' is invalid format", args[0])
+	}
 	return nil
 }
 
@@ -167,7 +171,6 @@ func PrintCreateLbResult(resp *http.Response, o api.RESTOptions) {
 	fmt.Printf("%s\n", result.Result)
 }
 
-// need to validation check
 func GetPortPairList(portPairStrList []string) (map[uint16]uint16, error) {
 	result := make(map[uint16]uint16)
 	for _, portPairStr := range portPairStrList {
@@ -192,7 +195,6 @@ func GetPortPairList(portPairStrList []string) (map[uint16]uint16, error) {
 	return result, nil
 }
 
-// need to validation check
 func GetEndpointWeightPairList(endpointsList []string) (map[string]uint8, error) {
 	result := make(map[string]uint8)
 	for _, endpointStr := range endpointsList {
