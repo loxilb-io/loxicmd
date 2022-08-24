@@ -29,7 +29,7 @@ type SessionMod struct {
 	Ident string  `json:"ident"`
 	Ip    net.IP  `json:"sessionIP"`
 	AnTun SessTun `json:"accessNetworkTunnel"`
-	CnTun SessTun `json:"connectionNetworkTunnel"`
+	CnTun SessTun `json:"coreNetworkTunnel"`
 }
 
 type SessTun struct {

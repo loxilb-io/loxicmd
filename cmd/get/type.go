@@ -20,7 +20,7 @@ var (
 	LOADBALANCER_TITLE      = []string{"External IP", "Port", "Protocol", "Select", "# of Endpoints"}
 	LOADBALANCER_WIDE_TITLE = []string{"External IP", "Port", "Protocol", "Select", "Endpoint IP", "Target Port", "Weight"}
 	SESSION_TITLE           = []string{"ident", "session IP"}
-	SESSION_WIDE_TITLE      = []string{"ident", "session IP", "access Network Tunnel", "connection Network Tunnel"}
+	SESSION_WIDE_TITLE      = []string{"ident", "session IP", "access Network Tunnel", "core Network Tunnel"}
 	PORT_WIDE_TITLE         = []string{"index", "portname", "MAC", "link/state", "mtu", "isActive/bpf", "Statistics", "L3Info", "L2Info", "Sync"}
 	PORT_TITLE              = []string{"index", "portname", "MAC", "link/state", "L3Info", "L2Info"}
 	ULCL_TITLE              = []string{"ident", "ulcl IP", "qfi"}
