@@ -35,6 +35,7 @@ func CreateCmd(restOptions *api.RESTOptions) *cobra.Command {
 
 	createCmd.AddCommand(NewCreateLoadBalancerCmd(restOptions))
 	createCmd.AddCommand(NewCreateSessionCmd(restOptions))
+	createCmd.AddCommand(NewCreateSessionUlClCmd(restOptions))
 
 	return createCmd
 }

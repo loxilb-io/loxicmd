@@ -35,6 +35,7 @@ func DeleteCmd(restOptions *api.RESTOptions) *cobra.Command {
 
 	deleteCmd.AddCommand(NewDeleteLoadBalancerCmd(restOptions))
 	deleteCmd.AddCommand(NewDeleteSessionCmd(restOptions))
+	deleteCmd.AddCommand(NewDeleteSessionUlClCmd(restOptions))
 
 	return deleteCmd
 }
