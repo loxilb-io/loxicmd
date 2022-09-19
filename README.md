@@ -1,10 +1,13 @@
+![build workflow](https://github.com/loxilb-io/loxicmd/actions/workflows/build.yml/badge.svg)
+
 ## What is loxicmd
 
-loxicmd is command tools for loxilb. It is "kubectl" for loxilb. loxicmd provides the following (currently) :
+loxicmd is the command-line tool for loxilb. It is equivalent of "kubectl" for loxilb. loxicmd provides the following (currently) :
 
-- Add/Delete/Get about the service type external load-balancer 
+- Add/Delete/Get - service type external load-balancer 
 - Get Port(interface) dump used by loxilb or its docker
-- Get Connection track information
+- Get Connection track (TCP/UDP/ICMP/SCTP) information
+- Add/Delete/Get - Qos Policies
 
 loxicmd aim to provide all of the configuation for the loxilb.
 
