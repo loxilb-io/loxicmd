@@ -28,6 +28,7 @@ const (
 	loxiPortResource         = "config/port/all"
 	loxiSessionResource      = "config/session"
 	loxiSessionUlClResource  = "config/sessionulcl"
+	loxiPolicyResource       = "config/policy"
 )
 
 type LoxiClient struct {
@@ -105,6 +106,19 @@ func (l *LoxiClient) SessionUlCL() *SessionUlCl {
 				provider:   loxiProvider,
 				apiVersion: loxiApiVersion,
 				resource:   loxiSessionUlClResource,
+			},
+		},
+	}
+}
+
+func (l *LoxiClient) Policy() *Policy {
+	return &Policy{
+		CommonAPI: CommonAPI{
+			restClient: &l.restClient,
+			requestInfo: RequestInfo{
+				provider:   loxiProvider,
+				apiVersion: loxiApiVersion,
+				resource:   loxiPolicyResource,
 			},
 		},
 	}

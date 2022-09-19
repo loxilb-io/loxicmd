@@ -47,6 +47,7 @@ func GetCmd(restOptions *api.RESTOptions) *cobra.Command {
 	GetCmd.AddCommand(NewGetPortCmd(restOptions))
 	GetCmd.AddCommand(NewGetSessionCmd(restOptions))
 	GetCmd.AddCommand(NewGetSessionULCLCmd(restOptions))
+	GetCmd.AddCommand(NewGetPolicyCmd(restOptions))
 
 	return GetCmd
 }

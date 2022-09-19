@@ -24,4 +24,6 @@ var (
 	PORT_WIDE_TITLE         = []string{"index", "portname", "MAC", "link/state", "mtu", "isActive/bpf", "Statistics", "L3Info", "L2Info", "Sync"}
 	PORT_TITLE              = []string{"index", "portname", "MAC", "link/state", "L3Info", "L2Info"}
 	ULCL_TITLE              = []string{"ident", "ulcl IP", "qfi"}
+	POLICY_TITLE            = []string{"Ident", "peakInfoRate", "committedInfoRate"}
+	POLICY_WIDE_TITLE       = []string{"Ident", "peakInfoRate", "committedInfoRate", "excessBlkSize", "committedBlkSize", "policyType", "ColorAware", "polObjName", "attachment"}
 )
