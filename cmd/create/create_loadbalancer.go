@@ -20,7 +20,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"loxicmd/pkg/api"
 	"net"
 	"net/http"
@@ -38,6 +38,7 @@ type CreateLoadBalancerOptions struct {
 	ICMP       bool
 	SCTP       []string
 	Endpoints  []string
+	Select     string
 }
 
 type CreateLoadBalancerResult struct {
@@ -62,13 +63,36 @@ func ReadCreateLoadBalancerOptions(o *CreateLoadBalancerOptions, args []string) 
 	return nil
 }
 
+func SelectToNum(sel string) int {
+	var ret int
+	switch sel {
+	case "rr":
+		ret = 0
+	case "hash":
+		ret = 1
+	case "priority":
+		ret = 2
+	default:
+		ret = 0
+	}
+	return ret
+}
+
+
 func NewCreateLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 	o := CreateLoadBalancerOptions{}
 
 	var createLbCmd = &cobra.Command{
-		Use:   "lb IP [--tcp=<port>:<targetPort>] [--udp=<port>:<targetPort>] [--sctp=<port>:<targetPort>] [--icmp] [--endpoints=<ip>:<weight>,]",
+		Use:   "lb IP [--select=<rr|hash|priority>] [--tcp=<port>:<targetPort>] [--udp=<port>:<targetPort>] [--sctp=<port>:<targetPort>] [--icmp] [--endpoints=<ip>:<weight>,]",
 		Short: "Create a LoadBalancer",
-		Long:  `Create a LoadBalancer`,
+		Long: `Create a LoadBalancer
+
+--select value options
+  	rr - select the lb end-points based on round-robin
+	hash - select the lb end-points based on hashing
+	priority - select the lb based on weighted round-robin
+
+		`,
 		Run: func(cmd *cobra.Command, args []string) {
 			if err := ReadCreateLoadBalancerOptions(&o, args); err != nil {
 				fmt.Printf("Error: %s\n", err.Error())
@@ -109,6 +133,7 @@ func NewCreateLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 						ExternalIP: o.ExternalIP,
 						Protocol:   proto,
 						Port:       port,
+						Sel:        api.EpSelect(SelectToNum(o.Select)),
 					}
 					lbModel.Service = lbService
 					for endpoint, weight := range endpointPair {
@@ -142,6 +167,7 @@ func NewCreateLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 	createLbCmd.Flags().StringSliceVar(&o.UDP, "udp", o.UDP, "Port pairs can be specified as '<port>:<targetPort>'")
 	createLbCmd.Flags().StringSliceVar(&o.SCTP, "sctp", o.SCTP, "Port pairs can be specified as '<port>:<targetPort>'")
 	createLbCmd.Flags().BoolVarP(&o.ICMP, "icmp", "", false, "ICMP Ping packet Load balancer")
+	createLbCmd.Flags().StringVarP(&o.Select, "select", "", "rr", "Select the hash algorithm for the load balance.(ex) rr, hash, priority")
 	createLbCmd.Flags().StringSliceVar(&o.Endpoints, "endpoints", o.Endpoints, "Endpoints is pairs that can be specified as '<endpointIP>:<Weight>'")
 
 	return createLbCmd
@@ -149,7 +175,7 @@ func NewCreateLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 
 func PrintCreateLbResult(resp *http.Response, o api.RESTOptions) {
 	result := CreateLoadBalancerResult{}
-	resultByte, err := ioutil.ReadAll(resp.Body)
+	resultByte, err := io.ReadAll(resp.Body)
 	fmt.Printf("Debug: response.Body: %s\n", string(resultByte))
 
 	if err != nil {
