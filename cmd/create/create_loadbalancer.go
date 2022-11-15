@@ -36,6 +36,7 @@ type CreateLoadBalancerOptions struct {
 	TCP        []string
 	UDP        []string
 	ICMP       bool
+	FullNat    bool
 	SCTP       []string
 	Endpoints  []string
 	Select     string
@@ -78,12 +79,11 @@ func SelectToNum(sel string) int {
 	return ret
 }
 
-
 func NewCreateLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 	o := CreateLoadBalancerOptions{}
 
 	var createLbCmd = &cobra.Command{
-		Use:   "lb IP [--select=<rr|hash|priority>] [--tcp=<port>:<targetPort>] [--udp=<port>:<targetPort>] [--sctp=<port>:<targetPort>] [--icmp] [--endpoints=<ip>:<weight>,]",
+		Use:   "lb IP [--select=<rr|hash|priority>] [--tcp=<port>:<targetPort>] [--udp=<port>:<targetPort>] [--sctp=<port>:<targetPort>] [--icmp] [--endpoints=<ip>:<weight>,] [--fullnat]",
 		Short: "Create a LoadBalancer",
 		Long: `Create a LoadBalancer
 
@@ -134,7 +134,9 @@ func NewCreateLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 						Protocol:   proto,
 						Port:       port,
 						Sel:        api.EpSelect(SelectToNum(o.Select)),
+						FullNat:    o.FullNat,
 					}
+
 					lbModel.Service = lbService
 					for endpoint, weight := range endpointPair {
 						ep := api.LoadBalancerEndpoint{
@@ -167,6 +169,7 @@ func NewCreateLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 	createLbCmd.Flags().StringSliceVar(&o.UDP, "udp", o.UDP, "Port pairs can be specified as '<port>:<targetPort>'")
 	createLbCmd.Flags().StringSliceVar(&o.SCTP, "sctp", o.SCTP, "Port pairs can be specified as '<port>:<targetPort>'")
 	createLbCmd.Flags().BoolVarP(&o.ICMP, "icmp", "", false, "ICMP Ping packet Load balancer")
+	createLbCmd.Flags().BoolVarP(&o.FullNat, "fullnat", "", false, "Enable One arm load balancer")
 	createLbCmd.Flags().StringVarP(&o.Select, "select", "", "rr", "Select the hash algorithm for the load balance.(ex) rr, hash, priority")
 	createLbCmd.Flags().StringSliceVar(&o.Endpoints, "endpoints", o.Endpoints, "Endpoints is pairs that can be specified as '<endpointIP>:<Weight>'")
 

@@ -39,6 +39,7 @@ type LoadBalancerService struct {
 	Port       uint16   `json:"port"`
 	Protocol   string   `json:"protocol"`
 	Sel        EpSelect `json:"sel"`
+	FullNat    bool     `json:"fullNat"`
 }
 
 type LoadBalancerEndpoint struct {
