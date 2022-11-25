@@ -40,6 +40,7 @@ type LoadBalancerService struct {
 	Protocol   string   `json:"protocol"`
 	Sel        EpSelect `json:"sel"`
 	FullNat    bool     `json:"fullNat"`
+	BGP        bool     `json:"BGP"`
 }
 
 type LoadBalancerEndpoint struct {
