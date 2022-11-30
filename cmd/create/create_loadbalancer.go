@@ -36,7 +36,7 @@ type CreateLoadBalancerOptions struct {
 	TCP        []string
 	UDP        []string
 	ICMP       bool
-	FullNat    bool
+	Mode       string
 	BGP        bool
 	SCTP       []string
 	Endpoints  []string
@@ -80,11 +80,24 @@ func SelectToNum(sel string) int {
 	return ret
 }
 
+func ModeToNum(sel string) int {
+	var ret int
+	switch sel {
+	case "onearm":
+		ret = 1
+	case "fullnat":
+		ret = 2
+	default:
+		ret = 0
+	}
+	return ret
+}
+
 func NewCreateLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 	o := CreateLoadBalancerOptions{}
 
 	var createLbCmd = &cobra.Command{
-		Use:   "lb IP [--select=<rr|hash|priority>] [--tcp=<port>:<targetPort>] [--udp=<port>:<targetPort>] [--sctp=<port>:<targetPort>] [--icmp] [--endpoints=<ip>:<weight>,] [--fullnat] [--bgp]",
+		Use:   "lb IP [--select=<rr|hash|priority>] [--tcp=<port>:<targetPort>] [--udp=<port>:<targetPort>] [--sctp=<port>:<targetPort>] [--icmp] [--endpoints=<ip>:<weight>,] [--mode=<onearm|fullnat>] [--bgp]",
 		Short: "Create a LoadBalancer",
 		Long: `Create a LoadBalancer
 
@@ -92,7 +105,9 @@ func NewCreateLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
   	rr - select the lb end-points based on round-robin
 	hash - select the lb end-points based on hashing
 	priority - select the lb based on weighted round-robin
-
+--mode value options
+	onearm - LB put LB-IP as srcIP
+	fullnat - LB put Service IP as scrIP
 		`,
 		Run: func(cmd *cobra.Command, args []string) {
 			if err := ReadCreateLoadBalancerOptions(&o, args); err != nil {
@@ -136,7 +151,7 @@ func NewCreateLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 						Port:       port,
 						Sel:        api.EpSelect(SelectToNum(o.Select)),
 						BGP:        o.BGP,
-						FullNat:    o.FullNat,
+						Mode:       api.LbMode(ModeToNum(o.Mode)),
 					}
 
 					lbModel.Service = lbService
@@ -171,7 +186,7 @@ func NewCreateLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 	createLbCmd.Flags().StringSliceVar(&o.UDP, "udp", o.UDP, "Port pairs can be specified as '<port>:<targetPort>'")
 	createLbCmd.Flags().StringSliceVar(&o.SCTP, "sctp", o.SCTP, "Port pairs can be specified as '<port>:<targetPort>'")
 	createLbCmd.Flags().BoolVarP(&o.ICMP, "icmp", "", false, "ICMP Ping packet Load balancer")
-	createLbCmd.Flags().BoolVarP(&o.FullNat, "fullnat", "", false, "Enable One arm load balancer")
+	createLbCmd.Flags().StringVarP(&o.Mode, "mode", "", o.Mode, "NAT mode for load balancer rule")
 	createLbCmd.Flags().BoolVarP(&o.BGP, "bgp", "", false, "Enable BGP in the load balancer")
 	createLbCmd.Flags().StringVarP(&o.Select, "select", "", "rr", "Select the hash algorithm for the load balance.(ex) rr, hash, priority")
 	createLbCmd.Flags().StringSliceVar(&o.Endpoints, "endpoints", o.Endpoints, "Endpoints is pairs that can be specified as '<endpointIP>:<Weight>'")

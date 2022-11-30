@@ -1,7 +1,8 @@
 .DEFAULT_GOAL := build
 bin=loxicmd
+dock?=loxilb
 
-loxilbid=$(shell docker ps -f name=loxilb | cut  -d " "  -f 1 | grep -iv  "CONTAINER")
+loxilbid=$(shell docker ps -f name=$(dock) | grep -w $(dock) | cut  -d " "  -f 1 | grep -iv  "CONTAINER")
 
 build: 
 	@go build -o ${bin}
