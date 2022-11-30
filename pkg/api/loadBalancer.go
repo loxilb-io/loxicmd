@@ -24,7 +24,7 @@ type LoadBalancer struct {
 }
 
 type EpSelect uint
-
+type LbMode int32
 type LbRuleModGet struct {
 	LbRules []LoadBalancerModel `json:"lbAttr"`
 }
@@ -39,7 +39,7 @@ type LoadBalancerService struct {
 	Port       uint16   `json:"port"`
 	Protocol   string   `json:"protocol"`
 	Sel        EpSelect `json:"sel"`
-	FullNat    bool     `json:"fullNat"`
+	Mode       LbMode   `json:"mode"`
 	BGP        bool     `json:"BGP"`
 }
 

@@ -71,6 +71,19 @@ func NumToSelect(sel int) string {
 	return ret
 }
 
+func NumToMode(mode int) string {
+	var ret string
+	switch mode {
+	case 1:
+		ret = "onearm"
+	case 2:
+		ret = "fullnat"
+	default:
+		ret = "default"
+	}
+	return ret
+}
+
 func PrintGetLbResult(resp *http.Response, o api.RESTOptions) {
 	lbresp := api.LbRuleModGet{}
 	var data [][]string
@@ -101,7 +114,7 @@ func PrintGetLbResult(resp *http.Response, o api.RESTOptions) {
 			table.SetHeader(LOADBALANCER_WIDE_TITLE)
 			for i, eps := range lbrule.Endpoints {
 				if i == 0 {
-					data = append(data, []string{lbrule.Service.ExternalIP, fmt.Sprintf("%d", lbrule.Service.Port), lbrule.Service.Protocol, NumToSelect(int(lbrule.Service.Sel)), fmt.Sprintf("%v", lbrule.Service.FullNat),
+					data = append(data, []string{lbrule.Service.ExternalIP, fmt.Sprintf("%d", lbrule.Service.Port), lbrule.Service.Protocol, NumToSelect(int(lbrule.Service.Sel)), NumToMode(int(lbrule.Service.Mode)),
 						eps.EndpointIP, fmt.Sprintf("%d", eps.TargetPort), fmt.Sprintf("%d", eps.Weight)})
 				} else {
 					data = append(data, []string{"", "", "", "", "", eps.EndpointIP, fmt.Sprintf("%d", eps.TargetPort), fmt.Sprintf("%d", eps.Weight)})
@@ -109,7 +122,7 @@ func PrintGetLbResult(resp *http.Response, o api.RESTOptions) {
 			}
 		} else {
 			table.SetHeader(LOADBALANCER_TITLE)
-			data = append(data, []string{lbrule.Service.ExternalIP, fmt.Sprintf("%d", lbrule.Service.Port), lbrule.Service.Protocol, NumToSelect(int(lbrule.Service.Sel)), fmt.Sprintf("%v", lbrule.Service.FullNat), fmt.Sprintf("%d", len(lbrule.Endpoints))})
+			data = append(data, []string{lbrule.Service.ExternalIP, fmt.Sprintf("%d", lbrule.Service.Port), lbrule.Service.Protocol, NumToSelect(int(lbrule.Service.Sel)), NumToMode(int(lbrule.Service.Mode)), fmt.Sprintf("%d", len(lbrule.Endpoints))})
 		}
 	}
 
