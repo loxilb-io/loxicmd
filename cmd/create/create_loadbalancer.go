@@ -38,6 +38,7 @@ type CreateLoadBalancerOptions struct {
 	ICMP       bool
 	Mode       string
 	BGP        bool
+	Timeout    uint32
 	SCTP       []string
 	Endpoints  []string
 	Select     string
@@ -97,7 +98,7 @@ func NewCreateLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 	o := CreateLoadBalancerOptions{}
 
 	var createLbCmd = &cobra.Command{
-		Use:   "lb IP [--select=<rr|hash|priority>] [--tcp=<port>:<targetPort>] [--udp=<port>:<targetPort>] [--sctp=<port>:<targetPort>] [--icmp] [--endpoints=<ip>:<weight>,] [--mode=<onearm|fullnat>] [--bgp]",
+		Use:   "lb IP [--select=<rr|hash|priority>] [--tcp=<port>:<targetPort>] [--udp=<port>:<targetPort>] [--sctp=<port>:<targetPort>] [--icmp] [--endpoints=<ip>:<weight>,] [--mode=<onearm|fullnat>] [--bgp] [--timeout=<to>]",
 		Short: "Create a LoadBalancer",
 		Long: `Create a LoadBalancer
 
@@ -152,6 +153,7 @@ func NewCreateLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 						Sel:        api.EpSelect(SelectToNum(o.Select)),
 						BGP:        o.BGP,
 						Mode:       api.LbMode(ModeToNum(o.Mode)),
+						Timeout:    o.Timeout,
 					}
 
 					lbModel.Service = lbService
@@ -189,6 +191,7 @@ func NewCreateLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 	createLbCmd.Flags().StringVarP(&o.Mode, "mode", "", o.Mode, "NAT mode for load balancer rule")
 	createLbCmd.Flags().BoolVarP(&o.BGP, "bgp", "", false, "Enable BGP in the load balancer")
 	createLbCmd.Flags().StringVarP(&o.Select, "select", "", "rr", "Select the hash algorithm for the load balance.(ex) rr, hash, priority")
+	createLbCmd.Flags().Uint32VarP(&o.Timeout, "timeout", "", 0, "Specify the timeout (in seconds) after which a LB session will be reset for inactivity")
 	createLbCmd.Flags().StringSliceVar(&o.Endpoints, "endpoints", o.Endpoints, "Endpoints is pairs that can be specified as '<endpointIP>:<Weight>'")
 
 	return createLbCmd
