@@ -29,6 +29,15 @@ const (
 	loxiSessionResource      = "config/session"
 	loxiSessionUlClResource  = "config/sessionulcl"
 	loxiPolicyResource       = "config/policy"
+	loxiRouteResource        = "config/route"
+	loxiIPv4AddressResource  = "config/ipv4address"
+	loxiNeighborResource     = "config/neighbor"
+	loxiFDBResource          = "config/fdb"
+	loxiVlanResource         = "config/vlan"
+	loxiVxlanResource        = "config/tunnel/vxlan"
+	loxiMirrorResource       = "config/mirror"
+	loxiFirewallResource     = "config/firewall"
+	loxiStatusResource       = "status"
 )
 
 type LoxiClient struct {
@@ -119,6 +128,110 @@ func (l *LoxiClient) Policy() *Policy {
 				provider:   loxiProvider,
 				apiVersion: loxiApiVersion,
 				resource:   loxiPolicyResource,
+			},
+		},
+	}
+}
+
+func (l *LoxiClient) Route() *Route {
+	return &Route{
+		CommonAPI: CommonAPI{
+			restClient: &l.restClient,
+			requestInfo: RequestInfo{
+				provider:   loxiProvider,
+				apiVersion: loxiApiVersion,
+				resource:   loxiRouteResource,
+			},
+		},
+	}
+}
+
+func (l *LoxiClient) IPv4Address() *IPv4Address {
+	return &IPv4Address{
+		CommonAPI: CommonAPI{
+			restClient: &l.restClient,
+			requestInfo: RequestInfo{
+				provider:   loxiProvider,
+				apiVersion: loxiApiVersion,
+				resource:   loxiIPv4AddressResource,
+			},
+		},
+	}
+}
+
+func (l *LoxiClient) Neighbor() *Neighbor {
+	return &Neighbor{
+		CommonAPI: CommonAPI{
+			restClient: &l.restClient,
+			requestInfo: RequestInfo{
+				provider:   loxiProvider,
+				apiVersion: loxiApiVersion,
+				resource:   loxiNeighborResource,
+			},
+		},
+	}
+}
+
+func (l *LoxiClient) FDB() *FDB {
+	return &FDB{
+		CommonAPI: CommonAPI{
+			restClient: &l.restClient,
+			requestInfo: RequestInfo{
+				provider:   loxiProvider,
+				apiVersion: loxiApiVersion,
+				resource:   loxiFDBResource,
+			},
+		},
+	}
+}
+
+func (l *LoxiClient) Vlan() *Vlan {
+	return &Vlan{
+		CommonAPI: CommonAPI{
+			restClient: &l.restClient,
+			requestInfo: RequestInfo{
+				provider:   loxiProvider,
+				apiVersion: loxiApiVersion,
+				resource:   loxiVlanResource,
+			},
+		},
+	}
+}
+
+func (l *LoxiClient) Vxlan() *Vxlan {
+	return &Vxlan{
+		CommonAPI: CommonAPI{
+			restClient: &l.restClient,
+			requestInfo: RequestInfo{
+				provider:   loxiProvider,
+				apiVersion: loxiApiVersion,
+				resource:   loxiVxlanResource,
+			},
+		},
+	}
+}
+
+func (l *LoxiClient) Status() *Status {
+	return &Status{
+		CommonAPI: CommonAPI{
+			restClient: &l.restClient,
+			requestInfo: RequestInfo{
+				provider:   loxiProvider,
+				apiVersion: loxiApiVersion,
+				resource:   loxiStatusResource,
+			},
+		},
+	}
+}
+
+func (l *LoxiClient) Firewall() *Status {
+	return &Status{
+		CommonAPI: CommonAPI{
+			restClient: &l.restClient,
+			requestInfo: RequestInfo{
+				provider:   loxiProvider,
+				apiVersion: loxiApiVersion,
+				resource:   loxiFirewallResource,
 			},
 		},
 	}
