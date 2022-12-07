@@ -19,7 +19,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"loxicmd/pkg/api"
 	"net/http"
 	"sort"
@@ -62,7 +62,7 @@ func NewGetPortCmd(restOptions *api.RESTOptions) *cobra.Command {
 func PrintGetPortResult(resp *http.Response, o api.RESTOptions) {
 	portresp := api.PortGet{}
 	var data [][]string
-	resultByte, err := ioutil.ReadAll(resp.Body)
+	resultByte, err := io.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Printf("Error: Failed to read HTTP response: (%s)\n", err.Error())
 		return
@@ -94,7 +94,7 @@ func PrintGetPortResult(resp *http.Response, o api.RESTOptions) {
 			table.SetHeader(PORT_WIDE_TITLE)
 			data = append(data, []string{fmt.Sprintf("%d", port.PortNo), port.Name, // Default Info
 				port.HInfo.MacAddrStr, fmt.Sprintf("%v/%v", port.HInfo.Link, port.HInfo.State), fmt.Sprintf("%d", port.HInfo.Mtu), // HW info
-				fmt.Sprintf("%v/%v", port.SInfo.PortActive, port.SInfo.BpfLoaded), // SW info
+				fmt.Sprintf("%v/%v\n%s", port.SInfo.PortActive, port.SInfo.BpfLoaded, port.SInfo.PortTypeToString()), // SW info
 				fmt.Sprintf("rx/tx byte : %d/%d \nrx/tx packets : %d/%d \nrx/tx error : %d/%d ", // Statistic infor
 					port.Stats.RxBytes, port.Stats.TxBytes,
 					port.Stats.RxPackets, port.Stats.TxPackets,

@@ -15,6 +15,11 @@
  */
 package api
 
+import (
+	"fmt"
+	"strings"
+)
+
 type Port struct {
 	CommonAPI
 }
@@ -78,4 +83,58 @@ type PortSwInfo struct {
 type PortLayer2Info struct {
 	IsPvid bool `json:"isPvid"`
 	Vid    int  `json:"vid"`
+}
+
+const (
+	// PortReal - Base port type
+	PortReal = 0x1
+	// PortBondSif - Bond slave port type
+	PortBondSif = 0x2
+	// PortBond - Bond port type
+	PortBond = 0x4
+	// PortVlanSif - Vlan slave port type
+	PortVlanSif = 0x8
+	// PortVlanBr - Vlan Br port type
+	PortVlanBr = 0x10
+	// PortVxlanSif - Vxlan slave port type
+	PortVxlanSif = 0x20
+	// PortVxlanBr - Vxlan br port type
+	PortVxlanBr = 0x40
+	// PortWg - Wireguard port type
+	PortWg = 0x80
+	// PortVti - Vti port type
+	PortVti = 0x100
+)
+
+func (p PortSwInfo) PortTypeToString() string {
+	var pStr string
+	if p.PortType&PortReal == PortReal {
+		pStr += "phy,"
+	}
+	if p.PortType&PortVlanSif == PortVlanSif {
+		pStr += "vlan-sif,"
+	}
+	if p.PortType&PortVlanBr == PortVlanBr {
+		pStr += "vlan,"
+	}
+	if p.PortType&PortBondSif == PortBondSif {
+		pStr += "bond-sif,"
+	}
+	if p.PortType&PortBondSif == PortBond {
+		pStr += "bond,"
+	}
+	if p.PortType&PortVxlanSif == PortVxlanSif {
+		pStr += "vxlan-sif,"
+	}
+	if p.PortType&PortVti == PortVti {
+		pStr += "vti,"
+	}
+	if p.PortType&PortVxlanBr == PortVxlanBr {
+		pStr += "vxlan,"
+		if p.PortReal != nil {
+			pStr += fmt.Sprintf("(%s)", p.PortReal.Name)
+		}
+	}
+	nStr := strings.TrimSuffix(pStr, ",")
+	return nStr
 }
