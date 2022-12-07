@@ -64,10 +64,12 @@ func Execute() {
 	saveCmd.Flags().BoolVarP(&saveOptions.SaveLBConfig, "lb", "l", false, "Saves Load Balancer rules configuration")
 	saveCmd.Flags().BoolVarP(&saveOptions.SaveSessionConfig, "session", "", false, "Saves session configuration")
 	saveCmd.Flags().BoolVarP(&saveOptions.SaveUlClConfig, "ulcl", "", false, "Saves ulcl configuration")
-	saveCmd.MarkFlagsMutuallyExclusive("all", "ip", "lb", "session", "ulcl")
+	saveCmd.Flags().BoolVarP(&saveOptions.SaveFWConfig, "firewall", "", false, "Saves firewall configuration")
+
+	saveCmd.MarkFlagsMutuallyExclusive("all", "ip", "lb", "session", "ulcl", "firewall")
 
 	applyCmd.Flags().StringVarP(&applyOptions.IpConfigFile, "ip", "i", "", "IP config file to apply")
-	applyCmd.Flags().StringVarP(&applyOptions.Intf, "per-intf", "","", "Apply configuration only for specific interface")
+	applyCmd.Flags().StringVarP(&applyOptions.Intf, "per-intf", "", "", "Apply configuration only for specific interface")
 	applyCmd.Flags().BoolVarP(&applyOptions.Route, "ipv4route", "r", false, "Apply route configuration only for specific interface")
 	applyCmd.Flags().StringVarP(&applyOptions.ConfigPath, "config-path", "c", "/opt/loxilb/ipconfig/", "Configuration path only for applying per interface config")
 	applyCmd.Flags().StringVarP(&applyOptions.LBConfigFile, "lb", "l", "", "Load Balancer config file to apply")

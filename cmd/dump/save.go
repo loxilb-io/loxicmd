@@ -28,6 +28,7 @@ type SaveOptions struct {
 	SaveLBConfig      bool
 	SaveSessionConfig bool
 	SaveUlClConfig    bool
+	SaveFWConfig      bool
 	SaveAllConfig     bool
 }
 
@@ -68,7 +69,14 @@ func SaveCmd(saveOpts *SaveOptions, restOptions *api.RESTOptions) *cobra.Command
 				}
 				fmt.Println("UlCl Configuration saved in", ulclFile)
 			}
-
+			if saveOpts.SaveFWConfig || saveOpts.SaveAllConfig {
+				FWFile, err := get.FWdump(restOptions)
+				if err != nil {
+					fmt.Println(err.Error())
+					return
+				}
+				fmt.Println("Firewall Configuration saved in", FWFile)
+			}
 		},
 	}
 	return saveCmd
