@@ -20,7 +20,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strconv"
 	"time"
@@ -50,11 +50,13 @@ func NewDeleteLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 	var udpPortNumberList []int
 	var sctpPortNumberList []int
 	var icmpPortNumberList bool
+	var BGP bool
+
 	var externalIP string
 	//var endpointList []string
 
 	var deleteLbCmd = &cobra.Command{
-		Use:   "lb <EXTERNAL-IP> [--tcp portNumber] [--udp portNumber] [--sctp portNumber] [--icmp portNumber]",
+		Use:   "lb <EXTERNAL-IP> [--tcp portNumber] [--udp portNumber] [--sctp portNumber] [--icmp portNumber] [--bgp]",
 		Short: "Delete a LoadBalancer",
 		Long:  `Delete a LoadBalancer.`,
 		Run: func(cmd *cobra.Command, args []string) {
@@ -92,8 +94,10 @@ func NewDeleteLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 						"port", strconv.Itoa(port),
 						"protocol", proto,
 					}
+					bgp := map[string]string{}
+					bgp["bgp"] = fmt.Sprintf("%v", BGP)
 					fmt.Printf("subResources: %v\n", subResources)
-					resp, err := client.LoadBalancer().SubResources(subResources).Delete(ctx)
+					resp, err := client.LoadBalancer().SubResources(subResources).Query(bgp).Delete(ctx)
 					if err != nil {
 						fmt.Printf("Error: Failed to delete LoadBalancer(ExternalIP: %s, Protocol:%s, Port:%d)", externalIP, "tcp", portNum)
 						return
@@ -115,12 +119,13 @@ func NewDeleteLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 	deleteLbCmd.Flags().IntSliceVar(&udpPortNumberList, "udp", udpPortNumberList, "UDP port list can be specified as '<port>,<port>...'")
 	deleteLbCmd.Flags().IntSliceVar(&sctpPortNumberList, "sctp", sctpPortNumberList, "SCTP port list can be specified as '<port>,<port>...'")
 	deleteLbCmd.Flags().BoolVarP(&icmpPortNumberList, "icmp", "", false, "ICMP port list can be specified as '<port>,<port>...'")
+	deleteLbCmd.Flags().BoolVarP(&BGP, "bgp", "", false, "BGP enable information'")
 	return deleteLbCmd
 }
 
 func PrintDeleteLbResult(resp *http.Response, o api.RESTOptions) {
 	result := DeleteLoadBalancerResult{}
-	resultByte, err := ioutil.ReadAll(resp.Body)
+	resultByte, err := io.ReadAll(resp.Body)
 	fmt.Printf("Debug: response.Body: %s\n", string(resultByte))
 
 	if err != nil {

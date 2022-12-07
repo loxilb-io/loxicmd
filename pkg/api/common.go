@@ -33,6 +33,13 @@ func (l *CommonAPI) GetUrlString() string {
 		Host:   l.restClient.GetHost(),
 		Path:   l.requestInfo.GetBaseURL(),
 	}
+	if l.requestInfo.queryArgs != nil {
+		q := lbURL.Query()
+		for k, v := range l.requestInfo.queryArgs {
+			q.Add(k, v)
+		}
+		lbURL.RawQuery = q.Encode()
+	}
 
 	return lbURL.String()
 }
@@ -59,6 +66,11 @@ func (l *CommonAPI) Get(ctx context.Context) (*http.Response, error) {
 
 func (l *CommonAPI) SubResources(resourceList []string) *CommonAPI {
 	l.requestInfo.subResource = append(l.requestInfo.subResource, resourceList...)
+	return l
+}
+
+func (l *CommonAPI) Query(queryArgs map[string]string) *CommonAPI {
+	l.requestInfo.queryArgs = queryArgs
 	return l
 }
 
