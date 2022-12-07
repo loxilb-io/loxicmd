@@ -37,6 +37,14 @@ func CreateCmd(restOptions *api.RESTOptions) *cobra.Command {
 	createCmd.AddCommand(NewCreateSessionCmd(restOptions))
 	createCmd.AddCommand(NewCreateSessionUlClCmd(restOptions))
 	createCmd.AddCommand(NewCreatePolicyCmd(restOptions))
+	createCmd.AddCommand(NewCreateRouteCmd(restOptions))
+	createCmd.AddCommand(NewCreateIPv4AddressCmd(restOptions))
+	createCmd.AddCommand(NewCreateNeighborsCmd(restOptions))
+	createCmd.AddCommand(NewCreateFDBCmd(restOptions))
+	createCmd.AddCommand(NewCreateVlanBridgeCmd(restOptions))
+	createCmd.AddCommand(NewCreateVlanMemberCmd(restOptions))
+	createCmd.AddCommand(NewCreateVxlanBridgeCmd(restOptions))
+	createCmd.AddCommand(NewCreateVxlanPeerCmd(restOptions))
 
 	return createCmd
 }

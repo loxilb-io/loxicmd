@@ -21,9 +21,20 @@ var (
 	LOADBALANCER_WIDE_TITLE = []string{"External IP", "Port", "Protocol", "Select", "Mode", "Endpoint IP", "Target Port", "Weight"}
 	SESSION_TITLE           = []string{"ident", "session IP"}
 	SESSION_WIDE_TITLE      = []string{"ident", "session IP", "access Network Tunnel", "core Network Tunnel"}
-	PORT_WIDE_TITLE         = []string{"index", "portname", "MAC", "link/state", "mtu", "isActive/bpf", "Statistics", "L3Info", "L2Info", "Sync"}
+	PORT_WIDE_TITLE         = []string{"index", "portname", "MAC", "link/state", "mtu", "isActive/bpf\nPort type", "Statistics", "L3Info", "L2Info", "Sync"}
 	PORT_TITLE              = []string{"index", "portname", "MAC", "link/state", "L3Info", "L2Info"}
 	ULCL_TITLE              = []string{"ident", "ulcl IP", "qfi"}
 	POLICY_TITLE            = []string{"Ident", "peakInfoRate", "committedInfoRate"}
 	POLICY_WIDE_TITLE       = []string{"Ident", "peakInfoRate", "committedInfoRate", "excessBlkSize", "committedBlkSize", "policyType", "ColorAware", "polObjName", "attachment"}
+	ROUTE_TITLE             = []string{"destinationIPNet", "gateway", "flag"}
+	ROUTE_WIDE_TITLE        = []string{"destinationIPNet", "gateway", "flag", "HardwareMark", "packets", "bytes"}
+	IP_TITLE                = []string{"Device Name", "IP Address"}
+	IP_WIDE_TITLE           = []string{"Device Name", "IP Address", "Sync"}
+	VLAN_WIDE_TITLE         = []string{"Device Name", "Vlan ID", "Member", "Statistics"}
+	VLAN_TITLE              = []string{"Device Name", "Vlan ID", "Member"}
+	NEIGHBOR_TITLE          = []string{"IP Address", "Device Name", "Mac Address"}
+	PROCESS_TITLE           = []string{"pid", "user", "priority", "nice", "virtMemory", "residentSize", "sharedMemory", "status", "CPUUsage", "MemoryUsage", "time", "command"}
+	DEVICE_TITLE            = []string{"hostName", "machineID", "bootID", "OS", "kernel", "architecture", "uptime"}
+	FILESYSTEM_TITLE        = []string{"fileSystem", "type", "size", "used", "avail", "usePercent", "mountedOn"}
+
 )

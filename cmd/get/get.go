@@ -48,6 +48,11 @@ func GetCmd(restOptions *api.RESTOptions) *cobra.Command {
 	GetCmd.AddCommand(NewGetSessionCmd(restOptions))
 	GetCmd.AddCommand(NewGetSessionULCLCmd(restOptions))
 	GetCmd.AddCommand(NewGetPolicyCmd(restOptions))
+	GetCmd.AddCommand(NewGetRouteCmd(restOptions))
+	GetCmd.AddCommand(NewGetIPAddressCmd(restOptions))
+	GetCmd.AddCommand(NewGetNeighborCmd(restOptions))
+	GetCmd.AddCommand(NewGetStatusProcessCmd(restOptions))
+	GetCmd.AddCommand(NewGetVlanCmd(restOptions))
 
 	return GetCmd
 }
