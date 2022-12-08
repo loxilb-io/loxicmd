@@ -36,5 +36,7 @@ var (
 	PROCESS_TITLE           = []string{"pid", "user", "priority", "nice", "virtMemory", "residentSize", "sharedMemory", "status", "CPUUsage", "MemoryUsage", "time", "command"}
 	DEVICE_TITLE            = []string{"hostName", "machineID", "bootID", "OS", "kernel", "architecture", "uptime"}
 	FILESYSTEM_TITLE        = []string{"fileSystem", "type", "size", "used", "avail", "usePercent", "mountedOn"}
-
+	MIRROR_TITLE            = []string{"Mirror Name", "Mirror info", "Target\nAttachment", "target\nName"}
+	MIRROR_WIDE_TITLE       = []string{"Mirror Name", "Mirror info", "Target\nAttachment", "target\nName", "Sync"}
+	FIREWALL_TITLE          = []string{"Source IP", "destination IP", "min Source Port", "max Source Port", "min Destination Port", "max Destination Port", "protocol", "port Name", "preference", "Option"}
 )

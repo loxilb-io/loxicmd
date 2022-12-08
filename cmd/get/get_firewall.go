@@ -17,6 +17,7 @@ package get
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -26,7 +27,84 @@ import (
 	"os/exec"
 	"strings"
 	"time"
+
+	"github.com/spf13/cobra"
 )
+
+func NewGetFirewallCmd(restOptions *api.RESTOptions) *cobra.Command {
+	var GetfwCmd = &cobra.Command{
+		Use:     "firewall",
+		Short:   "Get a firewall",
+		Aliases: []string{"Firewall", "fw", "firewalls"},
+		Long:    `It shows Load balancer Information`,
+		Run: func(cmd *cobra.Command, args []string) {
+			_ = cmd
+			_ = args
+			resp, err := FWAPICall(restOptions)
+			if err != nil {
+				fmt.Printf("Error: %s\n", err.Error())
+				return
+			}
+			if resp.StatusCode == http.StatusOK {
+				PrintGetFWResult(resp, *restOptions)
+				return
+			}
+
+		},
+	}
+
+	return GetfwCmd
+}
+
+func PrintGetFWResult(resp *http.Response, o api.RESTOptions) {
+	fwresp := api.FWInformationGet{}
+	var data [][]string
+	resultByte, err := io.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Printf("Error: Failed to read HTTP response: (%s)\n", err.Error())
+		return
+	}
+
+	if err := json.Unmarshal(resultByte, &fwresp); err != nil {
+		fmt.Printf("Error: Failed to unmarshal HTTP response: (%s)\n", err.Error())
+		return
+	}
+
+	// if json options enable, it print as a json format.
+	if o.PrintOption == "json" {
+		resultIndent, _ := json.MarshalIndent(fwresp, "", "    ")
+		fmt.Println(string(resultIndent))
+		return
+	}
+
+	// Table Init
+	table := TableInit()
+
+	// Making load balance data
+	for _, fwrule := range fwresp.FWInfo {
+		table.SetHeader(FIREWALL_TITLE)
+		data = append(data, []string{fwrule.Rule.SrcIP, fwrule.Rule.DstIP, fmt.Sprintf("%d", fwrule.Rule.SrcPortMin), fmt.Sprintf("%d", fwrule.Rule.SrcPortMax),
+			fmt.Sprintf("%d", fwrule.Rule.DstPortMin), fmt.Sprintf("%d", fwrule.Rule.DstPortMax), fmt.Sprintf("%d", fwrule.Rule.Proto),
+			fwrule.Rule.InPort, fmt.Sprintf("%d", fwrule.Rule.Pref), MakeFirewallOptionToString(fwrule.Opts)})
+
+	}
+
+	// Rendering the load balance data to table
+	TableShow(data, table)
+}
+
+func MakeFirewallOptionToString(t api.FwOptArg) (ret string) {
+	if t.Allow {
+		ret = "Allow"
+	} else if t.Drop {
+		ret = "Drop"
+	} else if t.Trap {
+		ret = "Trap"
+	} else if t.Rdr {
+		ret = fmt.Sprintf("Redirect(%s)", t.RdrPort)
+	}
+	return ret
+}
 
 func FWAPICall(restOptions *api.RESTOptions) (*http.Response, error) {
 	client := api.NewLoxiClient(restOptions)
@@ -68,20 +146,20 @@ func FWdump(restOptions *api.RESTOptions) (string, error) {
 	// Write
 	f.Write(resultByte)
 
-	if _, err := os.Stat("/opt/loxilb/FWconfig.txt"); errors.Is(err, os.ErrNotExist) {
+	if _, err := os.Stat("/opt/loxifw/FWconfig.txt"); errors.Is(err, os.ErrNotExist) {
 		if err != nil {
 			fmt.Println("There is no saved config file")
 		}
 	} else {
-		command := "mv /opt/loxilb/FWconfig.txt /opt/loxilb/FWconfig.txt.bk"
+		command := "mv /opt/loxifw/FWconfig.txt /opt/loxifw/FWconfig.txt.bk"
 		cmd := exec.Command("bash", "-c", command)
 		_, err := cmd.Output()
 		if err != nil {
-			fmt.Println("Can't backup /opt/loxilb/FWconfig.txt")
+			fmt.Println("Can't backup /opt/loxifw/FWconfig.txt")
 			return file, err
 		}
 	}
-	command := "cp -R " + file + " /opt/loxilb/FWconfig.txt"
+	command := "cp -R " + file + " /opt/loxifw/FWconfig.txt"
 	cmd := exec.Command("bash", "-c", command)
 	fmt.Println(cmd)
 	_, err = cmd.Output()

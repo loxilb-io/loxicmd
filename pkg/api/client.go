@@ -224,14 +224,27 @@ func (l *LoxiClient) Status() *Status {
 	}
 }
 
-func (l *LoxiClient) Firewall() *Status {
-	return &Status{
+func (l *LoxiClient) Firewall() *Firewall {
+	return &Firewall{
 		CommonAPI: CommonAPI{
 			restClient: &l.restClient,
 			requestInfo: RequestInfo{
 				provider:   loxiProvider,
 				apiVersion: loxiApiVersion,
 				resource:   loxiFirewallResource,
+			},
+		},
+	}
+}
+
+func (l *LoxiClient) Mirror() *Mirror {
+	return &Mirror{
+		CommonAPI: CommonAPI{
+			restClient: &l.restClient,
+			requestInfo: RequestInfo{
+				provider:   loxiProvider,
+				apiVersion: loxiApiVersion,
+				resource:   loxiMirrorResource,
 			},
 		},
 	}
