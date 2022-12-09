@@ -121,6 +121,7 @@ Ex) loxicmd create policy pol-hs0 --rate=100:100 --target=hs0:1
 
 rate unit : Mbps
 block-size unit : bps
+Policy type(pol-type) 0 : TrTCM,  1 : SrTCM
 
 	`,
 		Aliases: []string{"pol", "policys", "pols", "polices"},

@@ -99,11 +99,11 @@ ex) loxicmd create firewall --firewallRule="sourceIP:1.2.3.2/32,destinationIP:2.
 	return createFirewallCmd
 }
 
-func GetFirewallRulePairList(o *api.FwRuleMod, MirrInfo []string) error {
-	for _, FirewallArg := range MirrInfo {
+func GetFirewallRulePairList(o *api.FwRuleMod, FWrule []string) error {
+	for _, FirewallArg := range FWrule {
 		FirewallArgsPair := strings.Split(FirewallArg, ":")
 		if len(FirewallArgsPair) != 2 {
-			return fmt.Errorf("FirewallArgs '%s' is invalid format", MirrInfo)
+			return fmt.Errorf("FirewallArgs '%s' is invalid format", FWrule)
 		} else if FirewallArgsPair[0] == "protocol" {
 			protocol, err := strconv.Atoi(FirewallArgsPair[1])
 			if err != nil {
