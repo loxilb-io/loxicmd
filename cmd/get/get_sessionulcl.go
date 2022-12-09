@@ -20,7 +20,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"loxicmd/pkg/api"
 	"net/http"
 	"os"
@@ -59,7 +59,7 @@ func NewGetSessionULCLCmd(restOptions *api.RESTOptions) *cobra.Command {
 func PrintGetSessionULCLResult(resp *http.Response, o api.RESTOptions) {
 	ulclresp := api.UlclInformationGet{}
 	var data [][]string
-	resultByte, err := ioutil.ReadAll(resp.Body)
+	resultByte, err := io.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Printf("Error: Failed to read HTTP response: (%s)\n", err.Error())
 		return
@@ -137,7 +137,7 @@ func SessionUlCldump(restOptions *api.RESTOptions) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	resultByte, err := ioutil.ReadAll(resp.Body)
+	resultByte, err := io.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Printf("Error: Failed to read HTTP response: (%s)\n", err.Error())
 	}

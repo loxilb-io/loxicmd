@@ -19,7 +19,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"loxicmd/pkg/api"
 	"net/http"
 	"time"
@@ -62,7 +62,7 @@ func NewGetConntrackCmd(restOptions *api.RESTOptions) *cobra.Command {
 func PrintGetCTResult(resp *http.Response, o api.RESTOptions) {
 	ctresp := api.CtInformationGet{}
 	var data [][]string
-	resultByte, err := ioutil.ReadAll(resp.Body)
+	resultByte, err := io.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Printf("Error: Failed to read HTTP response: (%s)\n", err.Error())
 		return
