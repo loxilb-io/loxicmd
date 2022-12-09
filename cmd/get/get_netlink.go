@@ -25,6 +25,7 @@ import (
 	"os"
 	"os/exec"
 	"time"
+
 	nlp "github.com/vishvananda/netlink"
 	"golang.org/x/sys/unix"
 )
@@ -117,17 +118,17 @@ func dumpMaster(path string, master string, mtype string) {
 }
 
 func dumpVxlan(name string, id int, local string, uif string) {
-	file := path + name +"/info"
+	file := path + name + "/info"
 	f := fileOpen(file, os.O_RDWR|os.O_TRUNC|os.O_CREATE)
 	if f == nil {
 		return
 	}
-	dump(f, "%d|%s|%s", id,local,uif)
+	dump(f, "%d|%s|%s", id, local, uif)
 	f.Close()
 }
 
 func dumpReal(path string, real string, vid string) {
-	file := path +"/real"
+	file := path + "/real"
 	f := fileOpen(file, os.O_RDWR|os.O_TRUNC|os.O_CREATE)
 	if f == nil {
 		return
@@ -147,7 +148,7 @@ func dumpSubIntf(path string, subintf string, real string, vid string) {
 }
 
 func dumpMember(name string, member string) {
-	file := path + name +"/members"
+	file := path + name + "/members"
 	f := fileOpen(file, os.O_RDWR|os.O_APPEND|os.O_CREATE)
 	if f == nil {
 		return
@@ -242,7 +243,7 @@ func AddLink(link nlp.Link) int {
 		if state {
 			dump(f, "ip link set %v up\n", pname[0])
 		}
-		
+
 		createDir(intfpath)
 		dumpType(intfpath, "subintf")
 		dumpReal(intfpath, pname[0], pname[1])
@@ -266,7 +267,7 @@ func AddLink(link nlp.Link) int {
 			createDir(intfpath)
 			dumpType(intfpath, "vxlan")
 			dumpVxlan(name, tunId, vxlan.SrcAddr.String(), real)
-			upath=path + real
+			upath = path + real
 			createDir(upath)
 			if _, ok := uif.(*nlp.Bridge); ok {
 				dumpType(upath, "bridge")
@@ -307,7 +308,7 @@ func AddLink(link nlp.Link) int {
 			fmt.Println(err)
 			return -1
 		}
-		
+
 		if _, ok := master.(*nlp.Bridge); ok {
 			dumpMaster(intfpath, master.Attrs().Name, "bridge")
 			dumpMember(master.Attrs().Name, name)
@@ -333,8 +334,8 @@ func AddAddr(addr nlp.Addr, link nlp.Link) int {
 	dump(f, "ip addr add %v dev %v\n", ipStr, name)
 
 	intfpath = path + name
-	
-	dumpIpv4Addr(intfpath, ipStr);
+
+	dumpIpv4Addr(intfpath, ipStr)
 
 	return ret
 }
@@ -348,8 +349,8 @@ func AddNeigh(neigh nlp.Neigh, link nlp.Link) int {
 
 	attrs := link.Attrs()
 	name := attrs.Name
-	
-	if neigh.State & unix.NUD_PERMANENT == 0 {
+
+	if neigh.State&unix.NUD_PERMANENT == 0 {
 		return -1
 	}
 	//fmt.Printf("%v\n", neigh)
@@ -357,20 +358,19 @@ func AddNeigh(neigh nlp.Neigh, link nlp.Link) int {
 		return -1
 	}
 	copy(mac[:], neigh.HardwareAddr[:6])
-	
-	intfpath = path  + name
-	
+
+	intfpath = path + name
 
 	if neigh.Family == unix.AF_INET {
 		dump(f, "ip neigh add %v lladdr %s dev %v permanent\n", neigh.IP.String(), net.HardwareAddr(mac[:]), name)
-		dumpIpv4Neigh(intfpath, neigh.IP.String(), mac);
+		dumpIpv4Neigh(intfpath, neigh.IP.String(), mac)
 	} else if neigh.Family == unix.AF_BRIDGE {
-		
+
 		if len(neigh.HardwareAddr) == 0 {
 			return -1
 		}
 		copy(mac[:], neigh.HardwareAddr[:6])
-		
+
 		if neigh.Vlan == 1 {
 			return 0
 		}
@@ -391,15 +391,15 @@ func AddNeigh(neigh nlp.Neigh, link nlp.Link) int {
 				return 0
 			}
 		}
-		
+
 		if _, ok := link.(*nlp.Vxlan); ok {
-		
+
 			if len(neigh.IP) > 0 /*&& (neigh.MasterIndex == 0)*/ {
 				dst = neigh.IP
 			} else {
 				return 0
 			}
-		
+
 			dump(f, "bridge fdb append %v dst %v dev %v permanent\n", net.HardwareAddr(mac[:]), dst.String(), name)
 			dumpVxlanFdb(intfpath, mac, dst.String())
 		} else {
@@ -424,7 +424,7 @@ func AddRoute(route nlp.Route) int {
 	} else {
 		ipNet = *route.Dst
 	}
-	
+
 	link, err := nlp.LinkByIndex(route.LinkIndex)
 	if err != nil {
 		fmt.Println(err)
@@ -433,7 +433,7 @@ func AddRoute(route nlp.Route) int {
 
 	name := link.Attrs().Name
 
-	intfpath = path +  name
+	intfpath = path + name
 
 	dump(f, "ip route add %s via %s proto static\n", ipNet.String(), route.Gw.String())
 	dumpIpv4Route(intfpath, ipNet.String(), route.Gw.String())
@@ -526,7 +526,7 @@ func Nlpdump() string {
 
 	defer f.Close()
 
-	path = "ipconfig_" + t.Local().Format("2006-01-02_15:04:05")+"/"
+	path = "ipconfig_" + t.Local().Format("2006-01-02_15:04:05") + "/"
 	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
 		err := os.Mkdir(path, os.ModePerm)
 		if err != nil {
@@ -546,8 +546,8 @@ func Nlpdump() string {
 	}
 
 	for _, link := range links {
-		_, br := link.(*nlp.Bridge) 
-		_,bo := link.(*nlp.Bond);
+		_, br := link.(*nlp.Bridge)
+		_, bo := link.(*nlp.Bond)
 		if !br && !bo {
 			ret = AddLink(link)
 

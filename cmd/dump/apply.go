@@ -18,14 +18,14 @@ package dump
 import (
 	"bufio"
 	"encoding/json"
+	"errors"
 	"fmt"
-	"io/ioutil"
 	"loxicmd/cmd/create"
 	"loxicmd/pkg/api"
 	"os"
 	"os/exec"
 	"strings"
-	"errors"
+
 	"github.com/spf13/cobra"
 )
 
@@ -34,9 +34,10 @@ type ApplyOptions struct {
 	LBConfigFile          string
 	SessionConfigFile     string
 	SessionUlClConfigFile string
-	Intf				  string
-	ConfigPath			  string
-	Route				  bool
+	FWConfigFile          string
+	Intf                  string
+	ConfigPath            string
+	Route                 bool
 }
 
 // applyCmd represents the save command
@@ -48,11 +49,12 @@ func ApplyCmd(options *ApplyOptions, restOptions *api.RESTOptions) *cobra.Comman
 		Run: func(cmd *cobra.Command, args []string) {
 			_ = cmd
 			_ = args
-			if len(options.IpConfigFile) == 0 && 
-			   len(options.LBConfigFile) == 0 && 
-			   len(options.SessionConfigFile) == 0 && 
-			   len(options.SessionUlClConfigFile) == 0 &&
-			   len(options.Intf) == 0 {
+			if len(options.IpConfigFile) == 0 &&
+				len(options.LBConfigFile) == 0 &&
+				len(options.SessionConfigFile) == 0 &&
+				len(options.SessionUlClConfigFile) == 0 &&
+				len(options.FWConfigFile) == 0 &&
+				len(options.Intf) == 0 {
 				fmt.Println("Provide valid options")
 				return
 			}
@@ -60,7 +62,7 @@ func ApplyCmd(options *ApplyOptions, restOptions *api.RESTOptions) *cobra.Comman
 				ApplyIpConfig(options.IpConfigFile)
 				fmt.Printf("Configuration applied - %s\n", options.IpConfigFile)
 			}
-			
+
 			if options.Route && len(options.Intf) > 0 {
 				addRoute(options.ConfigPath, options.Intf)
 				fmt.Printf("Route Configuration applied for - %s\n", options.Intf)
@@ -83,8 +85,14 @@ func ApplyCmd(options *ApplyOptions, restOptions *api.RESTOptions) *cobra.Comman
 				ApplySessionUlClConfig(options.SessionUlClConfigFile, restOptions)
 				fmt.Printf("Configuration applied - %s\n", options.SessionUlClConfigFile)
 			}
+			if len(options.FWConfigFile) > 0 {
+				ApplyFWConfig(options.FWConfigFile, restOptions)
+				fmt.Printf("Configuration applied - %s\n", options.FWConfigFile)
+			}
+
 		},
 	}
+	// -f filename option
 	return applyCmd
 }
 
@@ -130,7 +138,7 @@ func bashCommand(command string) {
 }
 
 func getType(path string, intf string) (string, error) {
-	file := path+"/"+intf+"/type"
+	file := path + "/" + intf + "/type"
 	var text string
 	// open file
 	f, err := os.Open(file)
@@ -146,17 +154,17 @@ func getType(path string, intf string) (string, error) {
 	for scanner.Scan() {
 		// do something with a line
 		text = scanner.Text()
-		break;
+		break
 	}
 
 	if err := scanner.Err(); err != nil {
 		return "", err
 	}
-	return text, nil;
+	return text, nil
 }
 
 func getBondMode(path string, intf string) (string, error) {
-	file := path+"/"+intf+"/mode"
+	file := path + "/" + intf + "/mode"
 	var text string
 	// open file
 	f, err := os.Open(file)
@@ -172,18 +180,18 @@ func getBondMode(path string, intf string) (string, error) {
 	for scanner.Scan() {
 		// do something with a line
 		text = scanner.Text()
-		break;
+		break
 	}
 
 	if err := scanner.Err(); err != nil {
 		return "", err
 	}
-	return text, nil;
+	return text, nil
 }
 
 func addMTU(path string, intf string) {
 	// open file
-	file := path+"/"+intf+"/mtu"
+	file := path + "/" + intf + "/mtu"
 	if _, err := os.Stat(file); errors.Is(err, os.ErrNotExist) {
 		return
 	}
@@ -200,7 +208,7 @@ func addMTU(path string, intf string) {
 	for scanner.Scan() {
 		// do something with a line
 		//fmt.Printf("%s\n", scanner.Text())
-		command :="ip link set dev "+intf+" mtu "+scanner.Text()
+		command := "ip link set dev " + intf + " mtu " + scanner.Text()
 		bashCommand(command)
 		break
 	}
@@ -212,7 +220,7 @@ func addMTU(path string, intf string) {
 
 func addIpAddr(path string, intf string) {
 	// open file
-	file := path+"/"+intf+"/ipv4addr"
+	file := path + "/" + intf + "/ipv4addr"
 	if _, err := os.Stat(file); errors.Is(err, os.ErrNotExist) {
 		return
 	}
@@ -230,7 +238,7 @@ func addIpAddr(path string, intf string) {
 	for scanner.Scan() {
 		// do something with a line
 		//fmt.Printf("%s\n", scanner.Text())
-		command :="ip addr add "+scanner.Text()+ " dev "+intf
+		command := "ip addr add " + scanner.Text() + " dev " + intf
 		bashCommand(command)
 	}
 
@@ -241,7 +249,7 @@ func addIpAddr(path string, intf string) {
 
 func addL2FDBs(path string, intf string) {
 	// open file
-	file := path+"/"+intf+"/l2fdbs"
+	file := path + "/" + intf + "/l2fdbs"
 	if _, err := os.Stat(file); errors.Is(err, os.ErrNotExist) {
 		return
 	}
@@ -259,7 +267,7 @@ func addL2FDBs(path string, intf string) {
 	for scanner.Scan() {
 		// do something with a line
 		//fmt.Printf("%s\n", scanner.Text())
-		command :="bridge fdb add "+scanner.Text()+ " dev "+ intf + " permanent"
+		command := "bridge fdb add " + scanner.Text() + " dev " + intf + " permanent"
 		bashCommand(command)
 	}
 
@@ -270,7 +278,7 @@ func addL2FDBs(path string, intf string) {
 
 func addVxFDBs(path string, intf string) {
 	// open file
-	file := path+"/"+intf+"/vxfdbs"
+	file := path + "/" + intf + "/vxfdbs"
 	if _, err := os.Stat(file); errors.Is(err, os.ErrNotExist) {
 		return
 	}
@@ -287,7 +295,7 @@ func addVxFDBs(path string, intf string) {
 	for scanner.Scan() {
 		// do something with a line
 		//fmt.Printf("%s\n", scanner.Text())
-		command :="bridge fdb append "+scanner.Text()+ " dev "+ intf + " permanent"
+		command := "bridge fdb append " + scanner.Text() + " dev " + intf + " permanent"
 		bashCommand(command)
 	}
 
@@ -298,7 +306,7 @@ func addVxFDBs(path string, intf string) {
 
 func addNeigh(path string, intf string) {
 	// open file
-	file := path+"/"+intf+"/ipv4neigh"
+	file := path + "/" + intf + "/ipv4neigh"
 	if _, err := os.Stat(file); errors.Is(err, os.ErrNotExist) {
 		return
 	}
@@ -315,7 +323,7 @@ func addNeigh(path string, intf string) {
 	for scanner.Scan() {
 		// do something with a line
 		//fmt.Printf("%s\n", scanner.Text())
-		command :="ip neigh add "+scanner.Text()+ " dev "+ intf + " permanent"
+		command := "ip neigh add " + scanner.Text() + " dev " + intf + " permanent"
 		bashCommand(command)
 	}
 
@@ -326,7 +334,7 @@ func addNeigh(path string, intf string) {
 
 func addRoute(path string, intf string) {
 	// open file
-	file := path+"/"+intf+"/ipv4route"
+	file := path + "/" + intf + "/ipv4route"
 	if _, err := os.Stat(file); errors.Is(err, os.ErrNotExist) {
 		return
 	}
@@ -343,7 +351,7 @@ func addRoute(path string, intf string) {
 	for scanner.Scan() {
 		// do something with a line
 		//fmt.Printf("%s\n", scanner.Text())
-		command :="ip route replace "+scanner.Text()+ " proto static"
+		command := "ip route replace " + scanner.Text() + " proto static"
 		bashCommand(command)
 	}
 
@@ -354,7 +362,7 @@ func addRoute(path string, intf string) {
 
 func addSubIntf(path string, intf string) {
 	// open file
-	file := path+"/"+intf+"/subintf"
+	file := path + "/" + intf + "/subintf"
 	if _, err := os.Stat(file); errors.Is(err, os.ErrNotExist) {
 		return
 	}
@@ -373,10 +381,10 @@ func addSubIntf(path string, intf string) {
 		//fmt.Printf("%s\n", scanner.Text())
 		token := strings.Split(scanner.Text(), "|")
 
-		command :="ip link add "+ token[0] + " link " + token[1] + " type vlan id " + token[2]
+		command := "ip link add " + token[0] + " link " + token[1] + " type vlan id " + token[2]
 		bashCommand(command)
 
-		command ="ip link set " + token[0] + " up"
+		command = "ip link set " + token[0] + " up"
 		bashCommand(command)
 	}
 
@@ -386,29 +394,29 @@ func addSubIntf(path string, intf string) {
 }
 
 func addBridge(intf string) {
-	
-	command :="ip link add "+ intf + " type bridge "
+
+	command := "ip link add " + intf + " type bridge "
 	bashCommand(command)
-	command ="ip link set " + intf + " up"
+	command = "ip link set " + intf + " up"
 	bashCommand(command)
 }
 
 func addBond(path string, intf string) {
-	
-	command :="ip link add "+ intf + " type bond "
+
+	command := "ip link add " + intf + " type bond "
 	bashCommand(command)
-	mode,err := getBondMode(path, intf)
-	if (err == nil) {
+	mode, err := getBondMode(path, intf)
+	if err == nil {
 		command = "ip link set " + intf + " type bond mode " + mode
 		bashCommand(command)
 	}
-	command ="ip link set " + intf + " up"
+	command = "ip link set " + intf + " up"
 	bashCommand(command)
 }
 
 func addVxlan(path string, intf string) {
 	// open file
-	file := path+"/"+intf+"/info"
+	file := path + "/" + intf + "/info"
 	if _, err := os.Stat(file); errors.Is(err, os.ErrNotExist) {
 		return
 	}
@@ -427,11 +435,11 @@ func addVxlan(path string, intf string) {
 		//fmt.Printf("%s\n", scanner.Text())
 		token := strings.Split(scanner.Text(), "|")
 
-		command :="ip link add "+ intf + " type vxlan id " + token[0] + 
-				  " local " + token[1] + " dev " + token[2] + " dst 4789"
+		command := "ip link add " + intf + " type vxlan id " + token[0] +
+			" local " + token[1] + " dev " + token[2] + " dst 4789"
 		bashCommand(command)
 
-		command ="ip link set " + intf + " up"
+		command = "ip link set " + intf + " up"
 		bashCommand(command)
 	}
 
@@ -441,24 +449,24 @@ func addVxlan(path string, intf string) {
 }
 
 func setMaster(intf string, master string) {
-	
-	command :="ip link set "+ intf + " down"
+
+	command := "ip link set " + intf + " down"
 	bashCommand(command)
-	command ="ip link set "+ intf + " master " + master
+	command = "ip link set " + intf + " master " + master
 	bashCommand(command)
-	command ="ip link set "+ intf + " up"
+	command = "ip link set " + intf + " up"
 	bashCommand(command)
 }
 
 func setDev(intf string) {
-	
-	command :="ip link set "+ intf + " up"
+
+	command := "ip link set " + intf + " up"
 	bashCommand(command)
 }
 
 func addMaster(path string, intf string) {
 	// open file
-	file := path+"/"+intf+"/master"
+	file := path + "/" + intf + "/master"
 	if _, err := os.Stat(file); errors.Is(err, os.ErrNotExist) {
 		return
 	}
@@ -486,7 +494,7 @@ func addMaster(path string, intf string) {
 			addBond(path, token[0])
 			setMaster(intf, token[0])
 		}
-		break;
+		break
 	}
 
 	if err := scanner.Err(); err != nil {
@@ -495,9 +503,9 @@ func addMaster(path string, intf string) {
 }
 
 func ApplyIpConfigPerInterface(path string, intf string) {
-	
-	itype,err := getType(path , intf);
-	if (err == nil) {
+
+	itype, err := getType(path, intf)
+	if err == nil {
 		if itype == "phy" || itype == "bond" {
 			setDev(intf)
 			addMTU(path, intf)
@@ -507,20 +515,20 @@ func ApplyIpConfigPerInterface(path string, intf string) {
 			addRoute(path, intf)
 			addSubIntf(path, intf)
 			addMaster(path, intf)
-		} else if (itype == "subintf") {
+		} else if itype == "subintf" {
 			setDev(intf)
 			addIpAddr(path, intf)
 			addNeigh(path, intf)
 			addRoute(path, intf)
 			addSubIntf(path, intf)
 			addMaster(path, intf)
-		} else if (itype == "bridge") {
+		} else if itype == "bridge" {
 			setDev(intf)
 			addIpAddr(path, intf)
 			addNeigh(path, intf)
 			addRoute(path, intf)
 			addMaster(path, intf)
-		} else if (itype == "vxlan") {
+		} else if itype == "vxlan" {
 			setDev(intf)
 			addIpAddr(path, intf)
 			addVxFDBs(path, intf)
@@ -537,7 +545,7 @@ func ApplyIpConfigPerInterface(path string, intf string) {
 func ApplyLbConfig(file string, restOptions *api.RESTOptions) {
 	// open file
 	var lbresp api.LbRuleModGet
-	byteBuf, err := ioutil.ReadFile(file)
+	byteBuf, err := os.ReadFile(file)
 	if err != nil {
 		fmt.Println(err.Error())
 		return
@@ -580,7 +588,7 @@ func ApplyLbConfig(file string, restOptions *api.RESTOptions) {
 func ApplySessionConfig(file string, restOptions *api.RESTOptions) {
 	// open file
 	var resp api.SessionInformationGet
-	byteBuf, err := ioutil.ReadFile(file)
+	byteBuf, err := os.ReadFile(file)
 	if err != nil {
 		fmt.Println(err.Error())
 		return
@@ -606,7 +614,7 @@ func ApplySessionConfig(file string, restOptions *api.RESTOptions) {
 func ApplySessionUlClConfig(file string, restOptions *api.RESTOptions) {
 	// open file
 	var resp api.UlclInformationGet
-	byteBuf, err := ioutil.ReadFile(file)
+	byteBuf, err := os.ReadFile(file)
 	if err != nil {
 		fmt.Println(err.Error())
 		return
@@ -622,6 +630,33 @@ func ApplySessionUlClConfig(file string, restOptions *api.RESTOptions) {
 	for _, ulcl := range resp.UlclInfo {
 		fmt.Printf("ulcl: %v\n", ulcl)
 		resp, err := create.SessionUlClAPICall(restOptions, ulcl)
+		if err != nil {
+			fmt.Printf("Error: %s\n", err.Error())
+			return
+		}
+		defer resp.Body.Close()
+	}
+}
+
+func ApplyFWConfig(file string, restOptions *api.RESTOptions) {
+	// open file
+	var resp api.FWInformationGet
+	byteBuf, err := os.ReadFile(file)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	// Unmashal to Json
+	if err := json.Unmarshal(byteBuf, &resp); err != nil {
+		fmt.Printf("Error: Failed to unmarshal File: (%s)\n", err.Error())
+		return
+	}
+
+	// POST the dump
+	for _, fw := range resp.FWInfo {
+		fmt.Printf("fw: %v\n", fw)
+		resp, err := create.FirewallAPICall(restOptions, fw)
 		if err != nil {
 			fmt.Printf("Error: %s\n", err.Error())
 			return

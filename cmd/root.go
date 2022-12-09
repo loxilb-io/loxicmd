@@ -75,6 +75,7 @@ func Execute() {
 	applyCmd.Flags().StringVarP(&applyOptions.LBConfigFile, "lb", "l", "", "Load Balancer config file to apply")
 	applyCmd.Flags().StringVarP(&applyOptions.SessionConfigFile, "session", "", "", "Session config file to apply")
 	applyCmd.Flags().StringVarP(&applyOptions.SessionUlClConfigFile, "ulcl", "", "", "Ulcl config file to apply")
+	applyCmd.Flags().StringVarP(&applyOptions.FWConfigFile, "firewall", "", "", "Firewall config file to apply")
 
 	rootCmd.AddCommand(saveCmd)
 	rootCmd.AddCommand(applyCmd)
