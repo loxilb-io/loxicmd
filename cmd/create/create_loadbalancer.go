@@ -248,16 +248,16 @@ func GetPortPairList(portPairStrList []string) (map[uint16]uint16, error) {
 func GetEndpointWeightPairList(endpointsList []string) (map[string]uint8, error) {
 	result := make(map[string]uint8)
 	for _, endpointStr := range endpointsList {
-		endpointPair := strings.Split(endpointStr, ":")
-		if len(endpointPair) != 2 {
+		weightIdx := strings.LastIndex(endpointStr, ":")
+		if weightIdx < 0 {
 			return nil, fmt.Errorf("endpoint '%s' is invalid format", endpointStr)
 		}
 		// 0 is endpoint IP, 1 is weight
-		weight, err := strconv.Atoi(endpointPair[1])
+		weight, err := strconv.Atoi(endpointStr[weightIdx+1:])
 		if err != nil {
-			return nil, fmt.Errorf("endpoint's weight '%s' is invalid format", endpointPair[1])
+			return nil, fmt.Errorf("endpoint's weight '%s' is invalid format", endpointStr[weightIdx+1:])
 		}
-		result[endpointPair[0]] = uint8(weight)
+		result[endpointStr[:weightIdx]] = uint8(weight)
 	}
 
 	return result, nil
