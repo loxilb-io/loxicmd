@@ -19,6 +19,10 @@ type FDB struct {
 	CommonAPI
 }
 
+type FDBModGet struct {
+	FdbAttr []FDBMod `json:"fdbAttr"`
+}
+
 type FDBMod struct {
 	// Dev - name of the related device
 	Dev string `json:"dev"`

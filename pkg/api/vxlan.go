@@ -18,6 +18,19 @@ package api
 type Vxlan struct {
 	CommonAPI
 }
+type VxlanGet struct {
+	VxlanAttr []VxlanDump `json:"vxlanAttr"`
+}
+
+type VxlanDump struct {
+	VxlanName string `json:"vxlanName"`
+	// VxLanID - name of the endpoint device in the vxlan
+	VxLanID int `json:"vxlanID"`
+	// EndpointDev - name of the endpoint device in the vxlan
+	EndpointDev string `json:"epIntf"`
+	// PeerIP - Peer IP address in the vxlan config
+	PeerIP []string `json:"peerIP"`
+}
 
 // VxlanBridgeMod - Info about an Vxlan bridge
 type VxlanBridgeMod struct {

@@ -55,6 +55,8 @@ func GetCmd(restOptions *api.RESTOptions) *cobra.Command {
 	GetCmd.AddCommand(NewGetVlanCmd(restOptions))
 	GetCmd.AddCommand(NewGetMirrorCmd(restOptions))
 	GetCmd.AddCommand(NewGetFirewallCmd(restOptions))
+	GetCmd.AddCommand(NewGetFDBCmd(restOptions))
+	GetCmd.AddCommand(NewGetVxlanCmd(restOptions))
 
 	return GetCmd
 }

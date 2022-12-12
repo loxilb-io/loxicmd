@@ -29,9 +29,11 @@ var (
 	ROUTE_TITLE             = []string{"destinationIPNet", "gateway", "flag"}
 	ROUTE_WIDE_TITLE        = []string{"destinationIPNet", "gateway", "flag", "HardwareMark", "packets", "bytes"}
 	IP_TITLE                = []string{"Device Name", "IP Address"}
+	FDB_TITLE               = []string{"Device Name", "MAC Address"}
 	IP_WIDE_TITLE           = []string{"Device Name", "IP Address", "Sync"}
 	VLAN_WIDE_TITLE         = []string{"Device Name", "Vlan ID", "Member", "Statistics"}
 	VLAN_TITLE              = []string{"Device Name", "Vlan ID", "Member"}
+	VXLAN_TITLE             = []string{"Device Name", "Vxlan ID", "endpoint interface", "Peer IP"}
 	NEIGHBOR_TITLE          = []string{"IP Address", "Device Name", "Mac Address"}
 	PROCESS_TITLE           = []string{"pid", "user", "priority", "nice", "virtMemory", "residentSize", "sharedMemory", "status", "CPUUsage", "MemoryUsage", "time", "command"}
 	DEVICE_TITLE            = []string{"hostName", "machineID", "bootID", "OS", "kernel", "architecture", "uptime"}
