@@ -32,7 +32,7 @@ func NewCreateFDBCmd(restOptions *api.RESTOptions) *cobra.Command {
 		Use:   "fdb <MacAddress> <DeviceName>",
 		Short: "Create a FDB",
 		Long: `Create a FDB using LoxiLB. It is working as "bridge fdb add <MacAddress> dev <device>"
-		
+ex) loxicmd create fdb aa:aa:aa:aa:bb:bb eno7	
 `,
 
 		Run: func(cmd *cobra.Command, args []string) {

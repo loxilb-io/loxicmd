@@ -32,7 +32,7 @@ func NewCreateIPv4AddressCmd(restOptions *api.RESTOptions) *cobra.Command {
 		Use:   "ip <DeviceIPNet> <device>",
 		Short: "Create a IPv4Address",
 		Long: `Create a IPv4Address using LoxiLB. It is working as "ip addr add <DeviceIPNet> dev <device>"
-		
+ex) loxicmd create ip 192.168.0.1/24 eno7
 `,
 		Aliases: []string{"ipv4address", "ipv4", "ipaddress"},
 		Run: func(cmd *cobra.Command, args []string) {

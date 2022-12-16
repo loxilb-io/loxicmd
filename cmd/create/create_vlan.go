@@ -32,7 +32,8 @@ func NewCreateVlanBridgeCmd(restOptions *api.RESTOptions) *cobra.Command {
 		Use:   "vlan <Vid>",
 		Short: "Create a vlan",
 		Long: `Create a vlan using LoxiLB. It is working as "brctl addbr vlan$<Vid>"
-		
+
+ex) loxicmd create vlan 100
 `,
 
 		Run: func(cmd *cobra.Command, args []string) {

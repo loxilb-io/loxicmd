@@ -40,9 +40,13 @@ func NewCreateSessionCmd(restOptions *api.RESTOptions) *cobra.Command {
 	o := CreateSessionOptions{}
 
 	var createSessionCmd = &cobra.Command{
-		Use:     "session <userID> <sessionIP> --accessNetworkTunnel=<TeID>:<TunnelIP> --coreNetworkTunnel=<TeID>:<TunnelIP>",
-		Short:   "Create a Session",
-		Long:    `Create a Session using LoxiLB`,
+		Use:   "session <userID> <sessionIP> --accessNetworkTunnel=<TeID>:<TunnelIP> --coreNetworkTunnel=<TeID>:<TunnelIP>",
+		Short: "Create a Session",
+		Long: `Create a Session using LoxiLB
+		
+ex) loxicmd create session user1 192.168.20.1 --accessNetworkTunnel=1:1.232.16.1 coreNetworkTunnel=1:1.233.16.1
+
+		`,
 		Aliases: []string{"session", "sessions"},
 
 		Run: func(cmd *cobra.Command, args []string) {

@@ -37,7 +37,10 @@ func NewCreateVlanMemberCmd(restOptions *api.RESTOptions) *cobra.Command {
 		Use:   "vlanmember <Vid> <DeviceName> --tagged=<Tagged>",
 		Short: "Create a vlanmember",
 		Long: `Create a vlanmember using LoxiLB. It is working as "brctl addif vlan<Vid> <DeviceName>.<tagged>"
+
 		
+ex) loxicmd create vlanmember 100 eno7 --tagged=true
+	loxicmd create vlanmember 100 eno7 
 `,
 		Aliases: []string{"vlanMember", "vlan-member", "vlan_member"},
 		Run: func(cmd *cobra.Command, args []string) {

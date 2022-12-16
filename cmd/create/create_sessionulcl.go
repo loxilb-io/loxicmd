@@ -38,9 +38,12 @@ func NewCreateSessionUlClCmd(restOptions *api.RESTOptions) *cobra.Command {
 	o := CreateSessionUlClOptions{}
 
 	var createSessionCmd = &cobra.Command{
-		Use:     "sessionulcl <userID> --ulclArgs=<QFI>:<ulclIP>,... ",
-		Short:   "Create a Session UlCl",
-		Long:    `Create a Session UlCl using LoxiLB`,
+		Use:   "sessionulcl <userID> --ulclArgs=<QFI>:<ulclIP>,... ",
+		Short: "Create a Session UlCl",
+		Long: `Create a Session UlCl using LoxiLB
+
+ex) loxicmd create sessionulcl user1 --ulclArgs=16:192.33.125.1
+		`,
 		Aliases: []string{"ulcl", "sessionulcls", "ulcls"},
 
 		Run: func(cmd *cobra.Command, args []string) {

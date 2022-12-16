@@ -32,7 +32,8 @@ func NewCreateVxlanPeerCmd(restOptions *api.RESTOptions) *cobra.Command {
 		Use:   "vxlanpeer <Vnid> <PeerIP>",
 		Short: "Create a vxlan",
 		Long: `Create a vxlan using LoxiLB.
-loxicmd create vxlan-peer 100 30.1.3.1
+
+ex) loxicmd create vxlan-peer 100 30.1.3.1
 `,
 		Aliases: []string{"vxlanPeer", "vxlan-peer", "vxlan_peer"},
 

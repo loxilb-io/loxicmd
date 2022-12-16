@@ -31,7 +31,11 @@ func NewCreateVxlanBridgeCmd(restOptions *api.RESTOptions) *cobra.Command {
 	var createvxlanCmd = &cobra.Command{
 		Use:   "vxlan <VxlanID> <EndpointDeviceName>",
 		Short: "Create a vxlan",
-		Long:  `Create a vxlan using LoxiLB. `,
+		Long: `Create a vxlan using LoxiLB. 
+
+ex) loxicmd create vxlan 100 eno7
+
+`,
 
 		Run: func(cmd *cobra.Command, args []string) {
 			var vxlanMod api.VxlanBridgeMod

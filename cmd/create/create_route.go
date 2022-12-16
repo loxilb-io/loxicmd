@@ -32,7 +32,8 @@ func NewCreateRouteCmd(restOptions *api.RESTOptions) *cobra.Command {
 		Use:   "route <DestinationIPNet> <gateway>",
 		Short: "Create a Route",
 		Long: `Create a Route using LoxiLB. It is working as "ip route add <DestinationIPNet> via <gateway>"
-		
+	
+ex) loxicmd create route 192.168.212.0/24 172.17.0.254
 `,
 		Run: func(cmd *cobra.Command, args []string) {
 			var RouteMod api.Routev4Get

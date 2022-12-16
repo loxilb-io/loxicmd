@@ -37,7 +37,8 @@ func NewCreateNeighborsCmd(restOptions *api.RESTOptions) *cobra.Command {
 		Use:   "neighbor <DeviceIP> <DeviceName> [--macAddress=aa:aa:aa:aa:aa:aa]",
 		Short: "Create a Neighbors",
 		Long: `Create a Neighbors using LoxiLB. It is working as "ip neigh add <DeviceIP> dev <device> lladdr <--macAddress>"
-		
+
+ex) loxicmd create neighbor 192.168.0.1 eno7 --macAddress=aa:aa:aa:aa:aa:aa
 `,
 		Aliases: []string{"nei", "neigh"},
 		Run: func(cmd *cobra.Command, args []string) {
