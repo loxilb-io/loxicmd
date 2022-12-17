@@ -41,6 +41,7 @@ type LoadBalancerService struct {
 	Sel        EpSelect `json:"sel"`
 	Mode       LbMode   `json:"mode"`
 	BGP        bool     `json:"BGP"`
+	Monitor    bool     `json:"Monitor"`
 	Timeout    uint32   `json:"inactiveTimeOut"`
 }
 

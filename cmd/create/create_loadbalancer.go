@@ -38,6 +38,7 @@ type CreateLoadBalancerOptions struct {
 	ICMP       bool
 	Mode       string
 	BGP        bool
+	Monitor    bool
 	Timeout    uint32
 	SCTP       []string
 	Endpoints  []string
@@ -98,7 +99,7 @@ func NewCreateLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 	o := CreateLoadBalancerOptions{}
 
 	var createLbCmd = &cobra.Command{
-		Use:   "lb IP [--select=<rr|hash|priority>] [--tcp=<port>:<targetPort>] [--udp=<port>:<targetPort>] [--sctp=<port>:<targetPort>] [--icmp] [--endpoints=<ip>:<weight>,] [--mode=<onearm|fullnat>] [--bgp] [--inatimeout=<to>]",
+		Use:   "lb IP [--select=<rr|hash|priority>] [--tcp=<port>:<targetPort>] [--udp=<port>:<targetPort>] [--sctp=<port>:<targetPort>] [--icmp] [--endpoints=<ip>:<weight>,] [--mode=<onearm|fullnat>] [--bgp] [--monitor] [--inatimeout=<to>]",
 		Short: "Create a LoadBalancer",
 		Long: `Create a LoadBalancer
 
@@ -160,6 +161,7 @@ ex) loxicmd create lb 192.168.0.200 --tcp=80:32015 --endpoints=10.212.0.1:1,10.2
 						Port:       port,
 						Sel:        api.EpSelect(SelectToNum(o.Select)),
 						BGP:        o.BGP,
+						Monitor:    o.Monitor,
 						Mode:       api.LbMode(ModeToNum(o.Mode)),
 						Timeout:    o.Timeout,
 					}
@@ -198,6 +200,7 @@ ex) loxicmd create lb 192.168.0.200 --tcp=80:32015 --endpoints=10.212.0.1:1,10.2
 	createLbCmd.Flags().BoolVarP(&o.ICMP, "icmp", "", false, "ICMP Ping packet Load balancer")
 	createLbCmd.Flags().StringVarP(&o.Mode, "mode", "", o.Mode, "NAT mode for load balancer rule")
 	createLbCmd.Flags().BoolVarP(&o.BGP, "bgp", "", false, "Enable BGP in the load balancer")
+	createLbCmd.Flags().BoolVarP(&o.Monitor, "monitor", "", false, "Enable monitoring end-points of this rule")
 	createLbCmd.Flags().StringVarP(&o.Select, "select", "", "rr", "Select the hash algorithm for the load balance.(ex) rr, hash, priority")
 	createLbCmd.Flags().Uint32VarP(&o.Timeout, "inatimeout", "", 0, "Specify the timeout (in seconds) after which a LB session will be reset for inactivity")
 	createLbCmd.Flags().StringSliceVar(&o.Endpoints, "endpoints", o.Endpoints, "Endpoints is pairs that can be specified as '<endpointIP>:<Weight>'")
