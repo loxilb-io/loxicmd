@@ -49,4 +49,5 @@ type LoadBalancerEndpoint struct {
 	EndpointIP string `json:"endpointIP"`
 	TargetPort uint16 `json:"targetPort"`
 	Weight     uint8  `json:"weight"`
+	State      string `json:"state"`
 }
