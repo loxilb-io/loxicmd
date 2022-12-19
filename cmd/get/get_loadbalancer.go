@@ -40,7 +40,14 @@ func NewGetLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			_ = cmd
 			_ = args
-			resp, err := LoadbalancerAPICall(restOptions)
+			client := api.NewLoxiClient(restOptions)
+			ctx := context.TODO()
+			var cancel context.CancelFunc
+			if restOptions.Timeout > 0 {
+				ctx, cancel = context.WithTimeout(context.TODO(), time.Duration(restOptions.Timeout)*time.Second)
+				defer cancel()
+			}
+			resp, err := client.LoadBalancerAll().Get(ctx)
 			if err != nil {
 				fmt.Printf("Error: %s\n", err.Error())
 				return
@@ -138,7 +145,7 @@ func LoadbalancerAPICall(restOptions *api.RESTOptions) (*http.Response, error) {
 		ctx, cancel = context.WithTimeout(context.TODO(), time.Duration(restOptions.Timeout)*time.Second)
 		defer cancel()
 	}
-	resp, err := client.LoadBalancer().SetUrl("/config/loadbalancer/all").Get(ctx)
+	resp, err := client.LoadBalancerAll().Get(ctx)
 	if err != nil {
 		fmt.Printf("Error: %s\n", err.Error())
 		return nil, err

@@ -24,6 +24,7 @@ const (
 	loxiProvider             = "netlox"
 	loxiApiVersion           = "v1"
 	loxiLoadBalancerResource = "config/loadbalancer"
+	loxiLoadBalancerResourceAll = "config/loadbalancer/all"
 	loxiConntrackResource    = "config/conntrack/all"
 	loxiPortResource         = "config/port/all"
 	loxiSessionResource      = "config/session"
@@ -63,6 +64,19 @@ func (l *LoxiClient) LoadBalancer() *LoadBalancer {
 				provider:   loxiProvider,
 				apiVersion: loxiApiVersion,
 				resource:   loxiLoadBalancerResource,
+			},
+		},
+	}
+}
+
+func (l *LoxiClient) LoadBalancerAll() *LoadBalancer {
+	return &LoadBalancer{
+		CommonAPI: CommonAPI{
+			restClient: &l.restClient,
+			requestInfo: RequestInfo{
+				provider:   loxiProvider,
+				apiVersion: loxiApiVersion,
+				resource:   loxiLoadBalancerResourceAll,
 			},
 		},
 	}
