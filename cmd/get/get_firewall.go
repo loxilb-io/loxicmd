@@ -103,6 +103,10 @@ func MakeFirewallOptionToString(t api.FwOptArg) (ret string) {
 	} else if t.Rdr {
 		ret = fmt.Sprintf("Redirect(%s)", t.RdrPort)
 	}
+	if t.Mark != 0 {
+		ret += fmt.Sprintf(",FwMark(%d)", t.Mark)
+
+	}
 	return ret
 }
 
@@ -146,20 +150,20 @@ func FWdump(restOptions *api.RESTOptions) (string, error) {
 	// Write
 	f.Write(resultByte)
 
-	if _, err := os.Stat("/opt/loxifw/FWconfig.txt"); errors.Is(err, os.ErrNotExist) {
+	if _, err := os.Stat("/opt/loxilb/FWconfig.txt"); errors.Is(err, os.ErrNotExist) {
 		if err != nil {
 			fmt.Println("There is no saved config file")
 		}
 	} else {
-		command := "mv /opt/loxifw/FWconfig.txt /opt/loxifw/FWconfig.txt.bk"
+		command := "mv /opt/loxilb/FWconfig.txt /opt/loxilb/FWconfig.txt.bk"
 		cmd := exec.Command("bash", "-c", command)
 		_, err := cmd.Output()
 		if err != nil {
-			fmt.Println("Can't backup /opt/loxifw/FWconfig.txt")
+			fmt.Println("Can't backup /opt/loxilb/FWconfig.txt")
 			return file, err
 		}
 	}
-	command := "cp -R " + file + " /opt/loxifw/FWconfig.txt"
+	command := "cp -R " + file + " /opt/loxilb/FWconfig.txt"
 	cmd := exec.Command("bash", "-c", command)
 	fmt.Println(cmd)
 	_, err = cmd.Output()

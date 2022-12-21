@@ -43,6 +43,7 @@ type LoadBalancerService struct {
 	BGP        bool     `json:"BGP"`
 	Monitor    bool     `json:"Monitor"`
 	Timeout    uint32   `json:"inactiveTimeOut"`
+	Block      uint16   `json:"block"`
 }
 
 type LoadBalancerEndpoint struct {

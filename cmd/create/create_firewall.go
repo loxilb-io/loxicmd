@@ -33,13 +33,14 @@ type CreateFirewallOptions struct {
 	Allow        bool
 	Drop         bool
 	Trap         bool
+	Mark         int
 }
 
 func NewCreateFirewallCmd(restOptions *api.RESTOptions) *cobra.Command {
 	o := CreateFirewallOptions{}
 
 	var createFirewallCmd = &cobra.Command{
-		Use:   "firewall --firewallRule=<ruleKey>:<ruleValue>, [--allow] [--drop] [--trap] [--redirect=<PortName>]",
+		Use:   "firewall --firewallRule=<ruleKey>:<ruleValue>, [--allow] [--drop] [--trap] [--redirect=<PortName>] [--setmark=<FwMark>",
 		Short: "Create a Firewall",
 		Long: `Create a Firewall using LoxiLB
 
@@ -56,6 +57,7 @@ preference(int) - User preference for ordering
 
 
 ex) loxicmd create firewall --firewallRule="sourceIP:1.2.3.2/32,destinationIP:2.3.1.2/32,preference:200" --allow
+	loxicmd create firewall --firewallRule="sourceIP:1.2.3.2/32,destinationIP:2.3.1.2/32,preference:200" --allow --setmark=10
     loxicmd create firewall --firewallRule="sourceIP:1.2.3.2/32,destinationIP:2.3.1.2/32,preference:200" --drop
 	loxicmd create firewall --firewallRule="sourceIP:1.2.3.2/32,destinationIP:2.3.1.2/32,preference:200" --trap
 	loxicmd create firewall --firewallRule="sourceIP:1.2.3.2/32,destinationIP:2.3.1.2/32,preference:200" --redirect=hs1
@@ -95,6 +97,7 @@ ex) loxicmd create firewall --firewallRule="sourceIP:1.2.3.2/32,destinationIP:2.
 	createFirewallCmd.Flags().BoolVarP(&o.Allow, "allow", "", false, "Allow any matching rule")
 	createFirewallCmd.Flags().BoolVarP(&o.Drop, "drop", "", false, "Drop any matching rule")
 	createFirewallCmd.Flags().BoolVarP(&o.Trap, "trap", "", false, " Trap anything matching rule")
+	createFirewallCmd.Flags().IntVarP(&o.Mark, "setmark", "", 0, " Add a fw mark")
 
 	return createFirewallCmd
 }
@@ -164,6 +167,7 @@ func GetFWOptionPairList(FirewallMods *api.FwRuleMod, o CreateFirewallOptions) e
 		FirewallMods.Opts.Rdr = true
 		FirewallMods.Opts.RdrPort = o.Redirect[0]
 	}
+	FirewallMods.Opts.Mark = o.Mark
 
 	return nil
 }

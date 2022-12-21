@@ -34,6 +34,7 @@ type FwOptArg struct {
 	RdrPort string `json:"redirectPortName"`
 	// Allow - Allow any matching rule
 	Allow bool `json:"allow"`
+	Mark int `json:"fwMark"`
 }
 
 // FwRuleArg - Information related to firewall rule
