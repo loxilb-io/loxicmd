@@ -85,6 +85,8 @@ func NumToMode(mode int) string {
 		ret = "onearm"
 	case 2:
 		ret = "fullnat"
+	case 3:
+		ret = "dsr"
 	default:
 		ret = "default"
 	}

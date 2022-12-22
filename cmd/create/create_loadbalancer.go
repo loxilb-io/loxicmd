@@ -90,6 +90,8 @@ func ModeToNum(sel string) int {
 		ret = 1
 	case "fullnat":
 		ret = 2
+	case "dsr":
+		ret = 3
 	default:
 		ret = 0
 	}
@@ -115,7 +117,8 @@ func NewCreateLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 ex) loxicmd create lb 192.168.0.200 --tcp=80:32015 --endpoints=10.212.0.1:1,10.212.0.2:1,10.212.0.3:1
 	loxicmd create lb 192.168.0.200 --udp=80:32015 --endpoints=10.212.0.1:1,10.212.0.2:1,10.212.0.3:1 --mark=10
 	loxicmd create lb 192.168.0.200 --tcp=80:32015 --udp=80:32015 --endpoints=10.212.0.1:1,10.212.0.2:1,10.212.0.3:1
-	loxicmd create lb 192.168.0.200 --select=hash --tcp=80:32015 --endpoints=10.212.0.1:1,10.212.0.2:1,10.212.0.3:1 
+	loxicmd create lb 192.168.0.200 --select=hash --tcp=80:32015 --endpoints=10.212.0.1:1,10.212.0.2:1,10.212.0.3:1
+	loxicmd create lb 192.168.0.200 --tcp=80:32015 --endpoints=10.212.0.1:1,10.212.0.2:1,10.212.0.3:1 --mode=dsr
 
 	loxicmd create lb  2001::1 --tcp=2020:8080 --endpoints=4ffe::1:1,5ffe::1:1,6ffe::1:1
 	loxicmd create lb  2001::1 --tcp=2020:8080 --endpoints=31.31.31.1:1,32.32.32.1:1,33.33.33.1:1
@@ -166,6 +169,11 @@ ex) loxicmd create lb 192.168.0.200 --tcp=80:32015 --endpoints=10.212.0.1:1,10.2
 						Mode:       api.LbMode(ModeToNum(o.Mode)),
 						Timeout:    o.Timeout,
 						Block:      o.Mark,
+					}
+
+					if o.Mode == "dsr" && targetPort != port {
+						fmt.Printf("Error: No port-translation in dsr mode\n")
+						return
 					}
 
 					lbModel.Service = lbService
