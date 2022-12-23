@@ -564,6 +564,9 @@ func ApplyLbConfig(file string, restOptions *api.RESTOptions) {
 			ExternalIP: lb.Service.ExternalIP,
 			Protocol:   lb.Service.Protocol,
 			Port:       lb.Service.Port,
+			Sel:        lb.Service.Sel,
+			Mode:       lb.Service.Mode,
+			BGP:        lb.Service.BGP,
 		}
 
 		lbModel.Service = lbService

@@ -30,6 +30,9 @@ import (
 	"golang.org/x/sys/unix"
 )
 
+var f *os.File
+var path string
+
 const (
 	IF_OPER_UNKNOWN uint8 = iota
 	IF_OPER_NOTPRESENT
@@ -223,7 +226,6 @@ func AddLink(link nlp.Link) int {
 	mtu := attrs.MTU
 	state := uint8(attrs.OperState) == IF_OPER_UP
 	intfpath = path + name
-
 	if _, ok := link.(*nlp.Bridge); ok {
 
 		dump(f, "ip link add %v type bridge\n", name)
@@ -509,10 +511,7 @@ func GetBonds() {
 	}
 }
 
-var f *os.File
-var path string
-
-func Nlpdump() string {
+func Nlpdump(dpath string) string {
 	var ret int
 	var err error
 	fileP := []string{"ipconfig_", ".txt"}
@@ -527,6 +526,7 @@ func Nlpdump() string {
 	defer f.Close()
 
 	path = "ipconfig_" + t.Local().Format("2006-01-02_15:04:05") + "/"
+	//fmt.Printf("Creating intf config dir : %s\n", path)
 	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
 		err := os.Mkdir(path, os.ModePerm)
 		if err != nil {
@@ -573,25 +573,27 @@ func Nlpdump() string {
 			}
 		}
 	}
-	if _, err := os.Stat("/opt/loxilb/ipconfig"); errors.Is(err, os.ErrNotExist) {
-		err := os.Mkdir(path, os.ModePerm)
+	
+	cpath := dpath + "ipconfig"
+	if _, err := os.Stat(cpath); errors.Is(err, os.ErrNotExist) {
+		err := os.Mkdir(cpath, os.ModePerm)
 		if err != nil {
-			fmt.Println("Can't create config dir")
+			fmt.Println("Can't create config dir: ", cpath)
 		}
 	} else {
-		command := "mv /opt/loxilb/ipconfig /opt/loxilb/ipconfig.bk"
+		command := "mv " + cpath + " " + cpath + ".bk"
 		cmd := exec.Command("bash", "-c", command)
 		_, err := cmd.Output()
 		if err != nil {
-			fmt.Println("Can't backup /opt/loxilb/ipconfig")
+			fmt.Println("Can't backup ", cpath)
 			return file
 		}
 	}
-	command := "cp -R " + path + " /opt/loxilb/ipconfig/"
+	command := "cp -R " + path + "/* " + cpath
 	cmd := exec.Command("bash", "-c", command)
 	_, err = cmd.Output()
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println(err, command)
 	}
 	return file
 }

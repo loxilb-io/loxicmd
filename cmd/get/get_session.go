@@ -116,7 +116,7 @@ func SessionAPICall(restOptions *api.RESTOptions) (*http.Response, error) {
 	return resp, nil
 }
 
-func Sessiondump(restOptions *api.RESTOptions) (string, error) {
+func Sessiondump(restOptions *api.RESTOptions, path string) (string, error) {
 	// File Open
 	fileP := []string{"sessionconfig_", ".txt"}
 	t := time.Now()
@@ -140,20 +140,21 @@ func Sessiondump(restOptions *api.RESTOptions) (string, error) {
 	// Write
 	f.Write(resultByte)
 
-	if _, err := os.Stat("/opt/loxilb/sessionconfig.txt"); errors.Is(err, os.ErrNotExist) {
+	cfile := path + "sessionconfig.txt"
+	if _, err := os.Stat(cfile); errors.Is(err, os.ErrNotExist) {
 		if err != nil {
 			fmt.Println("There is no saved config file")
 		}
 	} else {
-		command := "mv /opt/loxilb/sessionconfig.txt /opt/loxilb/sessionconfig.txt.bk"
+		command := "mv " + cfile + " " + cfile + ".bk"
 		cmd := exec.Command("bash", "-c", command)
 		_, err := cmd.Output()
 		if err != nil {
-			fmt.Println("Can't backup /opt/loxilb/sessionconfig.txt")
+			fmt.Println("Can't backup ", cfile)
 			return file, err
 		}
 	}
-	command := "cp -R " + file + " /opt/loxilb/sessionconfig.txt"
+	command := "cp -R " + file + " " + cfile
 	cmd := exec.Command("bash", "-c", command)
 	fmt.Println(cmd)
 	_, err = cmd.Output()

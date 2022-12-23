@@ -155,7 +155,7 @@ func LoadbalancerAPICall(restOptions *api.RESTOptions) (*http.Response, error) {
 	return resp, nil
 }
 
-func Lbdump(restOptions *api.RESTOptions) (string, error) {
+func Lbdump(restOptions *api.RESTOptions, path string) (string, error) {
 	// File Open
 	fileP := []string{"lbconfig_", ".txt"}
 	t := time.Now()
@@ -178,21 +178,21 @@ func Lbdump(restOptions *api.RESTOptions) (string, error) {
 	}
 	// Write
 	f.Write(resultByte)
-
-	if _, err := os.Stat("/opt/loxilb/lbconfig.txt"); errors.Is(err, os.ErrNotExist) {
+    cfile := path + "lbconfig.txt"
+	if _, err := os.Stat(cfile); errors.Is(err, os.ErrNotExist) {
 		if err != nil {
 			fmt.Println("There is no saved config file")
 		}
 	} else {
-		command := "mv /opt/loxilb/lbconfig.txt /opt/loxilb/lbconfig.txt.bk"
+		command := "mv " + cfile + " " + cfile + ".bk"
 		cmd := exec.Command("bash", "-c", command)
 		_, err := cmd.Output()
 		if err != nil {
-			fmt.Println("Can't backup /opt/loxilb/lbconfig.txt")
+			fmt.Println("Can't backup ", cfile)
 			return file, err
 		}
 	}
-	command := "cp -R " + file + " /opt/loxilb/lbconfig.txt"
+	command := "cp -R " + file + " " + cfile
 	cmd := exec.Command("bash", "-c", command)
 	fmt.Println(cmd)
 	_, err = cmd.Output()
