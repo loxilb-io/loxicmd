@@ -17,6 +17,8 @@ package dump
 
 import (
 	"fmt"
+	"os"
+	"errors"
 	get "loxicmd/cmd/get"
 	"loxicmd/pkg/api"
 
@@ -41,12 +43,20 @@ func SaveCmd(saveOpts *SaveOptions, restOptions *api.RESTOptions) *cobra.Command
 		Run: func(cmd *cobra.Command, args []string) {
 			_ = cmd
 			_ = args
+			dpath := "/etc/loxilb/"
+			if _, err := os.Stat(dpath); errors.Is(err, os.ErrNotExist) {
+				err := os.Mkdir(dpath, os.ModePerm)
+				if err != nil {
+					fmt.Println("Can't create config dir /etc/loxilb/")
+					return
+				}
+			}
 			if saveOpts.SaveIpConfig || saveOpts.SaveAllConfig {
-				file := get.Nlpdump()
+				file := get.Nlpdump(dpath)
 				fmt.Println("IP Configuration saved in", file)
 			}
 			if saveOpts.SaveLBConfig || saveOpts.SaveAllConfig {
-				lbfile, err := get.Lbdump(restOptions)
+				lbfile, err := get.Lbdump(restOptions, dpath)
 				if err != nil {
 					fmt.Println(err.Error())
 					return
@@ -54,7 +64,7 @@ func SaveCmd(saveOpts *SaveOptions, restOptions *api.RESTOptions) *cobra.Command
 				fmt.Println("LB Configuration saved in", lbfile)
 			}
 			if saveOpts.SaveSessionConfig || saveOpts.SaveAllConfig {
-				sessionFile, err := get.Sessiondump(restOptions)
+				sessionFile, err := get.Sessiondump(restOptions, dpath)
 				if err != nil {
 					fmt.Println(err.Error())
 					return
@@ -62,7 +72,7 @@ func SaveCmd(saveOpts *SaveOptions, restOptions *api.RESTOptions) *cobra.Command
 				fmt.Println("Session Configuration saved in", sessionFile)
 			}
 			if saveOpts.SaveUlClConfig || saveOpts.SaveAllConfig {
-				ulclFile, err := get.SessionUlCldump(restOptions)
+				ulclFile, err := get.SessionUlCldump(restOptions, dpath)
 				if err != nil {
 					fmt.Println(err.Error())
 					return
@@ -70,7 +80,7 @@ func SaveCmd(saveOpts *SaveOptions, restOptions *api.RESTOptions) *cobra.Command
 				fmt.Println("UlCl Configuration saved in", ulclFile)
 			}
 			if saveOpts.SaveFWConfig || saveOpts.SaveAllConfig {
-				FWFile, err := get.FWdump(restOptions)
+				FWFile, err := get.FWdump(restOptions, dpath)
 				if err != nil {
 					fmt.Println(err.Error())
 					return
