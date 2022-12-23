@@ -126,7 +126,7 @@ func FWAPICall(restOptions *api.RESTOptions) (*http.Response, error) {
 	return resp, nil
 }
 
-func FWdump(restOptions *api.RESTOptions) (string, error) {
+func FWdump(restOptions *api.RESTOptions, path string) (string, error) {
 	// File Open
 	fileP := []string{"FWconfig_", ".txt"}
 	t := time.Now()
@@ -150,20 +150,21 @@ func FWdump(restOptions *api.RESTOptions) (string, error) {
 	// Write
 	f.Write(resultByte)
 
-	if _, err := os.Stat("/opt/loxilb/FWconfig.txt"); errors.Is(err, os.ErrNotExist) {
+	cfile := path + "FWconfig.txt"
+	if _, err := os.Stat(cfile); errors.Is(err, os.ErrNotExist) {
 		if err != nil {
 			fmt.Println("There is no saved config file")
 		}
 	} else {
-		command := "mv /opt/loxilb/FWconfig.txt /opt/loxilb/FWconfig.txt.bk"
+		command := "mv " + cfile + " " + cfile + ".bk"
 		cmd := exec.Command("bash", "-c", command)
 		_, err := cmd.Output()
 		if err != nil {
-			fmt.Println("Can't backup /opt/loxilb/FWconfig.txt")
+			fmt.Println("Can't backup ", cfile)
 			return file, err
 		}
 	}
-	command := "cp -R " + file + " /opt/loxilb/FWconfig.txt"
+	command := "cp -R " + file + " " + cfile
 	cmd := exec.Command("bash", "-c", command)
 	fmt.Println(cmd)
 	_, err = cmd.Output()
