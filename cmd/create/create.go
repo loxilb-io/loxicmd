@@ -47,6 +47,7 @@ func CreateCmd(restOptions *api.RESTOptions) *cobra.Command {
 	createCmd.AddCommand(NewCreateVxlanPeerCmd(restOptions))
 	createCmd.AddCommand(NewCreateMirrorCmd(restOptions))
 	createCmd.AddCommand(NewCreateFirewallCmd(restOptions))
+	createCmd.AddCommand(NewCreateEndPointCmd(restOptions))
 
 	return createCmd
 }

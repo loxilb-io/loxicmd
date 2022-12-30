@@ -38,6 +38,7 @@ const (
 	loxiVxlanResource        = "config/tunnel/vxlan"
 	loxiMirrorResource       = "config/mirror"
 	loxiFirewallResource     = "config/firewall"
+	loxiEndPointResource     = "config/endpoint"
 	loxiStatusResource       = "status"
 )
 
@@ -259,6 +260,19 @@ func (l *LoxiClient) Mirror() *Mirror {
 				provider:   loxiProvider,
 				apiVersion: loxiApiVersion,
 				resource:   loxiMirrorResource,
+			},
+		},
+	}
+}
+
+func (l *LoxiClient) EndPoint() *Firewall {
+	return &Firewall{
+		CommonAPI: CommonAPI{
+			restClient: &l.restClient,
+			requestInfo: RequestInfo{
+				provider:   loxiProvider,
+				apiVersion: loxiApiVersion,
+				resource:   loxiEndPointResource,
 			},
 		},
 	}

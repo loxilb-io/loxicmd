@@ -47,6 +47,7 @@ func DeleteCmd(restOptions *api.RESTOptions) *cobra.Command {
 	deleteCmd.AddCommand(NewDeleteVxlanPeerCmd(restOptions))
 	deleteCmd.AddCommand(NewDeleteMirrorCmd(restOptions))
 	deleteCmd.AddCommand(NewDeleteFirewallCmd(restOptions))
+	deleteCmd.AddCommand(NewDeleteEndPointCmd(restOptions))
 
 	return deleteCmd
 }

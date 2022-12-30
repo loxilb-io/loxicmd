@@ -31,6 +31,7 @@ type SaveOptions struct {
 	SaveSessionConfig bool
 	SaveUlClConfig    bool
 	SaveFWConfig      bool
+	SaveEPConfig      bool
 	SaveAllConfig     bool
 }
 
@@ -86,6 +87,14 @@ func SaveCmd(saveOpts *SaveOptions, restOptions *api.RESTOptions) *cobra.Command
 					return
 				}
 				fmt.Println("Firewall Configuration saved in", FWFile)
+			}
+			if saveOpts.SaveEPConfig || saveOpts.SaveAllConfig {
+				FWFile, err := get.EPdump(restOptions, dpath)
+				if err != nil {
+					fmt.Println(err.Error())
+					return
+				}
+				fmt.Println("EndPoint Configuration saved in", FWFile)
 			}
 		},
 	}

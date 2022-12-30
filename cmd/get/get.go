@@ -57,6 +57,7 @@ func GetCmd(restOptions *api.RESTOptions) *cobra.Command {
 	GetCmd.AddCommand(NewGetFirewallCmd(restOptions))
 	GetCmd.AddCommand(NewGetFDBCmd(restOptions))
 	GetCmd.AddCommand(NewGetVxlanCmd(restOptions))
+	GetCmd.AddCommand(NewGetEndPointCmd(restOptions))
 
 	return GetCmd
 }
