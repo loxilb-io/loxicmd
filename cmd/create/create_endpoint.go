@@ -65,7 +65,7 @@ ex) loxicmd create endpoint 32.32.32.1 --desc=zone1host --probetype=http --l4por
 			}
 
 			if o.ProbeType != "http" && o.ProbeType != "ping" && o.ProbeType != "connect-tcp" &&
-				o.ProbeType != "connect-udp" && o.ProbeType != "connect-sctp" {
+				o.ProbeType != "connect-udp" && o.ProbeType != "connect-sctp" && o.ProbeType != "none" {
 				fmt.Printf("probetype '%s' is invalid\n", o.ProbeType)
 				return
 			}
@@ -108,7 +108,7 @@ ex) loxicmd create endpoint 32.32.32.1 --desc=zone1host --probetype=http --l4por
 	}
 
 	createEndPointCmd.Flags().StringVar(&o.Description, "desc", "", "Description of and end-point")
-	createEndPointCmd.Flags().StringVar(&o.ProbeType, "probetype", "ping", "Probe-type:ping,http,connect-udp,connect-tcp, connect-sctp")
+	createEndPointCmd.Flags().StringVar(&o.ProbeType, "probetype", "ping", "Probe-type:ping,http,connect-udp,connect-tcp,connect-sctp,none")
 	createEndPointCmd.Flags().StringVar(&o.ProbeReq, "probereq", "", "If probe is http, one can specify additional uri path")
 	createEndPointCmd.Flags().StringVar(&o.ProbeResp, "proberesp", "", "If probe is http, one can specify custom response string")
 	createEndPointCmd.Flags().IntVar(&o.ProbePort, "l4port", 0, "If probe is http,tcp,udp,sctp one can specify custom l4port to use")
