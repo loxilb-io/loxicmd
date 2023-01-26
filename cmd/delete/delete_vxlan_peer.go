@@ -54,7 +54,7 @@ ex) loxicmd delete vxlan-peer 100 30.1.3.1
 				return
 			}
 			Vnid := args[0]
-			Dev := args[1]
+			PeerIP := args[1]
 			client := api.NewLoxiClient(restOptions)
 			ctx := context.TODO()
 			var cancel context.CancelFunc
@@ -63,7 +63,7 @@ ex) loxicmd delete vxlan-peer 100 30.1.3.1
 				defer cancel()
 			}
 			subResources := []string{
-				Vnid, "peer", Dev,
+				Vnid, "peer", PeerIP,
 			}
 			resp, err := client.Vxlan().SubResources(subResources).Delete(ctx)
 			if err != nil {
