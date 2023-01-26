@@ -34,13 +34,19 @@ type RouteGetEntryStatistic struct {
 // Routev4Get - Info about an route
 type Routev4Get struct {
 	// Flags - flag type
-	Flags string `json:"flags"`
+	Flags string `json:"flags" yaml:"flags"`
 	// Gw - gateway information if any
-	Gw string `json:"gateway"`
+	Gw string `json:"gateway" yaml:"gateway"`
 	// Dst - ip addr
-	Dst string `json:"destinationIPNet"`
+	Dst string `json:"destinationIPNet" yaml:"destinationIPNet"`
 	// index of the route
-	HardwareMark int `json:"hardwareMark"`
+	HardwareMark int `json:"hardwareMark" yaml:"hardwareMark"`
 	// statistic
-	Statistic RouteGetEntryStatistic `json:"statistic"`
+	Statistic RouteGetEntryStatistic `json:"statistic" yaml:"statistic"`
+}
+
+type ConfigurationRouteFile struct {
+	TypeMeta   `yaml:",inline"`
+	ObjectMeta `yaml:"metadata,omitempty"`
+	Spec       Routev4Get `yaml:"spec"`
 }

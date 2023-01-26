@@ -15,10 +15,6 @@
  */
 package api
 
-import (
-	_ "fmt"
-)
-
 type LoadBalancer struct {
 	CommonAPI
 }
@@ -30,25 +26,31 @@ type LbRuleModGet struct {
 }
 
 type LoadBalancerModel struct {
-	Service   LoadBalancerService    `json:"serviceArguments"`
-	Endpoints []LoadBalancerEndpoint `json:"endpoints"`
+	Service   LoadBalancerService    `json:"serviceArguments" yaml:"serviceArguments"`
+	Endpoints []LoadBalancerEndpoint `json:"endpoints" yaml:"endpoints"`
 }
 
 type LoadBalancerService struct {
-	ExternalIP string   `json:"externalIP"`
-	Port       uint16   `json:"port"`
-	Protocol   string   `json:"protocol"`
-	Sel        EpSelect `json:"sel"`
-	Mode       LbMode   `json:"mode"`
-	BGP        bool     `json:"BGP"`
-	Monitor    bool     `json:"Monitor"`
-	Timeout    uint32   `json:"inactiveTimeOut"`
-	Block      uint16   `json:"block"`
+	ExternalIP string   `json:"externalIP" yaml:"externalIP"`
+	Port       uint16   `json:"port"           yaml:"port" `
+	Protocol   string   `json:"protocol"       yaml:"protocol"`
+	Sel        EpSelect `json:"sel"            yaml:"sel"`
+	Mode       LbMode   `json:"mode"           yaml:"mode"`
+	BGP        bool     `json:"BGP"            yaml:"BGP"`
+	Monitor    bool     `json:"Monitor"        yaml:"Monitor"`
+	Timeout    uint32   `json:"inactiveTimeOut" yaml:"inactiveTimeOut"`
+	Block      uint16   `json:"block"          yaml:"block"`
 }
 
 type LoadBalancerEndpoint struct {
-	EndpointIP string `json:"endpointIP"`
-	TargetPort uint16 `json:"targetPort"`
-	Weight     uint8  `json:"weight"`
-	State      string `json:"state"`
+	EndpointIP string `json:"endpointIP" yaml:"endpointIP"`
+	TargetPort uint16 `json:"targetPort" yaml:"targetPort"`
+	Weight     uint8  `json:"weight"     yaml:"weight"`
+	State      string `json:"state"      yaml:"state"`
+}
+
+type ConfigurationLBFile struct {
+	TypeMeta   `yaml:",inline"`
+	ObjectMeta `yaml:"metadata,omitempty"`
+	Spec       LoadBalancerModel `yaml:"spec"`
 }

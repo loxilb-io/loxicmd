@@ -40,13 +40,24 @@ type VlanStat struct {
 // VlanBridgerMod - Info about an Vlan bridge
 type VlanBridgeMod struct {
 	// Vid - Virtual LAN ID
-	Vid int `json:"vid"`
+	Vid int `json:"vid" yaml:"vid"`
 }
 
 // VlanMemberMod - Info about an Vlan bridge member
 type VlanMemberMod struct {
 	// Dev - name of the related device
-	Dev string `json:"dev"`
+	Dev string `json:"dev" yaml:"dev"`
 	// Tagged - Tagging status of the device
-	Tagged bool `json:"Tagged"`
+	Tagged bool `json:"tagged" yaml:"tagged"`
+}
+type ConfigurationVlanFile struct {
+	TypeMeta   `yaml:",inline"`
+	ObjectMeta `yaml:"metadata,omitempty"`
+	Spec       VlanBridgeMod `yaml:"spec"`
+}
+
+type ConfigurationVlanMemberFile struct {
+	TypeMeta   `yaml:",inline"`
+	ObjectMeta `yaml:"metadata,omitempty"`
+	Spec       VlanMemberMod `yaml:"spec"`
 }

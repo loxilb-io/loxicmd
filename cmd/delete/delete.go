@@ -24,15 +24,23 @@ import (
 )
 
 func DeleteCmd(restOptions *api.RESTOptions) *cobra.Command {
+
+	var NormalConfigFile string
 	var deleteCmd = &cobra.Command{
 		Use:   "delete",
 		Short: "Delete a Load balance features in the LoxiLB.",
 		Long:  `Delete a Load balance features in the LoxiLB. `,
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println("delete called")
+			if len(NormalConfigFile) > 0 {
+				if err := DeleteFileConfig(NormalConfigFile, restOptions); err != nil {
+					fmt.Printf("Configuration failed - %s\n", NormalConfigFile)
+				} else {
+					fmt.Printf("Configuration applied - %s\n", NormalConfigFile)
+				}
+
+			}
 		},
 	}
-
 	deleteCmd.AddCommand(NewDeleteLoadBalancerCmd(restOptions))
 	deleteCmd.AddCommand(NewDeleteSessionCmd(restOptions))
 	deleteCmd.AddCommand(NewDeleteSessionUlClCmd(restOptions))
@@ -48,6 +56,6 @@ func DeleteCmd(restOptions *api.RESTOptions) *cobra.Command {
 	deleteCmd.AddCommand(NewDeleteMirrorCmd(restOptions))
 	deleteCmd.AddCommand(NewDeleteFirewallCmd(restOptions))
 	deleteCmd.AddCommand(NewDeleteEndPointCmd(restOptions))
-
+	deleteCmd.Flags().StringVarP(&NormalConfigFile, "file", "f", "", "Config file to apply as like K8s")
 	return deleteCmd
 }

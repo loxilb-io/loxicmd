@@ -25,9 +25,14 @@ type NeighborModGet struct {
 
 type NeighborMod struct {
 	// Dev - name of the related device
-	Dev string `json:"dev"`
+	Dev string `json:"dev" yaml:"dev"`
 	// IP - Actual IP address
-	IP string `json:"ipAddress"`
+	IP string `json:"ipAddress" yaml:"ipAddress"`
 	// MacAddress - Hardware address
-	MacAddress string `json:"macAddress"`
+	MacAddress string `json:"macAddress" yaml:"macAddress"`
+}
+type ConfigurationNeighborFile struct {
+	TypeMeta   `yaml:",inline"`
+	ObjectMeta `yaml:"metadata,omitempty"`
+	Spec       NeighborMod `yaml:"spec"`
 }

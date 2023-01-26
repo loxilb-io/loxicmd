@@ -35,6 +35,7 @@ type ApplyOptions struct {
 	SessionConfigFile     string
 	SessionUlClConfigFile string
 	FWConfigFile          string
+	NormalConfigFile      string
 	Intf                  string
 	ConfigPath            string
 	Route                 bool
@@ -54,7 +55,8 @@ func ApplyCmd(options *ApplyOptions, restOptions *api.RESTOptions) *cobra.Comman
 				len(options.SessionConfigFile) == 0 &&
 				len(options.SessionUlClConfigFile) == 0 &&
 				len(options.FWConfigFile) == 0 &&
-				len(options.Intf) == 0 {
+				len(options.Intf) == 0 &&
+				len(options.NormalConfigFile) == 0 {
 				fmt.Println("Provide valid options")
 				return
 			}
@@ -88,6 +90,13 @@ func ApplyCmd(options *ApplyOptions, restOptions *api.RESTOptions) *cobra.Comman
 			if len(options.FWConfigFile) > 0 {
 				ApplyFWConfig(options.FWConfigFile, restOptions)
 				fmt.Printf("Configuration applied - %s\n", options.FWConfigFile)
+			}
+			if len(options.NormalConfigFile) > 0 {
+				if err := ApplyFileConfig(options.NormalConfigFile, restOptions); err != nil {
+					fmt.Printf("Configuration failed - %s\n", options.NormalConfigFile)
+				} else {
+					fmt.Printf("Configuration applied - %s\n", options.NormalConfigFile)
+				}
 			}
 
 		},

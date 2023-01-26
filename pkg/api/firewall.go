@@ -26,43 +26,49 @@ type FWInformationGet struct {
 // FwRuleOpts - Information related to Firewall options
 type FwOptArg struct {
 	// Drop - Drop any matching rule
-	Drop bool `json:"drop"`
+	Drop bool `json:"drop" yaml:"drop"`
 	// Trap - Trap anything matching rule
-	Trap bool `json:"trap"`
+	Trap bool `json:"trap" yaml:"trap"`
 	// Redirect - Redirect any matching rule
-	Rdr     bool   `json:"redirect"`
-	RdrPort string `json:"redirectPortName"`
+	Rdr     bool   `json:"redirect" yaml:"redirect"`
+	RdrPort string `json:"redirectPortName" yaml:"redirectPortName"`
 	// Allow - Allow any matching rule
-	Allow bool `json:"allow"`
-	Mark int `json:"fwMark"`
+	Allow bool `json:"allow" yaml:"allow"`
+	Mark  int  `json:"fwMark" yaml:"fwMark"`
 }
 
 // FwRuleArg - Information related to firewall rule
 type FwRuleArg struct {
 	// SrcIP - Source IP in CIDR notation
-	SrcIP string `json:"sourceIP"`
+	SrcIP string `json:"sourceIP" yaml:"sourceIP"`
 	// DstIP - Destination IP in CIDR notation
-	DstIP string `json:"destinationIP"`
+	DstIP string `json:"destinationIP" yaml:"destinationIP"`
 	// SrcPortMin - Minimum source port range
-	SrcPortMin uint16 `json:"minSourcePort"`
+	SrcPortMin uint16 `json:"minSourcePort" yaml:"minSourcePort"`
 	// SrcPortMax - Maximum source port range
-	SrcPortMax uint16 `json:"maxSourcePort"`
+	SrcPortMax uint16 `json:"maxSourcePort" yaml:"maxSourcePort"`
 	// DstPortMin - Minimum destination port range
-	DstPortMin uint16 `json:"minDestinationPort"`
+	DstPortMin uint16 `json:"minDestinationPort" yaml:"minDestinationPort"`
 	// SrcPortMax - Maximum source port range
-	DstPortMax uint16 `json:"maxDestinationPort"`
+	DstPortMax uint16 `json:"maxDestinationPort" yaml:"maxDestinationPort"`
 	// Proto - the protocol
-	Proto uint8 `json:"protocol"`
+	Proto uint8 `json:"protocol" yaml:"protocol"`
 	// InPort - the incoming port
-	InPort string `json:"portName"`
+	InPort string `json:"portName" yaml:"portName"`
 	// Pref - User preference for ordering
-	Pref uint16 `json:"preference"`
+	Pref uint16 `json:"preference" yaml:"preference"`
 }
 
 // FwRuleMod - Info related to a firewall entry
 type FwRuleMod struct {
 	// Serv - service argument of type FwRuleArg
-	Rule FwRuleArg `json:"ruleArguments"`
+	Rule FwRuleArg `json:"ruleArguments" yaml:"ruleArguments"`
 	// Opts - firewall options
-	Opts FwOptArg `json:"opts"`
+	Opts FwOptArg `json:"opts" yaml:"opts"`
+}
+
+type ConfigurationFWFile struct {
+	TypeMeta   `yaml:",inline"`
+	ObjectMeta `yaml:"metadata,omitempty"`
+	Spec       FwRuleMod `yaml:"spec"`
 }

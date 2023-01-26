@@ -59,20 +59,26 @@ type EPConfig struct {
 // EndPointMod - Info related to a end-point config entry
 type EndPointMod struct {
 	// Name - hostname in CIDR
-	Name string `json:"hostName"`
+	Name string `json:"hostName" yaml:"hostName"`
 	// Desc - host specific description
-	Desc string `json:"description"`
+	Desc string `json:"description" yaml:"description"`
 	// InActTries - No. of inactive probes to mark
 	// an end-point inactive
-	InActTries int `json:"inactiveReTries"`
+	InActTries int `json:"inactiveReTries" yaml:"inactiveReTries"`
 	// ProbeType - Type of probe : "icmp","connect-tcp", "connect-udp", "connect-sctp", "http"
-	ProbeType string `json:"probeType"`
+	ProbeType string `json:"probeType" yaml:"probeType"`
 	// ProbeReq - Request string in case of http probe
-	ProbeReq string `json:"probeReq"`
+	ProbeReq string `json:"probeReq" yaml:"probeReq"`
 	// ProbeResp - Response string in case of http probe
-	ProbeResp string `json:"probeResp"`
+	ProbeResp string `json:"probeResp" yaml:"probeResp"`
 	// ProbeDuration - How frequently (in seconds) to check activity
-	ProbeDuration uint32 `json:"probeDuration"`
+	ProbeDuration uint32 `json:"probeDuration" yaml:"probeDuration"`
 	// ProbePort - Port to probe for connect type
-	ProbePort uint16 `json:"probePort"`
+	ProbePort uint16 `json:"probePort" yaml:"probePort"`
+}
+
+type ConfigurationEndPointFile struct {
+	TypeMeta   `yaml:",inline"`
+	ObjectMeta `yaml:"metadata,omitempty"`
+	Spec       EndPointMod `yaml:"spec"`
 }

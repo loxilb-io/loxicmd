@@ -26,11 +26,17 @@ type UlclInformationGet struct {
 }
 
 type SessionUlClMod struct {
-	Ident string  `json:"ulclIdent"`
-	Args  UlClArg `json:"ulclArgument"`
+	Ident string  `json:"ulclIdent" yaml:"ulclIdent"`
+	Args  UlClArg `json:"ulclArgument" yaml:"ulclArgument"`
 }
 
 type UlClArg struct {
-	Addr net.IP `json:"ulclIP"`
-	Qfi  uint8  `json:"qfi"`
+	Addr net.IP `json:"ulclIP" yaml:"ulclIP"`
+	Qfi  uint8  `json:"qfi" yaml:"qfi"`
+}
+
+type ConfigurationSessionUlclFile struct {
+	TypeMeta   `yaml:",inline"`
+	ObjectMeta `yaml:"metadata,omitempty"`
+	Spec       SessionUlClMod `yaml:"spec"`
 }

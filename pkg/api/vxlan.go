@@ -35,13 +35,24 @@ type VxlanDump struct {
 // VxlanBridgeMod - Info about an Vxlan bridge
 type VxlanBridgeMod struct {
 	// VxLanID - name of the endpoint device in the vxlan
-	VxLanID int `json:"vxlanID"`
+	VxLanID int `json:"vxlanID" yaml:"vxlanID"`
 	// EndpointDev - name of the endpoint device in the vxlan
-	EndpointDev string `json:"epIntf"`
+	EndpointDev string `json:"epIntf" yaml:"epIntf"`
 }
 
 // VxlanPeerMod - Info about an Vlan bridge
 type VxlanPeerMod struct {
 	// PeerIP - Peer IP address in the vxlan config
-	PeerIP string `json:"peerIP"`
+	PeerIP string `json:"peerIP" yaml:"peerIP"`
+}
+type ConfigurationVxlanFile struct {
+	TypeMeta   `yaml:",inline"`
+	ObjectMeta `yaml:"metadata,omitempty"`
+	Spec       VxlanBridgeMod `yaml:"spec"`
+}
+
+type ConfigurationVxlanPeerFile struct {
+	TypeMeta   `yaml:",inline"`
+	ObjectMeta `yaml:"metadata,omitempty"`
+	Spec       VxlanPeerMod `yaml:"spec"`
 }

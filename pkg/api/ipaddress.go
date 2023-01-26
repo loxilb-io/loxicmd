@@ -33,11 +33,15 @@ type Ipv4AddrGet struct {
 	Sync DpStatusT `json:"sync"`
 }
 
-
 // Ipv4AddrGet - Info about an ip addresses
 type Ipv4AddrMod struct {
 	// Dev - name of the related device
-	Dev string `json:"dev"`
+	Dev string `json:"dev" yaml:"dev"`
 	// IP - Actual IP address
-	IP string `json:"ipAddress"`
+	IP string `json:"ipAddress" yaml:"ipAddress"`
+}
+type ConfigurationIPv4File struct {
+	TypeMeta   `yaml:",inline"`
+	ObjectMeta `yaml:"metadata,omitempty"`
+	Spec       Ipv4AddrMod `yaml:"spec"`
 }
