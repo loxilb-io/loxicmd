@@ -19,15 +19,15 @@ import (
 	"context"
 	"fmt"
 	"loxicmd/pkg/api"
+	"net"
 	"net/http"
 	"time"
-	"net"
 
 	"github.com/spf13/cobra"
 )
 
 type CreateEndPointOptions struct {
-	Host		  string
+	Host          string
 	Description   string
 	ProbeType     string
 	ProbeReq      string
@@ -64,14 +64,14 @@ ex) loxicmd create endpoint 32.32.32.1 --desc=zone1host --probetype=http --probe
 				return
 			}
 
-			if o.ProbeType != "http" &&  o.ProbeType != "https" && o.ProbeType != "ping" && 
-			   o.ProbeType != "connect-tcp" && o.ProbeType != "connect-udp" && 
-			   o.ProbeType != "connect-sctp" && o.ProbeType != "none" {
+			if o.ProbeType != "http" && o.ProbeType != "https" && o.ProbeType != "ping" &&
+				o.ProbeType != "connect-tcp" && o.ProbeType != "connect-udp" &&
+				o.ProbeType != "connect-sctp" && o.ProbeType != "none" {
 				fmt.Printf("probetype '%s' is invalid\n", o.ProbeType)
 				return
 			}
 
-			if o.ProbeType == "http"  || o.ProbeType == "https"  || o.ProbeType == "connect-tcp" ||
+			if o.ProbeType == "http" || o.ProbeType == "https" || o.ProbeType == "connect-tcp" ||
 				o.ProbeType == "connect-udp" || o.ProbeType == "connect-sctp" {
 				if o.ProbePort == 0 {
 					fmt.Printf("probeport cant be 0 for '%s' probes\n", o.ProbeType)

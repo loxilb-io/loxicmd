@@ -573,7 +573,7 @@ func Nlpdump(dpath string) string {
 			}
 		}
 	}
-	
+
 	cpath := dpath + "ipconfig"
 	if _, err := os.Stat(cpath); errors.Is(err, os.ErrNotExist) {
 		err := os.Mkdir(cpath, os.ModePerm)

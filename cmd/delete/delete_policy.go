@@ -42,9 +42,9 @@ func NewDeletePolicyCmd(restOptions *api.RESTOptions) *cobra.Command {
 	var Ident string
 
 	var deletePolicyCmd = &cobra.Command{
-		Use:   "policy <IDENT>",
-		Short: "Delete a Policy",
-		Long:  `Delete a Policy using IDENT in the LoxiLB.`,
+		Use:     "policy <IDENT>",
+		Short:   "Delete a Policy",
+		Long:    `Delete a Policy using IDENT in the LoxiLB.`,
 		Aliases: []string{"pol", "policys", "pols", "polices"},
 
 		Run: func(cmd *cobra.Command, args []string) {

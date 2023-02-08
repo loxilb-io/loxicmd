@@ -178,7 +178,7 @@ func Lbdump(restOptions *api.RESTOptions, path string) (string, error) {
 	}
 	// Write
 	f.Write(resultByte)
-    cfile := path + "lbconfig.txt"
+	cfile := path + "lbconfig.txt"
 	if _, err := os.Stat(cfile); errors.Is(err, os.ErrNotExist) {
 		if err != nil {
 			fmt.Println("There is no saved config file")

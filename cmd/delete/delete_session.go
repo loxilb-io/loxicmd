@@ -38,7 +38,6 @@ func DeleteSessionValidation(args []string) error {
 	return nil
 }
 
-
 func NewDeleteSessionCmd(restOptions *api.RESTOptions) *cobra.Command {
 	var UserID string
 
