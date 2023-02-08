@@ -41,7 +41,7 @@ func NewCreateEndPointCmd(restOptions *api.RESTOptions) *cobra.Command {
 	o := CreateEndPointOptions{}
 
 	var createEndPointCmd = &cobra.Command{
-		Use:   "endpoint IP [--desc=<desc>] [--probetype=<probetype>] [--req=<probereq>] [--resp=<proberesp>] [--l4port=<port>] [--period=<period>] [--retries=<retries>]",
+		Use:   "endpoint IP [--desc=<desc>] [--probetype=<probetype>] [--probereq=<probereq>] [--proberesp=<proberesp>] [--probeport=<port>] [--period=<period>] [--retries=<retries>]",
 		Short: "Create a LB EndPoint for monitoring",
 		Long: `Create a LB EndPoint for monitoring using LoxiLB
 
@@ -64,13 +64,14 @@ ex) loxicmd create endpoint 32.32.32.1 --desc=zone1host --probetype=http --l4por
 				return
 			}
 
-			if o.ProbeType != "http" && o.ProbeType != "ping" && o.ProbeType != "connect-tcp" &&
-				o.ProbeType != "connect-udp" && o.ProbeType != "connect-sctp" && o.ProbeType != "none" {
+			if o.ProbeType != "http" &&  o.ProbeType != "https" && o.ProbeType != "ping" && 
+			   o.ProbeType != "connect-tcp" && o.ProbeType != "connect-udp" && 
+			   o.ProbeType != "connect-sctp" && o.ProbeType != "none" {
 				fmt.Printf("probetype '%s' is invalid\n", o.ProbeType)
 				return
 			}
 
-			if o.ProbeType == "http"  || o.ProbeType == "connect-tcp" ||
+			if o.ProbeType == "http"  || o.ProbeType == "https"  || o.ProbeType == "connect-tcp" ||
 				o.ProbeType == "connect-udp" || o.ProbeType == "connect-sctp" {
 				if o.ProbePort == 0 {
 					fmt.Printf("probeport cant be 0 for '%s' probes\n", o.ProbeType)
@@ -91,7 +92,6 @@ ex) loxicmd create endpoint 32.32.32.1 --desc=zone1host --probetype=http --l4por
 			EPMod.InActTries = o.ProbeReTries
 			EPMod.ProbeReq = o.ProbeReq
 			EPMod.ProbeResp = o.ProbeResp
-
 			resp, err := EndPointAPICall(restOptions, EPMod)
 			if err != nil {
 				fmt.Printf("Error: %s\n", err.Error())
@@ -111,7 +111,7 @@ ex) loxicmd create endpoint 32.32.32.1 --desc=zone1host --probetype=http --l4por
 	createEndPointCmd.Flags().StringVar(&o.ProbeType, "probetype", "ping", "Probe-type:ping,http,connect-udp,connect-tcp,connect-sctp,none")
 	createEndPointCmd.Flags().StringVar(&o.ProbeReq, "probereq", "", "If probe is http, one can specify additional uri path")
 	createEndPointCmd.Flags().StringVar(&o.ProbeResp, "proberesp", "", "If probe is http, one can specify custom response string")
-	createEndPointCmd.Flags().IntVar(&o.ProbePort, "l4port", 0, "If probe is http,tcp,udp,sctp one can specify custom l4port to use")
+	createEndPointCmd.Flags().IntVar(&o.ProbePort, "probeport", 0, "If probe is http,tcp,udp,sctp one can specify custom l4port to use")
 	createEndPointCmd.Flags().IntVar(&o.ProbeDuration, "period", 60, "Period of probing")
 	createEndPointCmd.Flags().IntVar(&o.ProbeReTries, "retries", 2, "Number of retries before marking endPoint inactive")
 

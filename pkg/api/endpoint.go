@@ -20,11 +20,11 @@ type EndPoint struct {
 }
 
 type EPInformationGet struct {
-	EPInfo []EndPointState `json:"Attr"`
+	EPInfo []EndPointGetEntry `json:"Attr"`
 }
 
 // EndPointState - Info related to a end-point state
-type EndPointState struct {
+type EndPointGetEntry struct {
 	// Name - hostname in CIDR
 	Name string `json:"hostName"`
 	// Desc - host specific description
