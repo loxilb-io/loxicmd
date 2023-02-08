@@ -45,7 +45,7 @@ func NewCreateEndPointCmd(restOptions *api.RESTOptions) *cobra.Command {
 		Short: "Create a LB EndPoint for monitoring",
 		Long: `Create a LB EndPoint for monitoring using LoxiLB
 
-ex) loxicmd create endpoint 32.32.32.1 --desc=zone1host --probetype=http --l4port=8080 --period=60 --retries=2
+ex) loxicmd create endpoint 32.32.32.1 --desc=zone1host --probetype=http --probeport=8080 --period=60 --retries=2
 `,
 		Aliases: []string{"Endpoint", "ep", "endpoints"},
 
@@ -108,10 +108,10 @@ ex) loxicmd create endpoint 32.32.32.1 --desc=zone1host --probetype=http --l4por
 	}
 
 	createEndPointCmd.Flags().StringVar(&o.Description, "desc", "", "Description of and end-point")
-	createEndPointCmd.Flags().StringVar(&o.ProbeType, "probetype", "ping", "Probe-type:ping,http,connect-udp,connect-tcp,connect-sctp,none")
-	createEndPointCmd.Flags().StringVar(&o.ProbeReq, "probereq", "", "If probe is http, one can specify additional uri path")
-	createEndPointCmd.Flags().StringVar(&o.ProbeResp, "proberesp", "", "If probe is http, one can specify custom response string")
-	createEndPointCmd.Flags().IntVar(&o.ProbePort, "probeport", 0, "If probe is http,tcp,udp,sctp one can specify custom l4port to use")
+	createEndPointCmd.Flags().StringVar(&o.ProbeType, "probetype", "ping", "Probe-type:ping,http,https,connect-udp,connect-tcp,connect-sctp,none")
+	createEndPointCmd.Flags().StringVar(&o.ProbeReq, "probereq", "", "If probe is http/https, one can specify additional uri path")
+	createEndPointCmd.Flags().StringVar(&o.ProbeResp, "proberesp", "", "If probe is http/https, one can specify custom response string")
+	createEndPointCmd.Flags().IntVar(&o.ProbePort, "probeport", 0, "If probe is http,https,tcp,udp,sctp one can specify custom l4port to use")
 	createEndPointCmd.Flags().IntVar(&o.ProbeDuration, "period", 60, "Period of probing")
 	createEndPointCmd.Flags().IntVar(&o.ProbeReTries, "retries", 2, "Number of retries before marking endPoint inactive")
 
