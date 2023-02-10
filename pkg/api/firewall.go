@@ -35,6 +35,8 @@ type FwOptArg struct {
 	// Allow - Allow any matching rule
 	Allow bool `json:"allow" yaml:"allow"`
 	Mark  int  `json:"fwMark" yaml:"fwMark"`
+	// Record - Record packets matching rule
+	Record bool `json:"record" yaml:"record"`
 }
 
 // FwRuleArg - Information related to firewall rule

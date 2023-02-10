@@ -103,9 +103,11 @@ func MakeFirewallOptionToString(t api.FwOptArg) (ret string) {
 	} else if t.Rdr {
 		ret = fmt.Sprintf("Redirect(%s)", t.RdrPort)
 	}
+	if t.Record {
+		ret += fmt.Sprintf(",Record")
+	}
 	if t.Mark != 0 {
 		ret += fmt.Sprintf(",FwMark(%d)", t.Mark)
-
 	}
 	return ret
 }
