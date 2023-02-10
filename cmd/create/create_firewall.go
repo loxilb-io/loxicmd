@@ -34,6 +34,7 @@ type CreateFirewallOptions struct {
 	Allow        bool
 	Drop         bool
 	Trap         bool
+	Record       bool
 	Mark         int
 }
 
@@ -41,7 +42,7 @@ func NewCreateFirewallCmd(restOptions *api.RESTOptions) *cobra.Command {
 	o := CreateFirewallOptions{}
 
 	var createFirewallCmd = &cobra.Command{
-		Use:   "firewall --firewallRule=<ruleKey>:<ruleValue>, [--allow] [--drop] [--trap] [--redirect=<PortName>] [--setmark=<FwMark>",
+		Use:   "firewall --firewallRule=<ruleKey>:<ruleValue>, [--allow] [--drop] [--trap] [--record] [--redirect=<PortName>] [--setmark=<FwMark>]",
 		Short: "Create a Firewall",
 		Long: `Create a Firewall using LoxiLB
 
@@ -58,6 +59,7 @@ preference(int) - User preference for ordering
 
 
 ex) loxicmd create firewall --firewallRule="sourceIP:1.2.3.2/32,destinationIP:2.3.1.2/32,preference:200" --allow
+    loxicmd create firewall --firewallRule="sourceIP:1.2.3.2/32,destinationIP:2.3.1.2/32,preference:200" --allow --record
 	loxicmd create firewall --firewallRule="sourceIP:1.2.3.2/32,destinationIP:2.3.1.2/32,preference:200" --allow --setmark=10
     loxicmd create firewall --firewallRule="sourceIP:1.2.3.2/32,destinationIP:2.3.1.2/32,preference:200" --drop
 	loxicmd create firewall --firewallRule="sourceIP:1.2.3.2/32,destinationIP:2.3.1.2/32,preference:200" --trap
@@ -102,6 +104,7 @@ ex) loxicmd create firewall --firewallRule="sourceIP:1.2.3.2/32,destinationIP:2.
 	createFirewallCmd.Flags().StringSliceVar(&o.Redirect, "redirect", o.Redirect, "Redirect any matching rule")
 	createFirewallCmd.Flags().BoolVarP(&o.Allow, "allow", "", false, "Allow any matching rule")
 	createFirewallCmd.Flags().BoolVarP(&o.Drop, "drop", "", false, "Drop any matching rule")
+	createFirewallCmd.Flags().BoolVarP(&o.Record, "record", "", false, "Record/Dump any matching rule")
 	createFirewallCmd.Flags().BoolVarP(&o.Trap, "trap", "", false, " Trap anything matching rule")
 	createFirewallCmd.Flags().IntVarP(&o.Mark, "setmark", "", 0, " Add a fw mark")
 
@@ -173,6 +176,7 @@ func GetFWOptionPairList(FirewallMods *api.FwRuleMod, o CreateFirewallOptions) e
 		FirewallMods.Opts.Rdr = true
 		FirewallMods.Opts.RdrPort = o.Redirect[0]
 	}
+	FirewallMods.Opts.Record = o.Record
 	FirewallMods.Opts.Mark = o.Mark
 
 	return nil
