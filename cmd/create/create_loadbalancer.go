@@ -198,11 +198,12 @@ ex) loxicmd create lb 192.168.0.200 --tcp=80:32015 --endpoints=10.212.0.1:1,10.2
 						fmt.Printf("Error: %s\n", err.Error())
 						return
 					}
+
 					defer resp.Body.Close()
 
 					fmt.Printf("Debug: response.StatusCode: %d\n", resp.StatusCode)
-					if resp.StatusCode != http.StatusOK {
-						PrintCreateLbResult(resp, *restOptions)
+					if resp.StatusCode == http.StatusOK {
+						PrintCreateResult(resp, *restOptions)
 						return
 					}
 				}
@@ -226,10 +227,10 @@ ex) loxicmd create lb 192.168.0.200 --tcp=80:32015 --endpoints=10.212.0.1:1,10.2
 	return createLbCmd
 }
 
-func PrintCreateLbResult(resp *http.Response, o api.RESTOptions) {
+func PrintCreateResult(resp *http.Response, o api.RESTOptions) {
 	result := CreateLoadBalancerResult{}
 	resultByte, err := io.ReadAll(resp.Body)
-	fmt.Printf("Debug: response.Body: %s\n", string(resultByte))
+	//fmt.Printf("Debug: response.Body: %s\n", string(resultByte))
 
 	if err != nil {
 		fmt.Printf("Error: Failed to read HTTP response: (%s)\n", err.Error())

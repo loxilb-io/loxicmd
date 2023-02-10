@@ -69,8 +69,8 @@ ex) loxicmd create vlanmember 100 eno7 --tagged=true
 			}
 			defer resp.Body.Close()
 
-			if resp.StatusCode != http.StatusOK {
-				PrintCreateLbResult(resp, *restOptions)
+			if resp.StatusCode == http.StatusOK {
+				PrintCreateResult(resp, *restOptions)
 				return
 			}
 

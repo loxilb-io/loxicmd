@@ -84,8 +84,8 @@ ex) loxicmd create mirror mirr-1 --mirrorInfo="type:0,port:hs0" --targetObject="
 			defer resp.Body.Close()
 
 			fmt.Printf("Debug: response.StatusCode: %d\n", resp.StatusCode)
-			if resp.StatusCode != http.StatusOK {
-				PrintCreateLbResult(resp, *restOptions)
+			if resp.StatusCode == http.StatusOK {
+				PrintCreateResult(resp, *restOptions)
 				return
 			}
 

@@ -106,8 +106,8 @@ ex) loxicmd create endpoint 32.32.32.1 --desc=zone1host --probetype=http --probe
 			defer resp.Body.Close()
 
 			fmt.Printf("Debug: response.StatusCode: %d\n", resp.StatusCode)
-			if resp.StatusCode != http.StatusOK {
-				PrintCreateLbResult(resp, *restOptions)
+			if resp.StatusCode == http.StatusOK {
+				PrintCreateResult(resp, *restOptions)
 				return
 			}
 		},

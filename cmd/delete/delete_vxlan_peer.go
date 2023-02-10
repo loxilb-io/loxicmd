@@ -78,8 +78,8 @@ ex) loxicmd delete vxlan-peer 100 30.1.3.1
 			}
 			defer resp.Body.Close()
 			fmt.Printf("Debug: response.StatusCode: %d\n", resp.StatusCode)
-			if resp.StatusCode != http.StatusOK {
-				PrintDeleteLbResult(resp, *restOptions)
+			if resp.StatusCode == http.StatusOK {
+				PrintDeleteResult(resp, *restOptions)
 				return
 			}
 

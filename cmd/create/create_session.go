@@ -79,8 +79,8 @@ ex) loxicmd create session user1 192.168.20.1 --accessNetworkTunnel=1:1.232.16.1
 			defer resp.Body.Close()
 
 			fmt.Printf("Debug: response.StatusCode: %d\n", resp.StatusCode)
-			if resp.StatusCode != http.StatusOK {
-				PrintCreateLbResult(resp, *restOptions)
+			if resp.StatusCode == http.StatusOK {
+				PrintCreateResult(resp, *restOptions)
 				return
 			}
 

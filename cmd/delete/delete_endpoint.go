@@ -76,8 +76,8 @@ ex) loxicmd delete endpoint 31.31.31.31"
 			}
 			defer resp.Body.Close()
 			fmt.Printf("Debug: response.StatusCode: %d\n", resp.StatusCode)
-			if resp.StatusCode != http.StatusOK {
-				PrintDeleteLbResult(resp, *restOptions)
+			if resp.StatusCode == http.StatusOK {
+				PrintDeleteResult(resp, *restOptions)
 				return
 			}
 		},

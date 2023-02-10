@@ -56,8 +56,8 @@ ex) loxicmd create ip 192.168.0.1/24 eno7
 			}
 			defer resp.Body.Close()
 
-			if resp.StatusCode != http.StatusOK {
-				PrintCreateLbResult(resp, *restOptions)
+			if resp.StatusCode == http.StatusOK {
+				PrintCreateResult(resp, *restOptions)
 				return
 			}
 

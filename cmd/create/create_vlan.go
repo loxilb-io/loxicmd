@@ -56,8 +56,8 @@ ex) loxicmd create vlan 100
 			}
 			defer resp.Body.Close()
 
-			if resp.StatusCode != http.StatusOK {
-				PrintCreateLbResult(resp, *restOptions)
+			if resp.StatusCode == http.StatusOK {
+				PrintCreateResult(resp, *restOptions)
 				return
 			}
 

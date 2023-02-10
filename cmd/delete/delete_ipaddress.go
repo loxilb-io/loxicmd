@@ -80,8 +80,8 @@ func NewDeleteIPv4AddressCmd(restOptions *api.RESTOptions) *cobra.Command {
 			}
 			defer resp.Body.Close()
 			fmt.Printf("Debug: response.StatusCode: %d\n", resp.StatusCode)
-			if resp.StatusCode != http.StatusOK {
-				PrintDeleteLbResult(resp, *restOptions)
+			if resp.StatusCode == http.StatusOK {
+				PrintDeleteResult(resp, *restOptions)
 				return
 			}
 

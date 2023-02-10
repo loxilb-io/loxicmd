@@ -92,8 +92,8 @@ ex) loxicmd create firewall --firewallRule="sourceIP:1.2.3.2/32,destinationIP:2.
 			defer resp.Body.Close()
 
 			fmt.Printf("Debug: response.StatusCode: %d\n", resp.StatusCode)
-			if resp.StatusCode != http.StatusOK {
-				PrintCreateLbResult(resp, *restOptions)
+			if resp.StatusCode == http.StatusOK {
+				PrintCreateResult(resp, *restOptions)
 				return
 			}
 

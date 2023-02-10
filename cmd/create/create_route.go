@@ -56,8 +56,8 @@ ex) loxicmd create route 192.168.212.0/24 172.17.0.254
 			}
 			defer resp.Body.Close()
 
-			if resp.StatusCode != http.StatusOK {
-				PrintCreateLbResult(resp, *restOptions)
+			if resp.StatusCode == http.StatusOK {
+				PrintCreateResult(resp, *restOptions)
 				return
 			}
 
