@@ -22,6 +22,7 @@ import (
 	"loxicmd/pkg/api"
 	"net"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -41,6 +42,12 @@ func NewCreateNeighborsCmd(restOptions *api.RESTOptions) *cobra.Command {
 ex) loxicmd create neighbor 192.168.0.1 eno7 --macAddress=aa:aa:aa:aa:aa:aa
 `,
 		Aliases: []string{"nei", "neigh"},
+		PreRun: func(cmd *cobra.Command, args []string) {
+			if len(args) == 0 {
+				cmd.Help()
+				os.Exit(0)
+			}
+		},
 		Run: func(cmd *cobra.Command, args []string) {
 			var NeighborsMod api.NeighborMod
 			// Make NeighborsMod

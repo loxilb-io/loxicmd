@@ -17,7 +17,6 @@ package create
 
 import (
 	"fmt"
-
 	"loxicmd/pkg/api"
 
 	"github.com/spf13/cobra"
@@ -29,7 +28,14 @@ func CreateCmd(restOptions *api.RESTOptions) *cobra.Command {
 		Short: "Create a Load balance features in the LoxiLB.",
 		Long:  `Create a Load balance features in the LoxiLB.`,
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println("create called")
+			if len(args) == 0 {
+				cmd.Help()
+			}
+		},
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			fmt.Printf("Error: unknown command \"%v\"for \"loxicmd\" \nRun \"loxicmd --help\" for usage.\n", args)
+			cmd.Help()
+			return err
 		},
 	}
 

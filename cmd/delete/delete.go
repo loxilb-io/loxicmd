@@ -37,8 +37,16 @@ func DeleteCmd(restOptions *api.RESTOptions) *cobra.Command {
 				} else {
 					fmt.Printf("Configuration applied - %s\n", NormalConfigFile)
 				}
-
 			}
+			if len(NormalConfigFile) == 0 && len(args) == 0 {
+				cmd.Help()
+			}
+
+		},
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			fmt.Printf("Error: unknown command \"%v\"for \"loxicmd\" \nRun \"loxicmd --help\" for usage.\n", args)
+			cmd.Help()
+			return err
 		},
 	}
 	deleteCmd.AddCommand(NewDeleteLoadBalancerCmd(restOptions))

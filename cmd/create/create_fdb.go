@@ -22,6 +22,7 @@ import (
 	"loxicmd/pkg/api"
 	"net"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -34,7 +35,12 @@ func NewCreateFDBCmd(restOptions *api.RESTOptions) *cobra.Command {
 		Long: `Create a FDB using LoxiLB. It is working as "bridge fdb add <MacAddress> dev <device>"
 ex) loxicmd create fdb aa:aa:aa:aa:bb:bb eno7	
 `,
-
+		PreRun: func(cmd *cobra.Command, args []string) {
+			if len(args) == 0 {
+				cmd.Help()
+				os.Exit(0)
+			}
+		},
 		Run: func(cmd *cobra.Command, args []string) {
 			var FDBMod api.FDBMod
 			// Make FDBMod

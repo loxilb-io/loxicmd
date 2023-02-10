@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"loxicmd/pkg/api"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 
@@ -43,6 +44,12 @@ ex) loxicmd create vlanmember 100 eno7 --tagged=true
 	loxicmd create vlanmember 100 eno7 
 `,
 		Aliases: []string{"vlanMember", "vlan-member", "vlan_member"},
+		PreRun: func(cmd *cobra.Command, args []string) {
+			if len(args) == 0 {
+				cmd.Help()
+				os.Exit(0)
+			}
+		},
 		Run: func(cmd *cobra.Command, args []string) {
 			var vlanMod api.VlanMemberMod
 			// Make vlanMod

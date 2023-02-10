@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 
@@ -60,6 +61,12 @@ func NewDeleteLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 		Use:   "lb <EXTERNAL-IP> [--tcp portNumber] [--udp portNumber] [--sctp portNumber] [--icmp portNumber] [--bgp] [--block=<val>]",
 		Short: "Delete a LoadBalancer",
 		Long:  `Delete a LoadBalancer.`,
+		PreRun: func(cmd *cobra.Command, args []string) {
+			if len(args) == 0 {
+				cmd.Help()
+				os.Exit(0)
+			}
+		},
 		Run: func(cmd *cobra.Command, args []string) {
 			if err := validation(args); err != nil {
 				fmt.Println("not valid EXTERNAL-IP")

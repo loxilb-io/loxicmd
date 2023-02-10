@@ -19,6 +19,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 
@@ -49,7 +50,12 @@ func NewDeleteVlanMemberCmd(restOptions *api.RESTOptions) *cobra.Command {
 		Short:   "Delete a VlanMember",
 		Long:    `Delete a VlanMember using Vid in the LoxiLB.`,
 		Aliases: []string{"vlanMember", "vlan-member", "vlan_member"},
-
+		PreRun: func(cmd *cobra.Command, args []string) {
+			if len(args) == 0 {
+				cmd.Help()
+				os.Exit(0)
+			}
+		},
 		Run: func(cmd *cobra.Command, args []string) {
 			if err := DeleteVlanMemberValidation(args); err != nil {
 				fmt.Println("not valid <Vid>")

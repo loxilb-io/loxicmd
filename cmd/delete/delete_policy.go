@@ -20,6 +20,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	"loxicmd/pkg/api"
@@ -46,7 +47,12 @@ func NewDeletePolicyCmd(restOptions *api.RESTOptions) *cobra.Command {
 		Short:   "Delete a Policy",
 		Long:    `Delete a Policy using IDENT in the LoxiLB.`,
 		Aliases: []string{"pol", "policys", "pols", "polices"},
-
+		PreRun: func(cmd *cobra.Command, args []string) {
+			if len(args) == 0 {
+				cmd.Help()
+				os.Exit(0)
+			}
+		},
 		Run: func(cmd *cobra.Command, args []string) {
 			if err := DeletePolicyValidation(args); err != nil {
 				fmt.Println("not valid <IDENT>")

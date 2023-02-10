@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"os"
 	"time"
 
 	"loxicmd/pkg/api"
@@ -47,7 +48,12 @@ func NewDeleteFDBCmd(restOptions *api.RESTOptions) *cobra.Command {
 		Use:   "fdb <MacAddress> <DeviceName>",
 		Short: "Delete a FDB",
 		Long:  `Delete a FDB using MacAddress  in the LoxiLB.`,
-
+		PreRun: func(cmd *cobra.Command, args []string) {
+			if len(args) == 0 {
+				cmd.Help()
+				os.Exit(0)
+			}
+		},
 		Run: func(cmd *cobra.Command, args []string) {
 			if err := DeleteFDBValidation(args); err != nil {
 				fmt.Println("not valid <MacAddress>")

@@ -22,6 +22,7 @@ import (
 	"loxicmd/pkg/api"
 	"net"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -35,6 +36,12 @@ func NewCreateRouteCmd(restOptions *api.RESTOptions) *cobra.Command {
 	
 ex) loxicmd create route 192.168.212.0/24 172.17.0.254
 `,
+		PreRun: func(cmd *cobra.Command, args []string) {
+			if len(args) == 0 {
+				cmd.Help()
+				os.Exit(0)
+			}
+		},
 		Run: func(cmd *cobra.Command, args []string) {
 			var RouteMod api.Routev4Get
 			// Make RouteMod

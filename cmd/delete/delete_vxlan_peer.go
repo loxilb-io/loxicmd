@@ -19,6 +19,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 
@@ -47,7 +48,12 @@ ex) loxicmd delete vxlan-peer 100 30.1.3.1
 		
 		`,
 		Aliases: []string{"vxlanPeer", "vxlan-peer", "vxlan_peer"},
-
+		PreRun: func(cmd *cobra.Command, args []string) {
+			if len(args) == 0 {
+				cmd.Help()
+				os.Exit(0)
+			}
+		},
 		Run: func(cmd *cobra.Command, args []string) {
 			if err := DeleteVxlanPeerValidation(args); err != nil {
 				fmt.Println("not valid <Vnid>")

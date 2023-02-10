@@ -20,6 +20,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	"loxicmd/pkg/api"
@@ -51,7 +52,12 @@ func NewDeleteSessionUlClCmd(restOptions *api.RESTOptions) *cobra.Command {
 		Short:   "Delete a Ulcl configuration in the LoxiLB.",
 		Long:    `Delete a Ulcl configuration in the LoxiLB.`,
 		Aliases: []string{"ulcl", "sessionulcls", "ulcls"},
-
+		PreRun: func(cmd *cobra.Command, args []string) {
+			if len(args) == 0 {
+				cmd.Help()
+				os.Exit(0)
+			}
+		},
 		Run: func(cmd *cobra.Command, args []string) {
 			if err := DeleteSessionUlClValidation(args); err != nil {
 				fmt.Println("not valid <UserID>")

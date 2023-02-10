@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"os"
 	"time"
 
 	"loxicmd/pkg/api"
@@ -48,6 +49,12 @@ func NewDeleteIPv4AddressCmd(restOptions *api.RESTOptions) *cobra.Command {
 		Short:   "Delete a IPv4Address",
 		Long:    `Delete a IPv4Address using DeviceIPNet  in the LoxiLB.`,
 		Aliases: []string{"ipv4address", "ipv4", "ipaddress"},
+		PreRun: func(cmd *cobra.Command, args []string) {
+			if len(args) == 0 {
+				cmd.Help()
+				os.Exit(0)
+			}
+		},
 		Run: func(cmd *cobra.Command, args []string) {
 			if err := DeleteIPv4AddressValidation(args); err != nil {
 				fmt.Println("not valid <DeviceIPNet>")

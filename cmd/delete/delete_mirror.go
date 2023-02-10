@@ -19,6 +19,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	"loxicmd/pkg/api"
@@ -40,7 +41,12 @@ func NewDeleteMirrorCmd(restOptions *api.RESTOptions) *cobra.Command {
 		Short:   "Delete a Mirror",
 		Long:    `Delete a Mirror using MirrorIdent in the LoxiLB.`,
 		Aliases: []string{"mirror", "mirr", "mirrors"},
-
+		PreRun: func(cmd *cobra.Command, args []string) {
+			if len(args) == 0 {
+				cmd.Help()
+				os.Exit(0)
+			}
+		},
 		Run: func(cmd *cobra.Command, args []string) {
 			if err := DeleteMirrorValidation(args); err != nil {
 				fmt.Println("not valid <MirrorIdent>")

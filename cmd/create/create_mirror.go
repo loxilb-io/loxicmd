@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"loxicmd/pkg/api"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -54,7 +55,12 @@ ex) loxicmd create mirror mirr-1 --mirrorInfo="type:0,port:hs0" --targetObject="
 
 `,
 		Aliases: []string{"mirror", "mirr", "mirrors"},
-
+		PreRun: func(cmd *cobra.Command, args []string) {
+			if len(args) == 0 {
+				cmd.Help()
+				os.Exit(0)
+			}
+		},
 		Run: func(cmd *cobra.Command, args []string) {
 			var mirrorMods api.MirrMod
 			// Make mirrorMod

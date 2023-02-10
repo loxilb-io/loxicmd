@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"os"
 	"time"
 
 	"loxicmd/pkg/api"
@@ -48,6 +49,12 @@ func NewDeleteNeighborsCmd(restOptions *api.RESTOptions) *cobra.Command {
 		Short:   "Delete a Neighbors",
 		Long:    `Delete a Neighbors using DeviceIP in the LoxiLB.`,
 		Aliases: []string{"nei", "neigh"},
+		PreRun: func(cmd *cobra.Command, args []string) {
+			if len(args) == 0 {
+				cmd.Help()
+				os.Exit(0)
+			}
+		},
 		Run: func(cmd *cobra.Command, args []string) {
 			if err := DeleteNeighborsValidation(args); err != nil {
 				fmt.Println("not valid <DeviceIP>")

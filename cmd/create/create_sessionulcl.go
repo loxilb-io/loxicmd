@@ -22,6 +22,7 @@ import (
 	"loxicmd/pkg/api"
 	"net"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -45,7 +46,12 @@ func NewCreateSessionUlClCmd(restOptions *api.RESTOptions) *cobra.Command {
 ex) loxicmd create sessionulcl user1 --ulclArgs=16:192.33.125.1
 		`,
 		Aliases: []string{"ulcl", "sessionulcls", "ulcls"},
-
+		PreRun: func(cmd *cobra.Command, args []string) {
+			if len(args) == 0 {
+				cmd.Help()
+				os.Exit(0)
+			}
+		},
 		Run: func(cmd *cobra.Command, args []string) {
 			var SessionMods api.UlclInformationGet
 			// Make SessionMod

@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"loxicmd/pkg/api"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 
@@ -35,7 +36,12 @@ func NewCreateVlanBridgeCmd(restOptions *api.RESTOptions) *cobra.Command {
 
 ex) loxicmd create vlan 100
 `,
-
+		PreRun: func(cmd *cobra.Command, args []string) {
+			if len(args) == 0 {
+				cmd.Help()
+				os.Exit(0)
+			}
+		},
 		Run: func(cmd *cobra.Command, args []string) {
 			var vlanMod api.VlanBridgeMod
 			// Make vlanMod

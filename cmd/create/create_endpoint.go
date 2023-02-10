@@ -21,6 +21,7 @@ import (
 	"loxicmd/pkg/api"
 	"net"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -48,7 +49,12 @@ func NewCreateEndPointCmd(restOptions *api.RESTOptions) *cobra.Command {
 ex) loxicmd create endpoint 32.32.32.1 --desc=zone1host --probetype=http --probeport=8080 --period=60 --retries=2
 `,
 		Aliases: []string{"Endpoint", "ep", "endpoints"},
-
+		PreRun: func(cmd *cobra.Command, args []string) {
+			if len(args) == 0 {
+				cmd.Help()
+				os.Exit(0)
+			}
+		},
 		Run: func(cmd *cobra.Command, args []string) {
 			var EPMod api.EndPointMod
 			// Make EndPointMod

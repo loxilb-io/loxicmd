@@ -20,6 +20,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	"loxicmd/pkg/api"
@@ -45,6 +46,12 @@ func NewDeleteSessionCmd(restOptions *api.RESTOptions) *cobra.Command {
 		Use:   "session <UserID>",
 		Short: "Delete a Session",
 		Long:  `Delete a Session using USERID in the LoxiLB.`,
+		PreRun: func(cmd *cobra.Command, args []string) {
+			if len(args) == 0 {
+				cmd.Help()
+				os.Exit(0)
+			}
+		},
 		Run: func(cmd *cobra.Command, args []string) {
 			if err := DeleteSessionValidation(args); err != nil {
 				fmt.Println("not valid <UserID>")

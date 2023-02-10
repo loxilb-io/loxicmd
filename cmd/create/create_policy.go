@@ -23,6 +23,7 @@ import (
 	"io"
 	"loxicmd/pkg/api"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -125,7 +126,12 @@ Policy type(pol-type) 0 : TrTCM,  1 : SrTCM
 
 	`,
 		Aliases: []string{"pol", "policys", "pols", "polices"},
-
+		PreRun: func(cmd *cobra.Command, args []string) {
+			if len(args) == 0 {
+				cmd.Help()
+				os.Exit(0)
+			}
+		},
 		Run: func(cmd *cobra.Command, args []string) {
 			if err := ReadCreatePolicyOptions(&o, args); err != nil {
 				fmt.Printf("Error: %s\n", err.Error())

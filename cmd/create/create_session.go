@@ -22,6 +22,7 @@ import (
 	"loxicmd/pkg/api"
 	"net"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -48,7 +49,12 @@ ex) loxicmd create session user1 192.168.20.1 --accessNetworkTunnel=1:1.232.16.1
 
 		`,
 		Aliases: []string{"session", "sessions"},
-
+		PreRun: func(cmd *cobra.Command, args []string) {
+			if len(args) == 0 {
+				cmd.Help()
+				os.Exit(0)
+			}
+		},
 		Run: func(cmd *cobra.Command, args []string) {
 			var SessionMod api.SessionMod
 			// Make SessionMod

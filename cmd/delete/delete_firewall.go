@@ -19,6 +19,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
@@ -52,7 +53,12 @@ preference(int) - User preference for ordering
 ex) loxicmd delete firewall --firewallRule="sourceIP:1.2.3.2/32,destinationIP:2.3.1.2/32,preference:200"
 		`,
 		Aliases: []string{"Firewall", "fw", "firewalls"},
-
+		PreRun: func(cmd *cobra.Command, args []string) {
+			if len(o.FirewallRule) == 0 {
+				cmd.Help()
+				os.Exit(0)
+			}
+		},
 		Run: func(cmd *cobra.Command, args []string) {
 			client := api.NewLoxiClient(restOptions)
 			ctx := context.TODO()

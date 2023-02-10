@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"os"
 	"time"
 
 	"loxicmd/pkg/api"
@@ -41,7 +42,12 @@ func NewDeleteEndPointCmd(restOptions *api.RESTOptions) *cobra.Command {
 ex) loxicmd delete endpoint 31.31.31.31"
 		`,
 		Aliases: []string{"EndPoint", "ep", "endpoints"},
-
+		PreRun: func(cmd *cobra.Command, args []string) {
+			if len(args) == 0 {
+				cmd.Help()
+				os.Exit(0)
+			}
+		},
 		Run: func(cmd *cobra.Command, args []string) {
 			client := api.NewLoxiClient(restOptions)
 			ctx := context.TODO()

@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"loxicmd/pkg/api"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 
@@ -36,7 +37,12 @@ func NewCreateVxlanBridgeCmd(restOptions *api.RESTOptions) *cobra.Command {
 ex) loxicmd create vxlan 100 eno7
 
 `,
-
+		PreRun: func(cmd *cobra.Command, args []string) {
+			if len(args) == 0 {
+				cmd.Help()
+				os.Exit(0)
+			}
+		},
 		Run: func(cmd *cobra.Command, args []string) {
 			var vxlanMod api.VxlanBridgeMod
 			// Make vxlanMod

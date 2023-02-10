@@ -38,7 +38,14 @@ func GetCmd(restOptions *api.RESTOptions) *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			_ = cmd
 			_ = args
-			fmt.Println("Get called")
+			if len(args) == 0 {
+				cmd.Help()
+			}
+		},
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			fmt.Printf("Error: unknown command \"%v\"for \"loxicmd\" \nRun \"loxicmd --help\" for usage.\n", args)
+			cmd.Help()
+			return err
 		},
 	}
 
