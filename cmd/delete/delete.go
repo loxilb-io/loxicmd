@@ -29,7 +29,10 @@ func DeleteCmd(restOptions *api.RESTOptions) *cobra.Command {
 	var deleteCmd = &cobra.Command{
 		Use:   "delete",
 		Short: "Delete a Load balance features in the LoxiLB.",
-		Long:  `Delete a Load balance features in the LoxiLB. `,
+		Long: `Delete a Load balance features in the LoxiLB. 
+Delete - Service type external load-balancer, Vlan, Vxlan, Qos Policies,
+	 Endpoint client,FDB, IPaddress, Neighbor, Route,Firewall, Mirror, Session, UlCl
+		`,
 		Run: func(cmd *cobra.Command, args []string) {
 			if len(NormalConfigFile) > 0 {
 				if err := DeleteFileConfig(NormalConfigFile, restOptions); err != nil {

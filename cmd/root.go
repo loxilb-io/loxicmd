@@ -28,20 +28,39 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var CompletionCmd = &cobra.Command{
+	Use:                   "completion [bash|zsh|fish|powershell]",
+	Short:                 "Generate completion script",
+	Long:                  "To load completions",
+	DisableFlagsInUseLine: true,
+	ValidArgs:             []string{"bash", "zsh", "fish", "powershell"},
+	Args:                  cobra.ExactValidArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		switch args[0] {
+		case "bash":
+			cmd.Root().GenBashCompletion(os.Stdout)
+		case "zsh":
+			cmd.Root().GenZshCompletion(os.Stdout)
+		case "fish":
+			cmd.Root().GenFishCompletion(os.Stdout, true)
+		case "powershell":
+			cmd.Root().GenPowerShellCompletionWithDesc(os.Stdout)
+		}
+	},
+}
+
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
 	var rootCmd = &cobra.Command{
 		Use:   "loxicmd",
-		Short: "A brief description of your application",
-		Long: `A longer description that spans multiple lines and likely contains
-	examples and usage of using your application. For example:
-	
-	Cobra is a CLI library for Go that empowers applications.
-	This application is a tool to generate the needed files
-	to quickly create a Cobra application.`,
+		Short: "loxicmd is the command-line tool for loxilb.",
+		Long: `loxicmd is the command-line tool for loxilb. It is equivalent of "kubectl" for loxilb. loxicmd provides the following (currently) :
+	- Create/Delete/Get - Service type external load-balancer, Vlan, Vxlan, Qos Policies, Endpoint client,FDB, IPaddress, Neighbor, Route,Firewall, Mirror, Session, UlCl
+	- Get Port(interface) dump used by loxilb or its docker
+	- Get Connection track (TCP/UDP/ICMP/SCTP) information
+loxicmd aim to provide all of the configuation for the loxilb.`,
 	}
-
 	restOptions := &api.RESTOptions{}
 	saveOptions := &dump.SaveOptions{}
 	applyOptions := &dump.ApplyOptions{}
@@ -81,7 +100,7 @@ func Execute() {
 
 	rootCmd.AddCommand(saveCmd)
 	rootCmd.AddCommand(applyCmd)
-
+	rootCmd.AddCommand(CompletionCmd)
 	err := rootCmd.Execute()
 	if err != nil {
 		os.Exit(1)

@@ -107,7 +107,7 @@ ex) loxicmd create firewall --firewallRule="sourceIP:1.2.3.2/32,destinationIP:2.
 	createFirewallCmd.Flags().BoolVarP(&o.Record, "record", "", false, "Record/Dump any matching rule")
 	createFirewallCmd.Flags().BoolVarP(&o.Trap, "trap", "", false, " Trap anything matching rule")
 	createFirewallCmd.Flags().IntVarP(&o.Mark, "setmark", "", 0, " Add a fw mark")
-
+	createFirewallCmd.MarkFlagRequired("firewallRule")
 	return createFirewallCmd
 }
 

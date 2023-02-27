@@ -26,7 +26,10 @@ func CreateCmd(restOptions *api.RESTOptions) *cobra.Command {
 	var createCmd = &cobra.Command{
 		Use:   "create",
 		Short: "Create a Load balance features in the LoxiLB.",
-		Long:  `Create a Load balance features in the LoxiLB.`,
+		Long: `Create a Load balance features in the LoxiLB.
+Create - Service type external load-balancer, Vlan, Vxlan, Qos Policies, 
+	 Endpoint client,FDB, IPaddress, Neighbor, Route,Firewall, Mirror, Session, UlCl
+`,
 		Run: func(cmd *cobra.Command, args []string) {
 			if len(args) == 0 {
 				cmd.Help()

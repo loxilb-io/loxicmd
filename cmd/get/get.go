@@ -28,13 +28,13 @@ import (
 func GetCmd(restOptions *api.RESTOptions) *cobra.Command {
 	var GetCmd = &cobra.Command{
 		Use:   "get",
-		Short: "A brief description of your command",
-		Long: `A longer description that spans multiple lines and likely contains examples
-	and usage of using your command. For example:
-	
-	Cobra is a CLI library for Go that empowers applications.
-	This application is a tool to generate the needed files
-	to quickly Get a Cobra application.`,
+		Short: "Get a Load balance features from LoxiLB.",
+		Long: `Get a Load balance features from LoxiLB.
+	Get - Service type external load-balancer, Vlan, Vxlan, Qos Policies, 
+	 Endpoint client,FDB, IPaddress, Neighbor, Route,Firewall, Mirror, Session, UlCl
+	Get Port(interface) dump used by loxilb or its docker
+	Get Connection track (TCP/UDP/ICMP/SCTP) information	
+`,
 		Run: func(cmd *cobra.Command, args []string) {
 			_ = cmd
 			_ = args
