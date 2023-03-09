@@ -177,7 +177,10 @@ func Lbdump(restOptions *api.RESTOptions, path string) (string, error) {
 		fmt.Printf("Error: Failed to read HTTP response: (%s)\n", err.Error())
 	}
 	// Write
-	f.Write(resultByte)
+	_, err = f.Write(resultByte)
+	if err != nil {
+		fmt.Println("File write error")
+	}
 	cfile := path + "lbconfig.txt"
 	if _, err := os.Stat(cfile); errors.Is(err, os.ErrNotExist) {
 		if err != nil {
