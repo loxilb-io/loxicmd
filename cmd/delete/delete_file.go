@@ -203,12 +203,13 @@ func EndPointDeleteWithFile(restOptions *api.RESTOptions, byteBuf []byte) error 
 	if restOptions.Timeout > 0 {
 		defer cancel()
 	}
-	qeury, err := MakeEndPointDeleteQurey(c.HostName)
-	if err != nil {
-		fmt.Printf("Error: Failed to create ep query for delete\n")
-		return err
+
+	subResources := []string{
+		"epipaddress", c.HostName,
+		"probetype", c.Spec.ProbeType,
+		"probeport", strconv.Itoa(int(c.Spec.ProbePort)),
 	}
-	_, err = client.EndPoint().Query(qeury).Delete(ctx)
+	_, err := client.EndPoint().SubResources(subResources).Delete(ctx)
 	if err != nil {
 		fmt.Printf("Error: Failed to delete EndPoint\n")
 		return err

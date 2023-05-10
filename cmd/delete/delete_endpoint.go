@@ -22,24 +22,27 @@ import (
 	"net/http"
 	"os"
 	"time"
-
+	"strconv"
 	"loxicmd/pkg/api"
 
 	"github.com/spf13/cobra"
 )
 
 type DeleteEndPoint struct {
-	Host string
+	Host 		string
+	ProbeType 	string
+	ProbePort 	int
 }
 
 func NewDeleteEndPointCmd(restOptions *api.RESTOptions) *cobra.Command {
 	o := DeleteEndPoint{}
+	
 	var deleteEndPointCmd = &cobra.Command{
-		Use:   "endpoint IP",
+		Use:   "endpoint IP endpoint IP [--probetype=<probetype>] [--probeport=<port>]",
 		Short: "Delete a LB EndPoint from monitoring",
 		Long: `Delete a LB EndPoint from monitoring in the LoxiLB.
 
-ex) loxicmd delete endpoint 31.31.31.31"
+ex) loxicmd delete endpoint 31.31.31.31 --probetype=http --probeport=8080"
 		`,
 		Aliases: []string{"EndPoint", "ep", "endpoints"},
 		PreRun: func(cmd *cobra.Command, args []string) {
@@ -64,12 +67,28 @@ ex) loxicmd delete endpoint 31.31.31.31"
 				return
 			}
 
-			qeury, err := MakeEndPointDeleteQurey(o.Host)
-			if err != nil {
-				fmt.Printf("Error: Failed to create ep query for delete\n")
+			if o.ProbeType != "http" && o.ProbeType != "https" && o.ProbeType != "ping" &&
+				o.ProbeType != "connect-tcp" && o.ProbeType != "connect-udp" &&
+				o.ProbeType != "connect-sctp" && o.ProbeType != "none" {
+				fmt.Printf("probetype '%s' is invalid\n", o.ProbeType)
 				return
 			}
-			resp, err := client.EndPoint().Query(qeury).Delete(ctx)
+
+			if o.ProbeType == "http" || o.ProbeType == "https" || o.ProbeType == "connect-tcp" ||
+				o.ProbeType == "connect-udp" || o.ProbeType == "connect-sctp" {
+				if o.ProbePort == 0 {
+					fmt.Printf("probeport cant be 0 for '%s' probes\n", o.ProbeType)
+					return
+				}
+			}
+
+			subResources := []string{
+				"epipaddress", o.Host,
+				"probetype", o.ProbeType,
+				"probeport", strconv.Itoa(o.ProbePort),
+			}
+			resp, err := client.EndPoint().SubResources(subResources).Delete(ctx)
+			
 			if err != nil {
 				fmt.Printf("Error: Failed to delete EndPoint\n")
 				return
@@ -82,12 +101,7 @@ ex) loxicmd delete endpoint 31.31.31.31"
 			}
 		},
 	}
-
+	deleteEndPointCmd.Flags().StringVar(&o.ProbeType, "probetype", "ping", "Probe-type:ping,http,https,connect-udp,connect-tcp,connect-sctp,none")
+	deleteEndPointCmd.Flags().IntVar(&o.ProbePort, "probeport", 0, "If probe is http,https,tcp,udp,sctp one can specify custom l4port to use")
 	return deleteEndPointCmd
-}
-
-func MakeEndPointDeleteQurey(host string) (map[string]string, error) {
-	query := map[string]string{}
-	query["hostName"] = host
-	return query, nil
 }
