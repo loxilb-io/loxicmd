@@ -29,7 +29,7 @@ import (
 
 type CreateEndPointOptions struct {
 	Host          string
-	Description   string
+	Name		  string
 	ProbeType     string
 	ProbeReq      string
 	ProbeResp     string
@@ -42,11 +42,11 @@ func NewCreateEndPointCmd(restOptions *api.RESTOptions) *cobra.Command {
 	o := CreateEndPointOptions{}
 
 	var createEndPointCmd = &cobra.Command{
-		Use:   "endpoint IP [--desc=<desc>] [--probetype=<probetype>] [--probereq=<probereq>] [--proberesp=<proberesp>] [--probeport=<port>] [--period=<period>] [--retries=<retries>]",
+		Use:   "endpoint IP [--name=<id>] [--probetype=<probetype>] [--probereq=<probereq>] [--proberesp=<proberesp>] [--probeport=<port>] [--period=<period>] [--retries=<retries>]",
 		Short: "Create a LB EndPoint for monitoring",
 		Long: `Create a LB EndPoint for monitoring using LoxiLB
 
-ex) loxicmd create endpoint 32.32.32.1 --desc=zone1host --probetype=http --probeport=8080 --period=60 --retries=2
+ex) loxicmd create endpoint 32.32.32.1 --name=32.32.32.1_http_8080 --probetype=http --probeport=8080 --period=60 --retries=2
 `,
 		Aliases: []string{"Endpoint", "ep", "endpoints"},
 		PreRun: func(cmd *cobra.Command, args []string) {
@@ -84,14 +84,19 @@ ex) loxicmd create endpoint 32.32.32.1 --desc=zone1host --probetype=http --probe
 					return
 				}
 			}
+			
+			if o.ProbeType == "ping" && o.ProbePort != 0 {
+				fmt.Printf("probeport should be 0 for '%s' probes\n", o.ProbeType)
+				return
+			}
 
 			if o.ProbeDuration > 24*60*60 {
 				fmt.Printf("probe period is out of bounds\n")
 				return
 			}
 
-			EPMod.Name = o.Host
-			EPMod.Desc = o.Description
+			EPMod.HostName = o.Host
+			EPMod.Name = o.Name
 			EPMod.ProbeDuration = uint32(o.ProbeDuration)
 			EPMod.ProbePort = uint16(o.ProbePort)
 			EPMod.ProbeType = o.ProbeType
@@ -113,7 +118,7 @@ ex) loxicmd create endpoint 32.32.32.1 --desc=zone1host --probetype=http --probe
 		},
 	}
 
-	createEndPointCmd.Flags().StringVar(&o.Description, "desc", "", "Description of and end-point")
+	createEndPointCmd.Flags().StringVar(&o.Name, "name", "", "Endpoint Identifier")
 	createEndPointCmd.Flags().StringVar(&o.ProbeType, "probetype", "ping", "Probe-type:ping,http,https,connect-udp,connect-tcp,connect-sctp,none")
 	createEndPointCmd.Flags().StringVar(&o.ProbeReq, "probereq", "", "If probe is http/https, one can specify additional uri path")
 	createEndPointCmd.Flags().StringVar(&o.ProbeResp, "proberesp", "", "If probe is http/https, one can specify custom response string")

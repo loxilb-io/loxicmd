@@ -25,10 +25,10 @@ type EPInformationGet struct {
 
 // EndPointState - Info related to a end-point state
 type EndPointGetEntry struct {
-	// Name - hostname in CIDR
-	Name string `json:"hostName"`
-	// Desc - host specific description
-	Desc string `json:"description"`
+	// HostName - hostname in CIDR
+	HostName string `json:"hostName"`
+	// Name - Endpoint Identifier
+	Name string `json:"name"`
 	// InActTries - No. of inactive probes to mark
 	// an end-point inactive
 	InActTries int `json:"inactiveReTries"`
@@ -58,10 +58,10 @@ type EPConfig struct {
 
 // EndPointMod - Info related to a end-point config entry
 type EndPointMod struct {
-	// Name - hostname in CIDR
-	Name string `json:"hostName" yaml:"hostName"`
-	// Desc - host specific description
-	Desc string `json:"description" yaml:"description"`
+	// HostName - hostname in CIDR
+	HostName string `json:"hostName" yaml:"hostName"`
+	// Name - Endpoint Identifier
+	Name string `json:"name" yaml:"name"`
 	// InActTries - No. of inactive probes to mark
 	// an end-point inactive
 	InActTries int `json:"inactiveReTries" yaml:"inactiveReTries"`

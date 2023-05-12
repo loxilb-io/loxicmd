@@ -89,7 +89,7 @@ func PrintGetEPResult(resp *http.Response, o api.RESTOptions) {
 	// Making load balance data
 	for _, ep := range epResp.EPInfo {
 		table.SetHeader(ENDPOINT_TITLE)
-		data = append(data, []string{ep.Name, ep.Desc, fmt.Sprintf("%s:%s", ep.ProbeType, ep.ProbeReq), fmt.Sprintf("%d", ep.ProbePort),
+		data = append(data, []string{ep.HostName, ep.Name, fmt.Sprintf("%s:%s", ep.ProbeType, ep.ProbeReq), fmt.Sprintf("%d", ep.ProbePort),
 			fmt.Sprintf("%d", ep.ProbeDuration), fmt.Sprintf("%d", ep.InActTries),
 			ep.MinDelay, ep.AvgDelay, ep.MaxDelay, ep.CurrState})
 
@@ -146,8 +146,8 @@ func EPdump(restOptions *api.RESTOptions, path string) (string, error) {
 	epMs := api.EPConfig{}
 	for _, ep := range epResp.EPInfo {
 		var epm api.EndPointMod
+		epm.HostName = ep.HostName
 		epm.Name = ep.Name
-		epm.Desc = ep.Desc
 		epm.InActTries = ep.InActTries
 		epm.ProbeType = ep.ProbeType
 		epm.ProbePort = ep.ProbePort
