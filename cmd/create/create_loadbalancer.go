@@ -44,6 +44,7 @@ type CreateLoadBalancerOptions struct {
 	Mark       uint16
 	SCTP       []string
 	Endpoints  []string
+	SecIPs	   []string	
 	Select     string
 }
 
@@ -103,7 +104,7 @@ func NewCreateLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 	o := CreateLoadBalancerOptions{}
 
 	var createLbCmd = &cobra.Command{
-		Use:   "lb IP [--select=<rr|hash|priority>] [--tcp=<port>:<targetPort>] [--udp=<port>:<targetPort>] [--sctp=<port>:<targetPort>] [--icmp] [--mark=<val>] [--endpoints=<ip>:<weight>,] [--mode=<onearm|fullnat>] [--bgp] [--monitor] [--inatimeout=<to>]",
+		Use:   "lb IP [--select=<rr|hash|priority>] [--tcp=<port>:<targetPort>] [--udp=<port>:<targetPort>] [--sctp=<port>:<targetPort>] [--icmp] [--mark=<val>] [--secips=<ip>,][--endpoints=<ip>:<weight>,] [--mode=<onearm|fullnat>] [--bgp] [--monitor] [--inatimeout=<to>]",
 		Short: "Create a LoadBalancer",
 		Long: `Create a LoadBalancer
 
@@ -120,6 +121,7 @@ ex) loxicmd create lb 192.168.0.200 --tcp=80:32015 --endpoints=10.212.0.1:1,10.2
 	loxicmd create lb 192.168.0.200 --tcp=80:32015 --udp=80:32015 --endpoints=10.212.0.1:1,10.212.0.2:1,10.212.0.3:1
 	loxicmd create lb 192.168.0.200 --select=hash --tcp=80:32015 --endpoints=10.212.0.1:1,10.212.0.2:1,10.212.0.3:1
 	loxicmd create lb 192.168.0.200 --tcp=80:32015 --endpoints=10.212.0.1:1,10.212.0.2:1,10.212.0.3:1 --mode=dsr
+	loxicmd create lb 192.168.0.200 --sctp=37412:38412 --secips=192.168.0.201,192.168.0.202 --endpoints=10.212.0.1:1,10.212.0.2:1,10.212.0.3:1
 
 	loxicmd create lb  2001::1 --tcp=2020:8080 --endpoints=4ffe::1:1,5ffe::1:1,6ffe::1:1
 	loxicmd create lb  2001::1 --tcp=2020:8080 --endpoints=31.31.31.1:1,32.32.32.1:1,33.33.33.1:1
@@ -131,6 +133,7 @@ ex) loxicmd create lb 192.168.0.200 --tcp=80:32015 --endpoints=10.212.0.1:1,10.2
 			}
 		},
 		Run: func(cmd *cobra.Command, args []string) {
+			var sctp bool
 			if err := ReadCreateLoadBalancerOptions(&o, args); err != nil {
 				fmt.Printf("Error: %s\n", err.Error())
 				return
@@ -146,11 +149,17 @@ ex) loxicmd create lb 192.168.0.200 --tcp=80:32015 --endpoints=10.212.0.1:1,10.2
 			}
 			if len(o.SCTP) > 0 {
 				ProtoPortpair["sctp"] = o.SCTP
+				sctp = true
 			}
 			if o.ICMP {
 				//icmpProtoPortpair := make(map[string][]string)
 				ProtoPortpair["icmp"] = []string{"0:0"}
 			}
+			if !sctp && len(o.SecIPs) > 0 {
+				fmt.Printf("Secondary IPs allowed in SCTP only\n")
+				return
+			}
+
 			fmt.Printf("ProtoPortpair: %v\n", ProtoPortpair)
 			// Commom Part of the load balancer.
 			endpointPair, err := GetEndpointWeightPairList(o.Endpoints)
@@ -193,6 +202,13 @@ ex) loxicmd create lb 192.168.0.200 --tcp=80:32015 --endpoints=10.212.0.1:1,10.2
 						lbModel.Endpoints = append(lbModel.Endpoints, ep)
 					}
 
+					for _, sip:= range o.SecIPs {
+						sp := api.LoadBalancerSecIp{
+							SecIP: sip,
+						}
+						lbModel.SecIPs = append(lbModel.SecIPs, sp)
+					}
+					
 					resp, err := LoadbalancerAPICall(restOptions, lbModel)
 					if err != nil {
 						fmt.Printf("Error: %s\n", err.Error())
@@ -219,6 +235,7 @@ ex) loxicmd create lb 192.168.0.200 --tcp=80:32015 --endpoints=10.212.0.1:1,10.2
 	createLbCmd.Flags().StringVarP(&o.Mode, "mode", "", o.Mode, "NAT mode for load balancer rule")
 	createLbCmd.Flags().BoolVarP(&o.BGP, "bgp", "", false, "Enable BGP in the load balancer")
 	createLbCmd.Flags().BoolVarP(&o.Monitor, "monitor", "", false, "Enable monitoring end-points of this rule")
+	createLbCmd.Flags().StringSliceVar(&o.SecIPs, "secips", o.SecIPs, "Secondary IPs for SCTP multihoming rule specified as '<secondaryIP>'")
 	createLbCmd.Flags().StringVarP(&o.Select, "select", "", "rr", "Select the hash algorithm for the load balance.(ex) rr, hash, priority")
 	createLbCmd.Flags().Uint32VarP(&o.Timeout, "inatimeout", "", 0, "Specify the timeout (in seconds) after which a LB session will be reset for inactivity")
 	createLbCmd.Flags().Uint16VarP(&o.Mark, "mark", "", 0, "Specify the mark num to segregate a load-balancer VIP service")

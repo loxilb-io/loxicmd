@@ -27,6 +27,7 @@ type LbRuleModGet struct {
 
 type LoadBalancerModel struct {
 	Service   LoadBalancerService    `json:"serviceArguments" yaml:"serviceArguments"`
+	SecIPs    []LoadBalancerSecIp    `json:"secIPs" yaml:"secIPs"`
 	Endpoints []LoadBalancerEndpoint `json:"endpoints" yaml:"endpoints"`
 }
 
@@ -47,6 +48,10 @@ type LoadBalancerEndpoint struct {
 	TargetPort uint16 `json:"targetPort" yaml:"targetPort"`
 	Weight     uint8  `json:"weight"     yaml:"weight"`
 	State      string `json:"state"      yaml:"state"`
+}
+
+type LoadBalancerSecIp struct {
+	SecIP string `json:"secIP" yaml:"secIP"`
 }
 
 type ConfigurationLBFile struct {
