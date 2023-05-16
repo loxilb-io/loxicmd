@@ -119,6 +119,8 @@ ex) loxicmd create endpoint 32.32.32.1 --name=32.32.32.1_http_8080 --probetype=h
 	}
 
 	createEndPointCmd.Flags().StringVar(&o.Name, "name", "", "Endpoint Identifier")
+	createEndPointCmd.Flags().StringVar(&o.Name, "desc", "", "Endpoint Identifier")
+	createEndPointCmd.Flags().MarkDeprecated("desc", "This flag is decrecated, Use --name")
 	createEndPointCmd.Flags().StringVar(&o.ProbeType, "probetype", "ping", "Probe-type:ping,http,https,connect-udp,connect-tcp,connect-sctp,none")
 	createEndPointCmd.Flags().StringVar(&o.ProbeReq, "probereq", "", "If probe is http/https, one can specify additional uri path")
 	createEndPointCmd.Flags().StringVar(&o.ProbeResp, "proberesp", "", "If probe is http/https, one can specify custom response string")
