@@ -204,9 +204,9 @@ ex) loxicmd create lb 192.168.0.200 --tcp=80:32015 --endpoints=10.212.0.1:1,10.2
 
 					for _, sip:= range o.SecIPs {
 						sp := api.LoadBalancerSecIp{
-							SecIP: sip,
+							SecondaryIP: sip,
 						}
-						lbModel.SecIPs = append(lbModel.SecIPs, sp)
+						lbModel.SecondaryIPs = append(lbModel.SecondaryIPs, sp)
 					}
 					
 					resp, err := LoadbalancerAPICall(restOptions, lbModel)
