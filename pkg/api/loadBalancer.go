@@ -15,6 +15,11 @@
  */
 package api
 
+import (
+	"fmt"
+	"sort"
+)
+
 type LoadBalancer struct {
 	CommonAPI
 }
@@ -53,4 +58,14 @@ type ConfigurationLBFile struct {
 	TypeMeta   `yaml:",inline"`
 	ObjectMeta `yaml:"metadata,omitempty"`
 	Spec       LoadBalancerModel `yaml:"spec"`
+}
+
+func (service LoadBalancerService) Key() string {
+	return fmt.Sprintf("%s|%05d|%s", service.ExternalIP, service.Port, service.Protocol)
+}
+
+func (lbresp LbRuleModGet) Sort() {
+	sort.Slice(lbresp.LbRules, func(i, j int) bool {
+		return lbresp.LbRules[i].Service.Key() < lbresp.LbRules[j].Service.Key()
+	})
 }

@@ -79,6 +79,8 @@ func PrintGetMirrorResult(resp *http.Response, o api.RESTOptions) {
 		return
 	}
 
+	Mirrorresp.Sort()
+
 	// Table Init
 	table := TableInit()
 

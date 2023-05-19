@@ -124,6 +124,8 @@ func PrintGetLbResult(resp *http.Response, o api.RESTOptions) {
 		fmt.Println(string(resultIndent))
 		return
 	}
+	
+	lbresp.Sort()
 
 	// Table Init
 	table := TableInit()

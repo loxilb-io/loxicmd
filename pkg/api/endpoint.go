@@ -15,6 +15,11 @@
  */
 package api
 
+import (
+	"fmt"
+	"sort"
+)
+
 type EndPoint struct {
 	CommonAPI
 }
@@ -81,4 +86,14 @@ type ConfigurationEndPointFile struct {
 	TypeMeta   `yaml:",inline"`
 	ObjectMeta `yaml:"metadata,omitempty"`
 	Spec       EndPointMod `yaml:"spec"`
+}
+
+func (epResp EndPointGetEntry) Key() string {
+	return fmt.Sprintf("%s|%05d|%s|%s", epResp.HostName, epResp.ProbePort, epResp.ProbeType, epResp.Name)
+}
+
+func (epResp EPInformationGet) Sort() {
+	sort.Slice(epResp.EPInfo, func(i, j int) bool {
+		return epResp.EPInfo[i].Key() < epResp.EPInfo[j].Key()
+	})
 }

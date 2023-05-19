@@ -22,7 +22,6 @@ import (
 	"io"
 	"loxicmd/pkg/api"
 	"net/http"
-	"sort"
 	"strings"
 	"time"
 
@@ -79,9 +78,8 @@ func PrintGetvxlanResult(resp *http.Response, o api.RESTOptions) {
 		return
 	}
 	// Sort vxlan Data
-	sort.Slice(vxlanresp.VxlanAttr, func(i, j int) bool {
-		return vxlanresp.VxlanAttr[i].VxLanID < vxlanresp.VxlanAttr[j].VxLanID
-	})
+	vxlanresp.Sort()
+
 	// Table Init
 	table := TableInit()
 

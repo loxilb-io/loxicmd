@@ -15,6 +15,11 @@
  */
 package api
 
+import (
+	"fmt"
+	"sort"
+)
+
 type Neighbor struct {
 	CommonAPI
 }
@@ -35,4 +40,14 @@ type ConfigurationNeighborFile struct {
 	TypeMeta   `yaml:",inline"`
 	ObjectMeta `yaml:"metadata,omitempty"`
 	Spec       NeighborMod `yaml:"spec"`
+}
+
+func (nei NeighborMod) Key() string {
+	return fmt.Sprintf("%s|%s|%s", nei.IP, nei.Dev, nei.MacAddress)
+}
+
+func (Neighborsresp NeighborModGet) Sort() {
+	sort.Slice(Neighborsresp.NeighborAttr, func(i, j int) bool {
+		return Neighborsresp.NeighborAttr[i].Key() < Neighborsresp.NeighborAttr[j].Key()
+	})
 }

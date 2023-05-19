@@ -15,6 +15,11 @@
  */
 package api
 
+import (
+	"fmt"
+	"sort"
+)
+
 type Firewall struct {
 	CommonAPI
 }
@@ -73,4 +78,16 @@ type ConfigurationFWFile struct {
 	TypeMeta   `yaml:",inline"`
 	ObjectMeta `yaml:"metadata,omitempty"`
 	Spec       FwRuleMod `yaml:"spec"`
+}
+
+func (fw FwRuleArg) Key() string {
+	return fmt.Sprintf("%s|%s|%05d|%05d|%05d|%05d|%d",
+		fw.SrcIP, fw.DstIP, fw.SrcPortMin, fw.SrcPortMax,
+		fw.DstPortMin, fw.DstPortMax, fw.Proto)
+}
+
+func (fwresp FWInformationGet) Sort() {
+	sort.Slice(fwresp.FWInfo, func(i, j int) bool {
+		return fwresp.FWInfo[i].Rule.Key() < fwresp.FWInfo[j].Rule.Key()
+	})
 }

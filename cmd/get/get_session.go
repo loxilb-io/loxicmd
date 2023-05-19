@@ -77,6 +77,8 @@ func PrintGetSessionResult(resp *http.Response, o api.RESTOptions) {
 		return
 	}
 
+	sessionresp.Sort()
+
 	// Table Init
 	table := TableInit()
 

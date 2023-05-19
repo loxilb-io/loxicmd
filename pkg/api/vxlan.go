@@ -15,6 +15,8 @@
  */
 package api
 
+import "sort"
+
 type Vxlan struct {
 	CommonAPI
 }
@@ -55,4 +57,10 @@ type ConfigurationVxlanPeerFile struct {
 	TypeMeta   `yaml:",inline"`
 	ObjectMeta `yaml:"metadata,omitempty"`
 	Spec       VxlanPeerMod `yaml:"spec"`
+}
+
+func (vxlanresp VxlanGet) Sort() {
+	sort.Slice(vxlanresp.VxlanAttr, func(i, j int) bool {
+		return vxlanresp.VxlanAttr[i].VxLanID < vxlanresp.VxlanAttr[j].VxLanID
+	})
 }

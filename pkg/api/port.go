@@ -17,6 +17,7 @@ package api
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 )
 
@@ -137,4 +138,10 @@ func (p PortSwInfo) PortTypeToString() string {
 	}
 	nStr := strings.TrimSuffix(pStr, ",")
 	return nStr
+}
+
+func (portresp PortGet) Sort() {
+	sort.Slice(portresp.Ports, func(i, j int) bool {
+		return portresp.Ports[i].PortNo < portresp.Ports[j].PortNo
+	})
 }

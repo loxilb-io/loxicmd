@@ -77,6 +77,8 @@ func PrintGetPolResult(resp *http.Response, o api.RESTOptions) {
 		return
 	}
 
+	Polresp.Sort()
+
 	// Table Init
 	table := TableInit()
 

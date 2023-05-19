@@ -77,6 +77,8 @@ func PrintGetRouteResult(resp *http.Response, o api.RESTOptions) {
 		return
 	}
 
+	routeresp.Sort()
+
 	// Table Init
 	table := TableInit()
 

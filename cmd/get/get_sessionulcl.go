@@ -77,6 +77,8 @@ func PrintGetSessionULCLResult(resp *http.Response, o api.RESTOptions) {
 		return
 	}
 
+	ulclresp.Sort()
+
 	// Table Init
 	table := TableInit()
 

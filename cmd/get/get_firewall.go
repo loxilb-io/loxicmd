@@ -77,6 +77,8 @@ func PrintGetFWResult(resp *http.Response, o api.RESTOptions) {
 		return
 	}
 
+	fwresp.Sort()
+
 	// Table Init
 	table := TableInit()
 

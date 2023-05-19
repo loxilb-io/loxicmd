@@ -80,6 +80,8 @@ func PrintGetCTResult(resp *http.Response, o api.RESTOptions) {
 		return
 	}
 
+	ctresp.Sort()
+
 	// Table Init
 	table := TableInit()
 	table.SetHeader([]string{"destinationIP", "sourceIP", "destinationPort", "sourcePort", "protocol", "state", "act", "packets", "bytes"})
