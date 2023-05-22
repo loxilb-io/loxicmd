@@ -40,7 +40,14 @@ func NewGetSessionULCLCmd(restOptions *api.RESTOptions) *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			_ = cmd
 			_ = args
-			resp, err := SessionUlClAPICall(restOptions)
+			client := api.NewLoxiClient(restOptions)
+			ctx := context.TODO()
+			var cancel context.CancelFunc
+			if restOptions.Timeout > 0 {
+				ctx, cancel = context.WithTimeout(context.TODO(), time.Duration(restOptions.Timeout)*time.Second)
+				defer cancel()
+			}
+			resp, err := client.SessionUlCL().SetUrl("/config/sessionulcl/all").Get(ctx)
 			if err != nil {
 				fmt.Printf("Error: %s\n", err.Error())
 				return
