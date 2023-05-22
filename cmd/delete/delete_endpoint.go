@@ -69,14 +69,14 @@ ex) loxicmd delete endpoint 31.31.31.31 --name=31.31.31.31_http_8080 --probetype
 			}
 
 			if o.ProbeType != "http" && o.ProbeType != "https" && o.ProbeType != "ping" &&
-				o.ProbeType != "connect-tcp" && o.ProbeType != "connect-udp" &&
-				o.ProbeType != "connect-sctp" && o.ProbeType != "none" {
+				o.ProbeType != "tcp" && o.ProbeType != "udp" &&
+				o.ProbeType != "sctp" && o.ProbeType != "none" {
 				fmt.Printf("probetype '%s' is invalid\n", o.ProbeType)
 				return
 			}
 
-			if o.ProbeType == "http" || o.ProbeType == "https" || o.ProbeType == "connect-tcp" ||
-				o.ProbeType == "connect-udp" || o.ProbeType == "connect-sctp" {
+			if o.ProbeType == "http" || o.ProbeType == "https" || o.ProbeType == "tcp" ||
+				o.ProbeType == "udp" || o.ProbeType == "sctp" {
 				if o.ProbePort == 0 {
 					fmt.Printf("probeport cant be 0 for '%s' probes\n", o.ProbeType)
 					return
@@ -120,7 +120,7 @@ ex) loxicmd delete endpoint 31.31.31.31 --name=31.31.31.31_http_8080 --probetype
 		},
 	}
 	deleteEndPointCmd.Flags().StringVar(&o.Name, "name", "", "Endpoint Identifier")
-	deleteEndPointCmd.Flags().StringVar(&o.ProbeType, "probetype", "ping", "Probe-type:ping,http,https,connect-udp,connect-tcp,connect-sctp,none")
+	deleteEndPointCmd.Flags().StringVar(&o.ProbeType, "probetype", "ping", "Probe-type:ping,http,https,udp,tcp,sctp,none")
 	deleteEndPointCmd.Flags().IntVar(&o.ProbePort, "probeport", 0, "If probe is http,https,tcp,udp,sctp one can specify custom l4port to use")
 	return deleteEndPointCmd
 }

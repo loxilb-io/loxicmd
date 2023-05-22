@@ -37,7 +37,7 @@ type EndPointGetEntry struct {
 	// InActTries - No. of inactive probes to mark
 	// an end-point inactive
 	InActTries int `json:"inactiveReTries"`
-	// ProbeType - Type of probe : "icmp","connect-tcp", "connect-udp", "connect-sctp", "http"
+	// ProbeType - Type of probe : "icmp","tcp", "udp", "sctp", "http"
 	ProbeType string `json:"probeType"`
 	// ProbeReq - Request string in case of http probe
 	ProbeReq string `json:"probeReq"`
@@ -70,7 +70,7 @@ type EndPointMod struct {
 	// InActTries - No. of inactive probes to mark
 	// an end-point inactive
 	InActTries int `json:"inactiveReTries" yaml:"inactiveReTries"`
-	// ProbeType - Type of probe : "icmp","connect-tcp", "connect-udp", "connect-sctp", "http"
+	// ProbeType - Type of probe : "icmp","tcp", "udp", "sctp", "http"
 	ProbeType string `json:"probeType" yaml:"probeType"`
 	// ProbeReq - Request string in case of http probe
 	ProbeReq string `json:"probeReq" yaml:"probeReq"`
