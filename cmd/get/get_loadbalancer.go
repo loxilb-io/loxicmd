@@ -107,6 +107,7 @@ func BoolToMon(mon bool) string {
 func PrintGetLbResult(resp *http.Response, o api.RESTOptions) {
 	lbresp := api.LbRuleModGet{}
 	var data [][]string
+	var secIPs string
 	resultByte, err := io.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Printf("Error: Failed to read HTTP response: (%s)\n", err.Error())
@@ -134,22 +135,30 @@ func PrintGetLbResult(resp *http.Response, o api.RESTOptions) {
 	for _, lbrule := range lbresp.LbRules {
 		if o.PrintOption == "wide" {
 			table.SetHeader(LOADBALANCER_WIDE_TITLE)
+			
+			if len(lbrule.SecondaryIPs) > 0 {
+				secIPs = lbrule.SecondaryIPs[0].SecondaryIP
+				for i := 1 ; i < len(lbrule.SecondaryIPs); i++ {
+					secIPs = secIPs + ", " + lbrule.SecondaryIPs[i].SecondaryIP
+				}
+			}
+
 			if lbrule.Service.Monitor {
 				for i, eps := range lbrule.Endpoints {
 					if i == 0 {
-						data = append(data, []string{lbrule.Service.ExternalIP, fmt.Sprintf("%d", lbrule.Service.Port), lbrule.Service.Protocol, fmt.Sprintf("%d", lbrule.Service.Block), NumToSelect(int(lbrule.Service.Sel)), NumToMode(int(lbrule.Service.Mode)),
+						data = append(data, []string{lbrule.Service.ExternalIP, secIPs, fmt.Sprintf("%d", lbrule.Service.Port), lbrule.Service.Protocol, fmt.Sprintf("%d", lbrule.Service.Block), NumToSelect(int(lbrule.Service.Sel)), NumToMode(int(lbrule.Service.Mode)),
 							eps.EndpointIP, fmt.Sprintf("%d", eps.TargetPort), fmt.Sprintf("%d", eps.Weight), eps.State})
 					} else {
-						data = append(data, []string{"", "", "", "", "", "", eps.EndpointIP, fmt.Sprintf("%d", eps.TargetPort), fmt.Sprintf("%d", eps.Weight), eps.State})
+						data = append(data, []string{"", "", "", "", "", "", "", eps.EndpointIP, fmt.Sprintf("%d", eps.TargetPort), fmt.Sprintf("%d", eps.Weight), eps.State})
 					}
 				}
 			} else {
 				for i, eps := range lbrule.Endpoints {
 					if i == 0 {
-						data = append(data, []string{lbrule.Service.ExternalIP, fmt.Sprintf("%d", lbrule.Service.Port), lbrule.Service.Protocol, fmt.Sprintf("%d", lbrule.Service.Block), NumToSelect(int(lbrule.Service.Sel)), NumToMode(int(lbrule.Service.Mode)),
+						data = append(data, []string{lbrule.Service.ExternalIP, secIPs, fmt.Sprintf("%d", lbrule.Service.Port), lbrule.Service.Protocol, fmt.Sprintf("%d", lbrule.Service.Block), NumToSelect(int(lbrule.Service.Sel)), NumToMode(int(lbrule.Service.Mode)),
 							eps.EndpointIP, fmt.Sprintf("%d", eps.TargetPort), fmt.Sprintf("%d", eps.Weight), "-"})
 					} else {
-						data = append(data, []string{"", "", "", "", "", "", eps.EndpointIP, fmt.Sprintf("%d", eps.TargetPort), fmt.Sprintf("%d", eps.Weight), "-"})
+						data = append(data, []string{"", "", "", "", "", "", "", eps.EndpointIP, fmt.Sprintf("%d", eps.TargetPort), fmt.Sprintf("%d", eps.Weight), "-"})
 					}
 				}
 			}

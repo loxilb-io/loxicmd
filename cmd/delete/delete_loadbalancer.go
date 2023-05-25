@@ -108,7 +108,7 @@ func NewDeleteLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 					fmt.Printf("subResources: %v\n", subResources)
 					resp, err := client.LoadBalancer().SubResources(subResources).Query(qmap).Delete(ctx)
 					if err != nil {
-						fmt.Printf("Error: Failed to delete LoadBalancer(ExternalIP: %s, Protocol:%s, Port:%d)", externalIP, "tcp", portNum)
+						fmt.Printf("Error: Failed to delete LoadBalancer(ExternalIP: %s, Protocol:%s, Port:%d)\n", externalIP, proto, portNum)
 						return
 					}
 					defer resp.Body.Close()
