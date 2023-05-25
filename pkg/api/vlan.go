@@ -15,6 +15,8 @@
  */
 package api
 
+import "sort"
+
 type Vlan struct {
 	CommonAPI
 }
@@ -60,4 +62,10 @@ type ConfigurationVlanMemberFile struct {
 	TypeMeta   `yaml:",inline"`
 	ObjectMeta `yaml:"metadata,omitempty"`
 	Spec       VlanMemberMod `yaml:"spec"`
+}
+
+func (Vlanresp VlanGet) Sort() {
+	sort.Slice(Vlanresp.Vlans, func(i, j int) bool {
+		return Vlanresp.Vlans[i].Vid < Vlanresp.Vlans[j].Vid
+	})
 }

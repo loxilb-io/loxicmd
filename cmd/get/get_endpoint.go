@@ -83,6 +83,8 @@ func PrintGetEPResult(resp *http.Response, o api.RESTOptions) {
 		return
 	}
 
+	epResp.Sort()
+
 	// Table Init
 	table := TableInit()
 

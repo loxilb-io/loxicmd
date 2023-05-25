@@ -15,6 +15,11 @@
  */
 package api
 
+import (
+	"fmt"
+	"sort"
+)
+
 type Conntrack struct {
 	CommonAPI
 }
@@ -33,4 +38,14 @@ type ConntrackInformation struct {
 	CAct   string `json:"conntrackAct"`
 	Pkts   uint64 `json:"packets"`
 	Bytes  uint64 `json:"bytes"`
+}
+
+func (ct ConntrackInformation) Key() string {
+	return fmt.Sprintf("%s|%s|%05d|%05d|%s", ct.Dip, ct.Sip, ct.Dport, ct.Sport, ct.Proto)
+}
+
+func (ctresp CtInformationGet) Sort() {
+	sort.Slice(ctresp.CtInfo, func(i, j int) bool {
+		return ctresp.CtInfo[i].Key() < ctresp.CtInfo[j].Key()
+	})
 }

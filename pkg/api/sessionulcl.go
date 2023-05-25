@@ -15,7 +15,10 @@
  */
 package api
 
-import "net"
+import (
+	"net"
+	"sort"
+)
 
 type SessionUlCl struct {
 	CommonAPI
@@ -39,4 +42,10 @@ type ConfigurationSessionUlclFile struct {
 	TypeMeta   `yaml:",inline"`
 	ObjectMeta `yaml:"metadata,omitempty"`
 	Spec       SessionUlClMod `yaml:"spec"`
+}
+
+func (ulclresp UlclInformationGet) Sort() {
+	sort.Slice(ulclresp.UlclInfo, func(i, j int) bool {
+		return ulclresp.UlclInfo[i].Ident < ulclresp.UlclInfo[j].Ident
+	})
 }

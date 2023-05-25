@@ -45,7 +45,7 @@ func NewCreateSessionCmd(restOptions *api.RESTOptions) *cobra.Command {
 		Short: "Create a Session",
 		Long: `Create a Session using LoxiLB
 		
-ex) loxicmd create session user1 192.168.20.1 --accessNetworkTunnel=1:1.232.16.1 coreNetworkTunnel=1:1.233.16.1
+ex) loxicmd create session user1 192.168.20.1 --accessNetworkTunnel=1:1.232.16.1 --coreNetworkTunnel=1:1.233.16.1
 
 		`,
 		Aliases: []string{"session", "sessions"},

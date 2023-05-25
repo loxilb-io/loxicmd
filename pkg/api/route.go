@@ -15,6 +15,8 @@
  */
 package api
 
+import "sort"
+
 type Route struct {
 	CommonAPI
 }
@@ -49,4 +51,10 @@ type ConfigurationRouteFile struct {
 	TypeMeta   `yaml:",inline"`
 	ObjectMeta `yaml:"metadata,omitempty"`
 	Spec       Routev4Get `yaml:"spec"`
+}
+
+func (routeresp RouteModGet) Sort() {
+	sort.Slice(routeresp.RouteAttr, func(i, j int) bool {
+		return routeresp.RouteAttr[i].Dst < routeresp.RouteAttr[j].Dst
+	})
 }

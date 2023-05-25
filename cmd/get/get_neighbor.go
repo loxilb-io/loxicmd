@@ -79,6 +79,8 @@ func PrintGetNeighborResult(resp *http.Response, o api.RESTOptions) {
 		return
 	}
 
+	Neighborsresp.Sort()
+
 	// Table Init
 	table := TableInit()
 

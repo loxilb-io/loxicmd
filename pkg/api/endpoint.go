@@ -15,6 +15,11 @@
  */
 package api
 
+import (
+	"fmt"
+	"sort"
+)
+
 type EndPoint struct {
 	CommonAPI
 }
@@ -32,7 +37,7 @@ type EndPointGetEntry struct {
 	// InActTries - No. of inactive probes to mark
 	// an end-point inactive
 	InActTries int `json:"inactiveReTries"`
-	// ProbeType - Type of probe : "icmp","connect-tcp", "connect-udp", "connect-sctp", "http"
+	// ProbeType - Type of probe : "icmp","tcp", "udp", "sctp", "http"
 	ProbeType string `json:"probeType"`
 	// ProbeReq - Request string in case of http probe
 	ProbeReq string `json:"probeReq"`
@@ -65,7 +70,7 @@ type EndPointMod struct {
 	// InActTries - No. of inactive probes to mark
 	// an end-point inactive
 	InActTries int `json:"inactiveReTries" yaml:"inactiveReTries"`
-	// ProbeType - Type of probe : "icmp","connect-tcp", "connect-udp", "connect-sctp", "http"
+	// ProbeType - Type of probe : "icmp","tcp", "udp", "sctp", "http"
 	ProbeType string `json:"probeType" yaml:"probeType"`
 	// ProbeReq - Request string in case of http probe
 	ProbeReq string `json:"probeReq" yaml:"probeReq"`
@@ -81,4 +86,14 @@ type ConfigurationEndPointFile struct {
 	TypeMeta   `yaml:",inline"`
 	ObjectMeta `yaml:"metadata,omitempty"`
 	Spec       EndPointMod `yaml:"spec"`
+}
+
+func (epResp EndPointGetEntry) Key() string {
+	return fmt.Sprintf("%s|%05d|%s|%s", epResp.HostName, epResp.ProbePort, epResp.ProbeType, epResp.Name)
+}
+
+func (epResp EPInformationGet) Sort() {
+	sort.Slice(epResp.EPInfo, func(i, j int) bool {
+		return epResp.EPInfo[i].Key() < epResp.EPInfo[j].Key()
+	})
 }

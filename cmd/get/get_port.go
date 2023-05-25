@@ -22,7 +22,6 @@ import (
 	"io"
 	"loxicmd/pkg/api"
 	"net/http"
-	"sort"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -84,9 +83,7 @@ func PrintGetPortResult(resp *http.Response, o api.RESTOptions) {
 	table := TableInit()
 
 	// Sort port Data
-	sort.Slice(portresp.Ports, func(i, j int) bool {
-		return portresp.Ports[i].PortNo < portresp.Ports[j].PortNo
-	})
+	portresp.Sort()
 
 	// Making Port data
 	for _, port := range portresp.Ports {

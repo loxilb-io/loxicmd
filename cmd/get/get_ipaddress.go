@@ -80,6 +80,8 @@ func PrintGetIPAddressResult(resp *http.Response, o api.RESTOptions) {
 		return
 	}
 
+	IPv4Addressresp.Sort()
+
 	// Table Init
 	table := TableInit()
 

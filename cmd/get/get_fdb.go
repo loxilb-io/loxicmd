@@ -78,6 +78,8 @@ func PrintGetFDBResult(resp *http.Response, o api.RESTOptions) {
 		return
 	}
 
+	FDBresp.Sort()
+
 	// Table Init
 	table := TableInit()
 

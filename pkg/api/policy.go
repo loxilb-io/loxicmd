@@ -15,6 +15,8 @@
  */
 package api
 
+import "sort"
+
 type Policy struct {
 	CommonAPI
 }
@@ -48,4 +50,10 @@ type ConfigurationPolicyFile struct {
 	TypeMeta   `yaml:",inline"`
 	ObjectMeta `yaml:"metadata,omitempty"`
 	Spec       PolMod `yaml:"spec"`
+}
+
+func (Polresp PolInformationGet) Sort() {
+	sort.Slice(Polresp.PolModInfo, func(i, j int) bool {
+		return Polresp.PolModInfo[i].Ident < Polresp.PolModInfo[j].Ident
+	})
 }

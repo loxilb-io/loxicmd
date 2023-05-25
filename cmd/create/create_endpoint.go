@@ -71,14 +71,14 @@ ex) loxicmd create endpoint 32.32.32.1 --name=32.32.32.1_http_8080 --probetype=h
 			}
 
 			if o.ProbeType != "http" && o.ProbeType != "https" && o.ProbeType != "ping" &&
-				o.ProbeType != "connect-tcp" && o.ProbeType != "connect-udp" &&
-				o.ProbeType != "connect-sctp" && o.ProbeType != "none" {
+				o.ProbeType != "tcp" && o.ProbeType != "udp" &&
+				o.ProbeType != "sctp" && o.ProbeType != "none" {
 				fmt.Printf("probetype '%s' is invalid\n", o.ProbeType)
 				return
 			}
 
-			if o.ProbeType == "http" || o.ProbeType == "https" || o.ProbeType == "connect-tcp" ||
-				o.ProbeType == "connect-udp" || o.ProbeType == "connect-sctp" {
+			if o.ProbeType == "http" || o.ProbeType == "https" || o.ProbeType == "tcp" ||
+				o.ProbeType == "udp" || o.ProbeType == "sctp" {
 				if o.ProbePort == 0 {
 					fmt.Printf("probeport cant be 0 for '%s' probes\n", o.ProbeType)
 					return
@@ -119,7 +119,9 @@ ex) loxicmd create endpoint 32.32.32.1 --name=32.32.32.1_http_8080 --probetype=h
 	}
 
 	createEndPointCmd.Flags().StringVar(&o.Name, "name", "", "Endpoint Identifier")
-	createEndPointCmd.Flags().StringVar(&o.ProbeType, "probetype", "ping", "Probe-type:ping,http,https,connect-udp,connect-tcp,connect-sctp,none")
+	createEndPointCmd.Flags().StringVar(&o.Name, "desc", "", "Endpoint Identifier")
+	createEndPointCmd.Flags().MarkDeprecated("desc", "This flag is decrecated, Use --name")
+	createEndPointCmd.Flags().StringVar(&o.ProbeType, "probetype", "ping", "Probe-type:ping,http,https,udp,tcp,sctp,none")
 	createEndPointCmd.Flags().StringVar(&o.ProbeReq, "probereq", "", "If probe is http/https, one can specify additional uri path")
 	createEndPointCmd.Flags().StringVar(&o.ProbeResp, "proberesp", "", "If probe is http/https, one can specify custom response string")
 	createEndPointCmd.Flags().IntVar(&o.ProbePort, "probeport", 0, "If probe is http,https,tcp,udp,sctp one can specify custom l4port to use")

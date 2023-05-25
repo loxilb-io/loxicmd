@@ -15,6 +15,11 @@
  */
 package api
 
+import (
+	"fmt"
+	"sort"
+)
+
 type IPv4Address struct {
 	CommonAPI
 }
@@ -44,4 +49,14 @@ type ConfigurationIPv4File struct {
 	TypeMeta   `yaml:",inline"`
 	ObjectMeta `yaml:"metadata,omitempty"`
 	Spec       Ipv4AddrMod `yaml:"spec"`
+}
+
+func (ipaddr Ipv4AddrGet) Key() string {
+	return fmt.Sprintf("%s|%s", ipaddr.Dev, ipaddr.IP)
+}
+
+func (IPv4Addressresp Ipv4AddrModGet) Sort() {
+	sort.Slice(IPv4Addressresp.IPv4Attr, func(i, j int) bool {
+		return IPv4Addressresp.IPv4Attr[i].Key() < IPv4Addressresp.IPv4Attr[j].Key()
+	})
 }

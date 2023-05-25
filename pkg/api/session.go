@@ -18,6 +18,7 @@ package api
 import (
 	"fmt"
 	"net"
+	"sort"
 )
 
 type Session struct {
@@ -51,4 +52,10 @@ func (s SessionMod) Validation() error {
 		return fmt.Errorf("TeID need to be not 0")
 	}
 	return nil
+}
+
+func (sessionresp SessionInformationGet) Sort() {
+	sort.Slice(sessionresp.SessionInfo, func(i, j int) bool {
+		return sessionresp.SessionInfo[i].Ident < sessionresp.SessionInfo[j].Ident
+	})
 }

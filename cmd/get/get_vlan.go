@@ -22,7 +22,6 @@ import (
 	"io"
 	"loxicmd/pkg/api"
 	"net/http"
-	"sort"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -70,10 +69,6 @@ func PrintGetVlanResult(resp *http.Response, o api.RESTOptions) {
 		fmt.Printf("Error: Failed to unmarshal HTTP response: (%s)\n", err.Error())
 		return
 	}
-	// Sort port Data
-	sort.Slice(Vlanresp.Vlans, func(i, j int) bool {
-		return Vlanresp.Vlans[i].Vid < Vlanresp.Vlans[j].Vid
-	})
 
 	// if json options enable, it print as a json format.
 	if o.PrintOption == "json" {
@@ -81,6 +76,9 @@ func PrintGetVlanResult(resp *http.Response, o api.RESTOptions) {
 		fmt.Println(string(resultIndent))
 		return
 	}
+
+	// Sort port Data
+	Vlanresp.Sort()
 
 	// Table Init
 	table := TableInit()

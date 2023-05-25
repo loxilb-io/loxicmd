@@ -15,6 +15,8 @@
  */
 package api
 
+import "sort"
+
 type Mirror struct {
 	CommonAPI
 }
@@ -90,4 +92,10 @@ type ConfigurationMirrorFile struct {
 	TypeMeta   `yaml:",inline"`
 	ObjectMeta `yaml:"metadata,omitempty"`
 	Spec       MirrMod `yaml:"spec"`
+}
+
+func (Mirrorresp MirrorGet) Sort() {
+	sort.Slice(Mirrorresp.Mirrors, func(i, j int) bool {
+		return Mirrorresp.Mirrors[i].Ident < Mirrorresp.Mirrors[j].Ident
+	})
 }
