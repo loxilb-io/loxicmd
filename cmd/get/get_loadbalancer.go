@@ -135,7 +135,7 @@ func PrintGetLbResult(resp *http.Response, o api.RESTOptions) {
 	for _, lbrule := range lbresp.LbRules {
 		if o.PrintOption == "wide" {
 			table.SetHeader(LOADBALANCER_WIDE_TITLE)
-			
+			secIPs = ""
 			if len(lbrule.SecondaryIPs) > 0 {
 				secIPs = lbrule.SecondaryIPs[0].SecondaryIP
 				for i := 1 ; i < len(lbrule.SecondaryIPs); i++ {
