@@ -125,7 +125,7 @@ func PrintGetLbResult(resp *http.Response, o api.RESTOptions) {
 		fmt.Println(string(resultIndent))
 		return
 	}
-	
+
 	lbresp.Sort()
 
 	// Table Init
@@ -138,7 +138,7 @@ func PrintGetLbResult(resp *http.Response, o api.RESTOptions) {
 			secIPs = ""
 			if len(lbrule.SecondaryIPs) > 0 {
 				secIPs = lbrule.SecondaryIPs[0].SecondaryIP
-				for i := 1 ; i < len(lbrule.SecondaryIPs); i++ {
+				for i := 1; i < len(lbrule.SecondaryIPs); i++ {
 					secIPs = secIPs + ", " + lbrule.SecondaryIPs[i].SecondaryIP
 				}
 			}
@@ -201,10 +201,19 @@ func Lbdump(restOptions *api.RESTOptions, path string) (string, error) {
 	defer f.Close()
 
 	// API Call
-	resp, err := LoadbalancerAPICall(restOptions)
+	client := api.NewLoxiClient(restOptions)
+	ctx := context.TODO()
+	var cancel context.CancelFunc
+	if restOptions.Timeout > 0 {
+		ctx, cancel = context.WithTimeout(context.TODO(), time.Duration(restOptions.Timeout)*time.Second)
+		defer cancel()
+	}
+	resp, err := client.LoadBalancerAll().Get(ctx)
 	if err != nil {
+		fmt.Printf("Error: %s\n", err.Error())
 		return "", err
 	}
+
 	resultByte, err := io.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Printf("Error: Failed to read HTTP response: (%s)\n", err.Error())
