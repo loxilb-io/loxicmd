@@ -65,6 +65,7 @@ func GetCmd(restOptions *api.RESTOptions) *cobra.Command {
 	GetCmd.AddCommand(NewGetFDBCmd(restOptions))
 	GetCmd.AddCommand(NewGetVxlanCmd(restOptions))
 	GetCmd.AddCommand(NewGetEndPointCmd(restOptions))
+	GetCmd.AddCommand(NewGetLogLevelCmd(restOptions))
 
 	return GetCmd
 }

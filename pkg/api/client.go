@@ -39,6 +39,7 @@ const (
 	loxiMirrorResource          = "config/mirror"
 	loxiFirewallResource        = "config/firewall"
 	loxiEndPointResource        = "config/endpoint"
+	loxiParamResource           = "config/params"
 	loxiStatusResource          = "status"
 )
 
@@ -273,6 +274,19 @@ func (l *LoxiClient) EndPoint() *Firewall {
 				provider:   loxiProvider,
 				apiVersion: loxiApiVersion,
 				resource:   loxiEndPointResource,
+			},
+		},
+	}
+}
+
+func (l *LoxiClient) Param() *Param {
+	return &Param{
+		CommonAPI: CommonAPI{
+			restClient: &l.restClient,
+			requestInfo: RequestInfo{
+				provider:   loxiProvider,
+				apiVersion: loxiApiVersion,
+				resource:   loxiParamResource,
 			},
 		},
 	}

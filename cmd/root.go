@@ -22,6 +22,7 @@ import (
 	"loxicmd/cmd/delete"
 	"loxicmd/cmd/dump"
 	"loxicmd/cmd/get"
+	"loxicmd/cmd/set"
 
 	"loxicmd/pkg/api"
 
@@ -74,6 +75,7 @@ loxicmd aim to provide all of the configuation for the loxilb.`,
 	rootCmd.AddCommand(get.GetCmd(restOptions))
 	rootCmd.AddCommand(create.CreateCmd(restOptions))
 	rootCmd.AddCommand(delete.DeleteCmd(restOptions))
+	rootCmd.AddCommand(set.SetParamCmd(restOptions))
 
 	saveCmd := dump.SaveCmd(saveOptions, restOptions)
 	applyCmd := dump.ApplyCmd(applyOptions, restOptions)
