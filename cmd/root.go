@@ -16,6 +16,7 @@
 package cmd
 
 import (
+	"fmt"
 	"os"
 
 	"loxicmd/cmd/create"
@@ -28,6 +29,19 @@ import (
 
 	"github.com/spf13/cobra"
 )
+
+var Version string = ""
+var BuildInfo string = ""
+
+var VersionCmd = &cobra.Command{
+	Use:   "version",
+	Short: "Get a version",
+	Long:  `It shows Loxicmd version.`,
+
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Printf("%s %s\n", Version, BuildInfo)
+	},
+}
 
 var CompletionCmd = &cobra.Command{
 	Use:                   "completion [bash|zsh|fish|powershell]",
@@ -103,6 +117,8 @@ loxicmd aim to provide all of the configuation for the loxilb.`,
 	rootCmd.AddCommand(saveCmd)
 	rootCmd.AddCommand(applyCmd)
 	rootCmd.AddCommand(CompletionCmd)
+	rootCmd.AddCommand(VersionCmd)
+
 	err := rootCmd.Execute()
 	if err != nil {
 		os.Exit(1)
