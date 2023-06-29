@@ -29,7 +29,7 @@ import (
 
 type CreateEndPointOptions struct {
 	Host          string
-	Name		  string
+	Name          string
 	ProbeType     string
 	ProbeReq      string
 	ProbeResp     string
@@ -84,7 +84,7 @@ ex) loxicmd create endpoint 32.32.32.1 --name=32.32.32.1_http_8080 --probetype=h
 					return
 				}
 			}
-			
+
 			if o.ProbeType == "ping" && o.ProbePort != 0 {
 				fmt.Printf("probeport should be 0 for '%s' probes\n", o.ProbeType)
 				return

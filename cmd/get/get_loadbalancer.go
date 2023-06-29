@@ -189,6 +189,8 @@ func LoadbalancerAPICall(restOptions *api.RESTOptions) (*http.Response, error) {
 }
 
 func Lbdump(restOptions *api.RESTOptions, path string) (string, error) {
+	lbresp := api.LbRuleModGet{}
+	dresp := api.LbRuleModGet{}
 	// File Open
 	fileP := []string{"lbconfig_", ".txt"}
 	t := time.Now()
@@ -218,8 +220,26 @@ func Lbdump(restOptions *api.RESTOptions, path string) (string, error) {
 	if err != nil {
 		fmt.Printf("Error: Failed to read HTTP response: (%s)\n", err.Error())
 	}
+
+	if err := json.Unmarshal(resultByte, &lbresp); err != nil {
+		fmt.Printf("Error: Failed to unmarshal HTTP response: (%s)\n", err.Error())
+		return "", err
+	}
+
+	for _, lbrule := range lbresp.LbRules {
+		if !lbrule.Service.Managed {
+			dresp.LbRules = append(dresp.LbRules, lbrule)
+		}
+	}
+
+	dumpBytes, err := json.Marshal(dresp)
+	if err != nil {
+		fmt.Printf("Error: Failed to marshal dump LB rules (%s)\n", err.Error())
+		return "", err
+	}
+
 	// Write
-	_, err = f.Write(resultByte)
+	_, err = f.Write(dumpBytes)
 	if err != nil {
 		fmt.Println("File write error")
 	}

@@ -18,26 +18,26 @@ package delete
 import (
 	"context"
 	"fmt"
+	"loxicmd/pkg/api"
 	"net"
 	"net/http"
 	"os"
-	"time"
 	"strconv"
-	"loxicmd/pkg/api"
+	"time"
 
 	"github.com/spf13/cobra"
 )
 
 type DeleteEndPoint struct {
-	Host 		string
-	Name		string
-	ProbeType 	string
-	ProbePort 	int
+	Host      string
+	Name      string
+	ProbeType string
+	ProbePort int
 }
 
 func NewDeleteEndPointCmd(restOptions *api.RESTOptions) *cobra.Command {
 	o := DeleteEndPoint{}
-	
+
 	var deleteEndPointCmd = &cobra.Command{
 		Use:   "endpoint IP [--name=<id>] [--probetype=<probetype>] [--probeport=<port>]",
 		Short: "Delete a LB EndPoint from monitoring",
@@ -88,14 +88,14 @@ ex) loxicmd delete endpoint 31.31.31.31 --name=31.31.31.31_http_8080 --probetype
 				return
 			}
 
-	/*		subResources := []string{
-				"epipaddress", o.Host,
-				"name", o.Name,
-				"probetype", o.ProbeType,
-				"probeport", strconv.Itoa(o.ProbePort),
-			}
-			resp, err := client.EndPoint().SubResources(subResources).Delete(ctx)
-	*/	
+			/*		subResources := []string{
+						"epipaddress", o.Host,
+						"name", o.Name,
+						"probetype", o.ProbeType,
+						"probeport", strconv.Itoa(o.ProbePort),
+					}
+					resp, err := client.EndPoint().SubResources(subResources).Delete(ctx)
+			*/
 			subResources := []string{
 				"epipaddress", o.Host,
 			}
@@ -103,7 +103,7 @@ ex) loxicmd delete endpoint 31.31.31.31 --name=31.31.31.31_http_8080 --probetype
 			qmap := map[string]string{}
 			qmap["name"] = o.Name
 			qmap["probe_type"] = o.ProbeType
-			qmap["probe_port"] =  strconv.Itoa(o.ProbePort)
+			qmap["probe_port"] = strconv.Itoa(o.ProbePort)
 
 			resp, err := client.EndPoint().SubResources(subResources).Query(qmap).Delete(ctx)
 
