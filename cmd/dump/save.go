@@ -53,7 +53,11 @@ func SaveCmd(saveOpts *SaveOptions, restOptions *api.RESTOptions) *cobra.Command
 				}
 			}
 			if saveOpts.SaveIpConfig || saveOpts.SaveAllConfig {
-				file := get.Nlpdump(dpath)
+				file, err := get.Nlpdump(dpath)
+				if err != nil {
+					fmt.Println(err.Error())
+					return
+				}
 				fmt.Println("IP Configuration saved in", file)
 			}
 			if saveOpts.SaveLBConfig || saveOpts.SaveAllConfig {

@@ -511,7 +511,7 @@ func GetBonds() {
 	}
 }
 
-func Nlpdump(dpath string) string {
+func Nlpdump(dpath string) (string, error) {
 	var ret int
 	var err error
 	fileP := []string{"ipconfig_", ".txt"}
@@ -542,7 +542,7 @@ func Nlpdump(dpath string) string {
 	if err != nil {
 		ret = -1
 		fmt.Println("Can't get device info")
-		return file
+		return file, err
 	}
 
 	for _, link := range links {
@@ -586,7 +586,7 @@ func Nlpdump(dpath string) string {
 		_, err := cmd.Output()
 		if err != nil {
 			fmt.Println("Can't backup ", cpath)
-			return file
+			return file, err
 		}
 	}
 	command := "cp -R " + path + "/* " + cpath
@@ -594,6 +594,8 @@ func Nlpdump(dpath string) string {
 	_, err = cmd.Output()
 	if err != nil {
 		fmt.Println(err, command)
+		fmt.Println("Failed copy file to", cpath)
+		return file, err
 	}
-	return file
+	return file, err
 }

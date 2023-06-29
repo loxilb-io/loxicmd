@@ -242,7 +242,8 @@ func Lbdump(restOptions *api.RESTOptions, path string) (string, error) {
 	fmt.Println(cmd)
 	_, err = cmd.Output()
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("Failed copy file to", cfile)
+		return file, err
 	}
 	return file, nil
 }
