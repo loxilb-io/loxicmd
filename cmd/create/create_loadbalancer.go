@@ -44,7 +44,7 @@ type CreateLoadBalancerOptions struct {
 	Mark       uint16
 	SCTP       []string
 	Endpoints  []string
-	SecIPs	   []string	
+	SecIPs     []string
 	Select     string
 }
 
@@ -202,13 +202,13 @@ ex) loxicmd create lb 192.168.0.200 --tcp=80:32015 --endpoints=10.212.0.1:1,10.2
 						lbModel.Endpoints = append(lbModel.Endpoints, ep)
 					}
 
-					for _, sip:= range o.SecIPs {
+					for _, sip := range o.SecIPs {
 						sp := api.LoadBalancerSecIp{
 							SecondaryIP: sip,
 						}
 						lbModel.SecondaryIPs = append(lbModel.SecondaryIPs, sp)
 					}
-					
+
 					resp, err := LoadbalancerAPICall(restOptions, lbModel)
 					if err != nil {
 						fmt.Printf("Error: %s\n", err.Error())

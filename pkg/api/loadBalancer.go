@@ -31,9 +31,9 @@ type LbRuleModGet struct {
 }
 
 type LoadBalancerModel struct {
-	Service   		LoadBalancerService    `json:"serviceArguments" yaml:"serviceArguments"`
-	SecondaryIPs    []LoadBalancerSecIp    `json:"secondaryIPs" yaml:"secondaryIPs"`
-	Endpoints 		[]LoadBalancerEndpoint `json:"endpoints" yaml:"endpoints"`
+	Service      LoadBalancerService    `json:"serviceArguments" yaml:"serviceArguments"`
+	SecondaryIPs []LoadBalancerSecIp    `json:"secondaryIPs" yaml:"secondaryIPs"`
+	Endpoints    []LoadBalancerEndpoint `json:"endpoints" yaml:"endpoints"`
 }
 
 type LoadBalancerService struct {
@@ -46,6 +46,7 @@ type LoadBalancerService struct {
 	Monitor    bool     `json:"Monitor"        yaml:"Monitor"`
 	Timeout    uint32   `json:"inactiveTimeOut" yaml:"inactiveTimeOut"`
 	Block      uint16   `json:"block"          yaml:"block"`
+	Managed    bool     `json:"managed,omitempty" yaml:"managed"`
 }
 
 type LoadBalancerEndpoint struct {
