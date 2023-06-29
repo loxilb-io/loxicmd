@@ -80,7 +80,7 @@ loxicmd aim to provide all of the configuation for the loxilb.`,
 	saveOptions := &dump.SaveOptions{}
 	applyOptions := &dump.ApplyOptions{}
 
-	rootCmd.PersistentFlags().Int16VarP(&restOptions.Timeout, "timeout", "t", 5, "Set timeout")
+	rootCmd.PersistentFlags().Int16VarP(&restOptions.Timeout, "timeout", "t", 10, "Set timeout")
 	rootCmd.PersistentFlags().StringVarP(&restOptions.Protocol, "protocol", "", "http", "Set API server http/https")
 	rootCmd.PersistentFlags().StringVarP(&restOptions.PrintOption, "output", "o", "", "Set output layer (ex.) wide, json)")
 	rootCmd.PersistentFlags().StringVarP(&restOptions.ServerIP, "apiserver", "s", "127.0.0.1", "Set API server IP address")
