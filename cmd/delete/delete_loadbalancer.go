@@ -52,13 +52,13 @@ func NewDeleteLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 	var sctpPortNumberList []int
 	var icmpPortNumberList bool
 	var BGP bool
-	var Block uint16
+	var Mark uint16
 
 	var externalIP string
 	//var endpointList []string
 
 	var deleteLbCmd = &cobra.Command{
-		Use:   "lb <EXTERNAL-IP> [--tcp portNumber] [--udp portNumber] [--sctp portNumber] [--icmp portNumber] [--bgp] [--block=<val>]",
+		Use:   "lb <EXTERNAL-IP> [--tcp portNumber] [--udp portNumber] [--sctp portNumber] [--icmp portNumber] [--bgp] [--mark=<val>]",
 		Short: "Delete a LoadBalancer",
 		Long:  `Delete a LoadBalancer.`,
 		PreRun: func(cmd *cobra.Command, args []string) {
@@ -104,7 +104,7 @@ func NewDeleteLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 					}
 					qmap := map[string]string{}
 					qmap["bgp"] = fmt.Sprintf("%v", BGP)
-					qmap["block"] = fmt.Sprintf("%v", Block)
+					qmap["block"] = fmt.Sprintf("%v", Mark)
 					fmt.Printf("subResources: %v\n", subResources)
 					resp, err := client.LoadBalancer().SubResources(subResources).Query(qmap).Delete(ctx)
 					if err != nil {
@@ -129,7 +129,7 @@ func NewDeleteLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 	deleteLbCmd.Flags().IntSliceVar(&sctpPortNumberList, "sctp", sctpPortNumberList, "SCTP port list can be specified as '<port>,<port>...'")
 	deleteLbCmd.Flags().BoolVarP(&icmpPortNumberList, "icmp", "", false, "ICMP port list can be specified as '<port>,<port>...'")
 	deleteLbCmd.Flags().BoolVarP(&BGP, "bgp", "", false, "BGP enable information'")
-	deleteLbCmd.Flags().Uint16VarP(&Block, "block", "", 0, "Specify the block-num to segregate a load-balancer VIP service")
+	deleteLbCmd.Flags().Uint16VarP(&Mark, "mark", "", 0, "Specify the mark num to segregate a load-balancer VIP service")
 	return deleteLbCmd
 }
 
