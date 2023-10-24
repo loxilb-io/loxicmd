@@ -17,8 +17,8 @@ package get
 
 var (
 	CONNTRACK_TITLE         = []string{"destIP", "srcIP", "dPort", "sPort", "proto", "state", "act", "packets", "bytes"}
-	LOADBALANCER_TITLE      = []string{"External IP", "Port", "Protocol", "Mark", "Select", "Mode", "# of Endpoints", "Monitor"}
-	LOADBALANCER_WIDE_TITLE = []string{"External IP", "Secondary IPs", "Port", "Protocol", "Mark", "Select", "Mode", "Endpoint IP", "Target Port", "Weight", "State"}
+	LOADBALANCER_TITLE      = []string{"Ext IP", "Port", "Proto", "Mark", "Sel", "Mode", "# of Endpoints", "Monitor"}
+	LOADBALANCER_WIDE_TITLE = []string{"Ext IP", "Sec IPs", "Port", "Proto", "Mark", "Sel", "Mode", "Endpoint", "EPort", "Weight", "State", "Counters"}
 	SESSION_TITLE           = []string{"ident", "session IP"}
 	SESSION_WIDE_TITLE      = []string{"ident", "session IP", "access Network Tunnel", "core Network Tunnel"}
 	PORT_WIDE_TITLE         = []string{"index", "portname", "MAC", "link/state", "mtu", "isActive/bpf\nPort type", "Statistics", "L3Info", "L2Info", "Sync"}
