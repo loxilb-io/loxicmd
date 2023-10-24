@@ -147,18 +147,18 @@ func PrintGetLbResult(resp *http.Response, o api.RESTOptions) {
 				for i, eps := range lbrule.Endpoints {
 					if i == 0 {
 						data = append(data, []string{lbrule.Service.ExternalIP, secIPs, fmt.Sprintf("%d", lbrule.Service.Port), lbrule.Service.Protocol, fmt.Sprintf("%d", lbrule.Service.Block), NumToSelect(int(lbrule.Service.Sel)), NumToMode(int(lbrule.Service.Mode)),
-							eps.EndpointIP, fmt.Sprintf("%d", eps.TargetPort), fmt.Sprintf("%d", eps.Weight), eps.State})
+							eps.EndpointIP, fmt.Sprintf("%d", eps.TargetPort), fmt.Sprintf("%d", eps.Weight), eps.State, eps.Counter})
 					} else {
-						data = append(data, []string{"", "", "", "", "", "", "", eps.EndpointIP, fmt.Sprintf("%d", eps.TargetPort), fmt.Sprintf("%d", eps.Weight), eps.State})
+						data = append(data, []string{"", "", "", "", "", "", "", eps.EndpointIP, fmt.Sprintf("%d", eps.TargetPort), fmt.Sprintf("%d", eps.Weight), eps.State, eps.Counter})
 					}
 				}
 			} else {
 				for i, eps := range lbrule.Endpoints {
 					if i == 0 {
 						data = append(data, []string{lbrule.Service.ExternalIP, secIPs, fmt.Sprintf("%d", lbrule.Service.Port), lbrule.Service.Protocol, fmt.Sprintf("%d", lbrule.Service.Block), NumToSelect(int(lbrule.Service.Sel)), NumToMode(int(lbrule.Service.Mode)),
-							eps.EndpointIP, fmt.Sprintf("%d", eps.TargetPort), fmt.Sprintf("%d", eps.Weight), "-"})
+							eps.EndpointIP, fmt.Sprintf("%d", eps.TargetPort), fmt.Sprintf("%d", eps.Weight), "-", eps.Counter})
 					} else {
-						data = append(data, []string{"", "", "", "", "", "", "", eps.EndpointIP, fmt.Sprintf("%d", eps.TargetPort), fmt.Sprintf("%d", eps.Weight), "-"})
+						data = append(data, []string{"", "", "", "", "", "", "", eps.EndpointIP, fmt.Sprintf("%d", eps.TargetPort), fmt.Sprintf("%d", eps.Weight), "-", eps.Counter})
 					}
 				}
 			}
@@ -228,6 +228,10 @@ func Lbdump(restOptions *api.RESTOptions, path string) (string, error) {
 
 	for _, lbrule := range lbresp.LbRules {
 		if !lbrule.Service.Managed {
+			for i, _ := range lbrule.Endpoints {
+				lbacts := &lbrule.Endpoints[i]
+				lbacts.Counter = ""
+			}
 			dresp.LbRules = append(dresp.LbRules, lbrule)
 		}
 	}

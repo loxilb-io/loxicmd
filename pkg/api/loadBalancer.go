@@ -54,6 +54,7 @@ type LoadBalancerEndpoint struct {
 	TargetPort uint16 `json:"targetPort" yaml:"targetPort"`
 	Weight     uint8  `json:"weight"     yaml:"weight"`
 	State      string `json:"state"      yaml:"state"`
+	Counter    string `json:"counter"    yaml:"counter"`
 }
 
 type LoadBalancerSecIp struct {
