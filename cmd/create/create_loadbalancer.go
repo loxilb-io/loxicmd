@@ -46,6 +46,7 @@ type CreateLoadBalancerOptions struct {
 	Endpoints  []string
 	SecIPs     []string
 	Select     string
+	Name	   string
 }
 
 type CreateLoadBalancerResult struct {
@@ -104,7 +105,7 @@ func NewCreateLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 	o := CreateLoadBalancerOptions{}
 
 	var createLbCmd = &cobra.Command{
-		Use:   "lb IP [--select=<rr|hash|priority>] [--tcp=<port>:<targetPort>] [--udp=<port>:<targetPort>] [--sctp=<port>:<targetPort>] [--icmp] [--mark=<val>] [--secips=<ip>,][--endpoints=<ip>:<weight>,] [--mode=<onearm|fullnat>] [--bgp] [--monitor] [--inatimeout=<to>]",
+		Use:   "lb IP [--select=<rr|hash|priority>] [--tcp=<port>:<targetPort>] [--udp=<port>:<targetPort>] [--sctp=<port>:<targetPort>] [--icmp] [--mark=<val>] [--secips=<ip>,][--endpoints=<ip>:<weight>,] [--mode=<onearm|fullnat>] [--bgp] [--monitor] [--inatimeout=<to>] [--name=<service-name>]",
 		Short: "Create a LoadBalancer",
 		Long: `Create a LoadBalancer
 
@@ -117,6 +118,7 @@ func NewCreateLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 	fullnat - LB put Service IP as scrIP
 
 ex) loxicmd create lb 192.168.0.200 --tcp=80:32015 --endpoints=10.212.0.1:1,10.212.0.2:1,10.212.0.3:1
+    loxicmd create lb 192.168.0.200 --tcp=80:32015 --name="http-service" --endpoints=10.212.0.1:1,10.212.0.2:1,10.212.0.3:1
 	loxicmd create lb 192.168.0.200 --udp=80:32015 --endpoints=10.212.0.1:1,10.212.0.2:1,10.212.0.3:1 --mark=10
 	loxicmd create lb 192.168.0.200 --tcp=80:32015 --udp=80:32015 --endpoints=10.212.0.1:1,10.212.0.2:1,10.212.0.3:1
 	loxicmd create lb 192.168.0.200 --select=hash --tcp=80:32015 --endpoints=10.212.0.1:1,10.212.0.2:1,10.212.0.3:1
@@ -185,6 +187,7 @@ ex) loxicmd create lb 192.168.0.200 --tcp=80:32015 --endpoints=10.212.0.1:1,10.2
 						Mode:       api.LbMode(ModeToNum(o.Mode)),
 						Timeout:    o.Timeout,
 						Block:      o.Mark,
+						Name:       o.Name,
 					}
 
 					if o.Mode == "dsr" && targetPort != port {
@@ -240,6 +243,7 @@ ex) loxicmd create lb 192.168.0.200 --tcp=80:32015 --endpoints=10.212.0.1:1,10.2
 	createLbCmd.Flags().Uint32VarP(&o.Timeout, "inatimeout", "", 0, "Specify the timeout (in seconds) after which a LB session will be reset for inactivity")
 	createLbCmd.Flags().Uint16VarP(&o.Mark, "mark", "", 0, "Specify the mark num to segregate a load-balancer VIP service")
 	createLbCmd.Flags().StringSliceVar(&o.Endpoints, "endpoints", o.Endpoints, "Endpoints is pairs that can be specified as '<endpointIP>:<Weight>'")
+	createLbCmd.Flags().StringVarP(&o.Name, "name", "", o.Name, "Name for load balancer rule")
 
 	return createLbCmd
 }

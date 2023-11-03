@@ -59,7 +59,7 @@ func NewGetLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 
 		},
 	}
-
+	GetLbCmd.Flags().StringVarP(&restOptions.ServiceName, "servName", "", restOptions.ServiceName, "Name for load balancer rule")
 	return GetLbCmd
 }
 
@@ -133,6 +133,9 @@ func PrintGetLbResult(resp *http.Response, o api.RESTOptions) {
 
 	// Making load balance data
 	for _, lbrule := range lbresp.LbRules {
+		if o.ServiceName != "" && o.ServiceName != lbrule.Service.Name {
+			continue
+		}
 		if o.PrintOption == "wide" {
 			table.SetHeader(LOADBALANCER_WIDE_TITLE)
 			secIPs = ""
@@ -146,25 +149,25 @@ func PrintGetLbResult(resp *http.Response, o api.RESTOptions) {
 			if lbrule.Service.Monitor {
 				for i, eps := range lbrule.Endpoints {
 					if i == 0 {
-						data = append(data, []string{lbrule.Service.ExternalIP, secIPs, fmt.Sprintf("%d", lbrule.Service.Port), lbrule.Service.Protocol, fmt.Sprintf("%d", lbrule.Service.Block), NumToSelect(int(lbrule.Service.Sel)), NumToMode(int(lbrule.Service.Mode)),
+						data = append(data, []string{lbrule.Service.ExternalIP, secIPs, fmt.Sprintf("%d", lbrule.Service.Port), lbrule.Service.Protocol, lbrule.Service.Name, fmt.Sprintf("%d", lbrule.Service.Block), NumToSelect(int(lbrule.Service.Sel)), NumToMode(int(lbrule.Service.Mode)),
 							eps.EndpointIP, fmt.Sprintf("%d", eps.TargetPort), fmt.Sprintf("%d", eps.Weight), eps.State, eps.Counter})
 					} else {
-						data = append(data, []string{"", "", "", "", "", "", "", eps.EndpointIP, fmt.Sprintf("%d", eps.TargetPort), fmt.Sprintf("%d", eps.Weight), eps.State, eps.Counter})
+						data = append(data, []string{"", "", "", "", "", "", "", "", eps.EndpointIP, fmt.Sprintf("%d", eps.TargetPort), fmt.Sprintf("%d", eps.Weight), eps.State, eps.Counter})
 					}
 				}
 			} else {
 				for i, eps := range lbrule.Endpoints {
 					if i == 0 {
-						data = append(data, []string{lbrule.Service.ExternalIP, secIPs, fmt.Sprintf("%d", lbrule.Service.Port), lbrule.Service.Protocol, fmt.Sprintf("%d", lbrule.Service.Block), NumToSelect(int(lbrule.Service.Sel)), NumToMode(int(lbrule.Service.Mode)),
+						data = append(data, []string{lbrule.Service.ExternalIP, secIPs, fmt.Sprintf("%d", lbrule.Service.Port), lbrule.Service.Protocol, lbrule.Service.Name, fmt.Sprintf("%d", lbrule.Service.Block), NumToSelect(int(lbrule.Service.Sel)), NumToMode(int(lbrule.Service.Mode)),
 							eps.EndpointIP, fmt.Sprintf("%d", eps.TargetPort), fmt.Sprintf("%d", eps.Weight), "-", eps.Counter})
 					} else {
-						data = append(data, []string{"", "", "", "", "", "", "", eps.EndpointIP, fmt.Sprintf("%d", eps.TargetPort), fmt.Sprintf("%d", eps.Weight), "-", eps.Counter})
+						data = append(data, []string{"", "", "", "", "", "", "", "", eps.EndpointIP, fmt.Sprintf("%d", eps.TargetPort), fmt.Sprintf("%d", eps.Weight), "-", eps.Counter})
 					}
 				}
 			}
 		} else {
 			table.SetHeader(LOADBALANCER_TITLE)
-			data = append(data, []string{lbrule.Service.ExternalIP, fmt.Sprintf("%d", lbrule.Service.Port), lbrule.Service.Protocol, fmt.Sprintf("%d", lbrule.Service.Block), NumToSelect(int(lbrule.Service.Sel)), NumToMode(int(lbrule.Service.Mode)), fmt.Sprintf("%d", len(lbrule.Endpoints)), BoolToMon(lbrule.Service.Monitor)})
+			data = append(data, []string{lbrule.Service.ExternalIP, fmt.Sprintf("%d", lbrule.Service.Port), lbrule.Service.Protocol, lbrule.Service.Name, fmt.Sprintf("%d", lbrule.Service.Block), NumToSelect(int(lbrule.Service.Sel)), NumToMode(int(lbrule.Service.Mode)), fmt.Sprintf("%d", len(lbrule.Endpoints)), BoolToMon(lbrule.Service.Monitor)})
 		}
 	}
 
