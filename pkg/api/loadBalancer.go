@@ -47,6 +47,7 @@ type LoadBalancerService struct {
 	Timeout    uint32   `json:"inactiveTimeOut" yaml:"inactiveTimeOut"`
 	Block      uint16   `json:"block"          yaml:"block"`
 	Managed    bool     `json:"managed,omitempty" yaml:"managed"`
+	Name       string   `json:"name,omitempty" yaml:"name"`
 }
 
 type LoadBalancerEndpoint struct {

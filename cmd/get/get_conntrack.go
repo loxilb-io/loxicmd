@@ -55,7 +55,7 @@ func NewGetConntrackCmd(restOptions *api.RESTOptions) *cobra.Command {
 
 		},
 	}
-
+	GetctCmd.Flags().StringVarP(&restOptions.ServiceName, "servName", "", restOptions.ServiceName, "Name for load balancer rule")
 	return GetctCmd
 }
 
@@ -84,17 +84,21 @@ func PrintGetCTResult(resp *http.Response, o api.RESTOptions) {
 
 	// Table Init
 	table := TableInit()
-	table.SetHeader([]string{"destIP", "srcIP", "dport", "sport", "proto", "state", "act", "packets", "bytes"})
+	table.SetHeader([]string{"Service Name","destIP", "srcIP", "dport", "sport", "proto", "state", "act", "packets", "bytes"})
 	// Making load balance data
-	data = makeConntrackData(ctresp)
+	data = makeConntrackData(o, ctresp)
 
 	// Rendering the load balance data to table
 	TableShow(data, table)
 }
 
-func makeConntrackData(ctresp api.CtInformationGet) (data [][]string) {
+func makeConntrackData(o api.RESTOptions,ctresp api.CtInformationGet) (data [][]string) {
 	for _, conntrack := range ctresp.CtInfo {
+		if o.ServiceName != "" && o.ServiceName != conntrack.ServName {
+			continue
+		}
 		data = append(data, []string{
+			conntrack.ServName,
 			conntrack.Dip,
 			conntrack.Sip,
 			fmt.Sprintf("%d", conntrack.Dport),

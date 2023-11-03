@@ -65,6 +65,7 @@ type RESTOptions struct {
 	ServerIP    string
 	ServerPort  int16
 	Timeout     int16
+	ServiceName string
 }
 
 type RESTClient struct {

@@ -38,6 +38,7 @@ type ConntrackInformation struct {
 	CAct   string `json:"conntrackAct"`
 	Pkts   uint64 `json:"packets"`
 	Bytes  uint64 `json:"bytes"`
+	ServName string `json:"servName"`
 }
 
 func (ct ConntrackInformation) Key() string {
