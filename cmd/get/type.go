@@ -43,4 +43,5 @@ var (
 	FIREWALL_TITLE          = []string{"Source IP", "destination IP", "min SPort", "max SPort", "min DPort", "max DPort", "protocol", "port Name", "preference", "Option"}
 	ENDPOINT_TITLE          = []string{"Host", "Name", "ptype", "port", "duration", "retries", "minDelay", "avgDelay", "maxDelay", "State"}
 	PARAM_TITLE             = []string{"Param Name", "Value"}
+	BGPNEIGHBOR_TITLE       = []string{"Peer", "AS", "UP/Down", "State"}
 )

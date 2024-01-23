@@ -57,6 +57,7 @@ Create - Service type external load-balancer, Vlan, Vxlan, Qos Policies,
 	createCmd.AddCommand(NewCreateMirrorCmd(restOptions))
 	createCmd.AddCommand(NewCreateFirewallCmd(restOptions))
 	createCmd.AddCommand(NewCreateEndPointCmd(restOptions))
+	createCmd.AddCommand(NewCreateBGPNeighborCmd(restOptions))
 
 	return createCmd
 }

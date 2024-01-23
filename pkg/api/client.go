@@ -40,6 +40,7 @@ const (
 	loxiFirewallResource        = "config/firewall"
 	loxiEndPointResource        = "config/endpoint"
 	loxiParamResource           = "config/params"
+	loxiBGPNeighResource        = "config/bgp/neigh"
 	loxiStatusResource          = "status"
 )
 
@@ -287,6 +288,19 @@ func (l *LoxiClient) Param() *Param {
 				provider:   loxiProvider,
 				apiVersion: loxiApiVersion,
 				resource:   loxiParamResource,
+			},
+		},
+	}
+}
+
+func (l *LoxiClient) BGPNeighbor() *BGPNeighbor {
+	return &BGPNeighbor{
+		CommonAPI: CommonAPI{
+			restClient: &l.restClient,
+			requestInfo: RequestInfo{
+				provider:   loxiProvider,
+				apiVersion: loxiApiVersion,
+				resource:   loxiBGPNeighResource,
 			},
 		},
 	}
