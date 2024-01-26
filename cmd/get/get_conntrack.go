@@ -84,7 +84,7 @@ func PrintGetCTResult(resp *http.Response, o api.RESTOptions) {
 
 	// Table Init
 	table := TableInit()
-	table.SetHeader([]string{"Service Name","destIP", "srcIP", "dport", "sport", "proto", "state", "act", "packets", "bytes"})
+	table.SetHeader([]string{"Service Name", "destIP", "srcIP", "dport", "sport", "proto", "state", "act", "packets", "bytes"})
 	// Making load balance data
 	data = makeConntrackData(o, ctresp)
 
@@ -92,7 +92,7 @@ func PrintGetCTResult(resp *http.Response, o api.RESTOptions) {
 	TableShow(data, table)
 }
 
-func makeConntrackData(o api.RESTOptions,ctresp api.CtInformationGet) (data [][]string) {
+func makeConntrackData(o api.RESTOptions, ctresp api.CtInformationGet) (data [][]string) {
 	for _, conntrack := range ctresp.CtInfo {
 		if o.ServiceName != "" && o.ServiceName != conntrack.ServName {
 			continue
