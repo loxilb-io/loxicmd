@@ -46,7 +46,7 @@ type CreateLoadBalancerOptions struct {
 	Endpoints  []string
 	SecIPs     []string
 	Select     string
-	Name	   string
+	Name       string
 }
 
 type CreateLoadBalancerResult struct {

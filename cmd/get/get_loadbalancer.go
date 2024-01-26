@@ -72,6 +72,8 @@ func NumToSelect(sel int) string {
 		ret = "hash"
 	case 2:
 		ret = "priority"
+	case 3:
+		ret = "persist"
 	default:
 		ret = "rr"
 	}
@@ -230,8 +232,8 @@ func Lbdump(restOptions *api.RESTOptions, path string) (string, error) {
 	}
 
 	for _, lbrule := range lbresp.LbRules {
-		if !lbrule.Service.Managed {
-			for i, _ := range lbrule.Endpoints {
+		if !lbrule.Service.Managed && !strings.Contains(lbrule.Service.Name, "ipvs") {
+			for i := range lbrule.Endpoints {
 				lbacts := &lbrule.Endpoints[i]
 				lbacts.Counter = ""
 			}
