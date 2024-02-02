@@ -574,18 +574,35 @@ func Nlpdump(dpath string) (string, error) {
 		}
 	}
 
-	cpath := dpath + "ipconfig"
+	cpath := dpath + "ipconfig"    // current path
+	bpath := dpath + "ipconfig.bk" // back path
+
+	if _, err := os.Stat(bpath); err == nil {
+		command := "rm -rf " + bpath
+		cmd := exec.Command("bash", "-c", command)
+		_, err := cmd.Output()
+		if err != nil {
+			fmt.Println(err, command)
+			fmt.Println("Can't remove backup ", bpath)
+		}
+	}
+
 	if _, err := os.Stat(cpath); errors.Is(err, os.ErrNotExist) {
 		err := os.Mkdir(cpath, os.ModePerm)
 		if err != nil {
 			fmt.Println("Can't create config dir: ", cpath)
 		}
 	} else {
-		command := "mv " + cpath + " " + cpath + ".bk"
+		command := "mv " + cpath + " " + bpath
 		cmd := exec.Command("bash", "-c", command)
 		_, err := cmd.Output()
 		if err != nil {
 			fmt.Println("Can't backup ", cpath)
+			return file, err
+		}
+		err = os.Mkdir(cpath, os.ModePerm)
+		if err != nil {
+			fmt.Println("Can't create config dir: ", cpath)
 			return file, err
 		}
 	}
