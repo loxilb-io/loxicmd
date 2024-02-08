@@ -44,4 +44,5 @@ var (
 	ENDPOINT_TITLE          = []string{"Host", "Name", "ptype", "port", "duration", "retries", "minDelay", "avgDelay", "maxDelay", "State"}
 	PARAM_TITLE             = []string{"Param Name", "Value"}
 	BGPNEIGHBOR_TITLE       = []string{"Peer", "AS", "UP/Down", "State"}
+	HASTATE_TITLE           = []string{"Instance", "HAState"}
 )
