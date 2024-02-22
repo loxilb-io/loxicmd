@@ -66,7 +66,7 @@ func ReadCreateLoadBalancerOptions(o *CreateLoadBalancerOptions, args []string) 
 	if val := net.ParseIP(args[0]); val != nil {
 		o.ExternalIP = args[0]
 	} else {
-		return fmt.Errorf("Externel IP '%s' is invalid format", args[0])
+		return fmt.Errorf("externel IP '%s' is invalid format", args[0])
 	}
 	return nil
 }

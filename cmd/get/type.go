@@ -45,4 +45,6 @@ var (
 	PARAM_TITLE             = []string{"Param Name", "Value"}
 	BGPNEIGHBOR_TITLE       = []string{"Peer", "AS", "UP/Down", "State"}
 	HASTATE_TITLE           = []string{"Instance", "HAState"}
+	BFD_TITLE               = []string{"Instance", "RemoteIP", "State"}
+	BFD_WIDE_TITLE          = []string{"Instance", "RemoteIP", "SourceIP", "Port", "Interval","Retry Count", "State"}
 )
