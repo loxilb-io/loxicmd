@@ -34,14 +34,14 @@ func SetParamCmd(restOptions *api.RESTOptions) *cobra.Command {
 	SetParamCmd := &cobra.Command{
 		Use:   "set",
 		Short: "Set configurations",
-		Long:  `Set the configuration like log-level`,
+		Long:  `Set the configuration like log-level or bfd session`,
 		Run: func(cmd *cobra.Command, args []string) {
 			_ = cmd
 			_ = args
-
 		},
 	}
 	SetParamCmd.AddCommand(NewSetLogLevelCmd(restOptions))
+	SetParamCmd.AddCommand(NewSetBFDCmd(restOptions))
 	return SetParamCmd
 }
 
