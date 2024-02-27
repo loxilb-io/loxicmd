@@ -101,8 +101,9 @@ loxicmd aim to provide all of the configuation for the loxilb.`,
 	saveCmd.Flags().BoolVarP(&saveOptions.SaveUlClConfig, "ulcl", "", false, "Saves ulcl configuration")
 	saveCmd.Flags().BoolVarP(&saveOptions.SaveFWConfig, "firewall", "", false, "Saves firewall configuration")
 	saveCmd.Flags().BoolVarP(&saveOptions.SaveEPConfig, "endpoint", "", false, "Saves endpoint configuration")
+	saveCmd.Flags().BoolVarP(&saveOptions.SaveBFDConfig, "bfd", "", false, "Saves BFD configuration")
 
-	saveCmd.MarkFlagsMutuallyExclusive("all", "ip", "lb", "session", "ulcl", "firewall", "endpoint")
+	saveCmd.MarkFlagsMutuallyExclusive("all", "ip", "lb", "session", "ulcl", "firewall", "endpoint", "bfd")
 
 	applyCmd.Flags().StringVarP(&applyOptions.IpConfigFile, "ip", "i", "", "IP config file to apply")
 	applyCmd.Flags().StringVarP(&applyOptions.Intf, "per-intf", "", "", "Apply configuration only for specific interface")
@@ -113,6 +114,7 @@ loxicmd aim to provide all of the configuation for the loxilb.`,
 	applyCmd.Flags().StringVarP(&applyOptions.SessionUlClConfigFile, "ulcl", "", "", "Ulcl config file to apply")
 	applyCmd.Flags().StringVarP(&applyOptions.FWConfigFile, "firewall", "", "", "Firewall config file to apply")
 	applyCmd.Flags().StringVarP(&applyOptions.NormalConfigFile, "file", "f", "", "Config file to apply as like K8s")
+	applyCmd.Flags().StringVarP(&applyOptions.BFDConfigFile, "bfd", "", "", "BFD Config file to apply")
 
 	rootCmd.AddCommand(saveCmd)
 	rootCmd.AddCommand(applyCmd)
