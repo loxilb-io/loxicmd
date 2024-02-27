@@ -32,6 +32,7 @@ type SaveOptions struct {
 	SaveUlClConfig    bool
 	SaveFWConfig      bool
 	SaveEPConfig      bool
+	SaveBFDConfig     bool
 	SaveAllConfig     bool
 }
 
@@ -45,6 +46,14 @@ func SaveCmd(saveOpts *SaveOptions, restOptions *api.RESTOptions) *cobra.Command
 			_ = cmd
 			_ = args
 			dpath := "/etc/loxilb/"
+			if (!saveOpts.SaveIpConfig && !saveOpts.SaveAllConfig && 
+				!saveOpts.SaveLBConfig && !saveOpts.SaveSessionConfig &&
+			    !saveOpts.SaveUlClConfig && !saveOpts.SaveFWConfig &&
+			    !saveOpts.SaveEPConfig && !saveOpts.SaveBFDConfig) {
+					fmt.Println("Provide valid options")
+					cmd.Help()
+					return
+				}
 			if _, err := os.Stat(dpath); errors.Is(err, os.ErrNotExist) {
 				err := os.Mkdir(dpath, os.ModePerm)
 				if err != nil {
@@ -93,12 +102,21 @@ func SaveCmd(saveOpts *SaveOptions, restOptions *api.RESTOptions) *cobra.Command
 				fmt.Println("Firewall Configuration saved in", FWFile)
 			}
 			if saveOpts.SaveEPConfig || saveOpts.SaveAllConfig {
-				FWFile, err := get.EPdump(restOptions, dpath)
+				EPFile, err := get.EPdump(restOptions, dpath)
 				if err != nil {
 					fmt.Println(err.Error())
 					return
 				}
-				fmt.Println("EndPoint Configuration saved in", FWFile)
+				fmt.Println("EndPoint Configuration saved in", EPFile)
+			}
+			if saveOpts.SaveBFDConfig || saveOpts.SaveAllConfig {
+				fmt.Println("Saving BFD Configuration...")
+				BFDFile, err := get.BFDdump(restOptions, dpath)
+				if err != nil {
+					fmt.Println(err.Error())
+					return
+				}
+				fmt.Println("BFD Configuration saved in", BFDFile)
 			}
 		},
 	}

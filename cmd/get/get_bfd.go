@@ -23,6 +23,10 @@ import (
 	"loxicmd/pkg/api"
 	"net/http"
 	"time"
+	"strings"
+	"os"
+	"os/exec"
+	"errors"
 
 	"github.com/spf13/cobra"
 )
@@ -81,7 +85,7 @@ func PrintGetBFDResult(resp *http.Response, o api.RESTOptions) {
 	// Table Init
 	table := TableInit()
 	
-	// Making load balance data
+	// Making data
 	for _, bfd := range BFDresp.BFDSessionAttr {
 		if (o.PrintOption == "wide") {
 			table.SetHeader(BFD_WIDE_TITLE)
@@ -92,6 +96,89 @@ func PrintGetBFDResult(resp *http.Response, o api.RESTOptions) {
 			data = append(data, []string{bfd.Instance, bfd.RemoteIP, bfd.State})
 		}
 	}
-	// Rendering the load balance data to table
+	// Rendering the data to table
 	TableShow(data, table)
+}
+
+func BFDdump(restOptions *api.RESTOptions, path string) (string, error) {
+	BFDresp := api.BFDSessionGet{}
+
+	// File Open
+	fileP := []string{"BFDconfig_", ".txt"}
+	t := time.Now()
+	file := strings.Join(fileP, t.Local().Format("2006-01-02_15:04:05"))
+	f, err := os.Create(file)
+	if err != nil {
+		fmt.Printf("Can't create dump file\n")
+		os.Exit(1)
+	}
+	defer f.Close()
+
+	client := api.NewLoxiClient(restOptions)
+	ctx := context.TODO()
+	var cancel context.CancelFunc
+	if restOptions.Timeout > 0 {
+		ctx, cancel = context.WithTimeout(context.TODO(), time.Duration(restOptions.Timeout)*time.Second)
+		defer cancel()
+	}
+	resp, err := client.Status().SetUrl("config/bfd/all").Get(ctx)
+	if err != nil {
+		fmt.Printf("Error: %s\n", err.Error())
+		return "", err
+	}
+	if resp.StatusCode == http.StatusOK {
+
+		resultByte, err := io.ReadAll(resp.Body)
+		if err != nil {
+			fmt.Printf("Error: Failed to read HTTP response: (%s)\n", err.Error())
+			return "", err
+		}
+
+		if err := json.Unmarshal(resultByte, &BFDresp); err != nil {
+			fmt.Printf("Error: Failed to unmarshal HTTP response: (%s)\n", err.Error())
+			return "", err
+		}
+		
+		bfds := api.BFDSessionGet{}
+		bfds.BFDSessionAttr = BFDresp.BFDSessionAttr
+		/*
+		for _, b := range BFDresp.BFDSessionAttr {
+			bfds.BFDSessionAttr = append(bfds.BFDSessionAttr, b)
+
+			data = append(data, []string{bfd.Instance, bfd.RemoteIP, bfd.SourceIP,
+				fmt.Sprintf("%d",bfd.Port), fmt.Sprintf("%d us",bfd.Interval), fmt.Sprintf("%d",bfd.RetryCount), bfd.State})
+		} */
+		cfgResultByte, err := json.Marshal(bfds)
+		if err != nil {
+			fmt.Printf("Error: Failed to marshal BFD Cfg: (%s)\n", err.Error())
+			return "", err
+		}
+
+		// Write
+		f.Write(cfgResultByte)
+		cfile := path + "BFDconfig.txt"
+		if _, err := os.Stat(cfile); errors.Is(err, os.ErrNotExist) {
+			if err != nil {
+				fmt.Println("There is no saved config file")
+			}
+		} else {
+			command := "mv " + cfile + " " + cfile + ".bk"
+			cmd := exec.Command("bash", "-c", command)
+			_, err := cmd.Output()
+			if err != nil {
+				fmt.Println("Can't backup ", cfile)
+				return file, err
+			}
+		}
+		command := "cp -R " + file + " " + cfile
+		cmd := exec.Command("bash", "-c", command)
+		fmt.Println(cmd)
+		_, err = cmd.Output()
+		if err != nil {
+			fmt.Println("Failed copy file to", cfile)
+			return file, err
+		}
+		return file, nil
+	}
+	return "", err
 }

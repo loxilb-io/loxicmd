@@ -21,6 +21,7 @@ import (
 	"errors"
 	"fmt"
 	"loxicmd/cmd/create"
+	"loxicmd/cmd/set"
 	"loxicmd/pkg/api"
 	"os"
 	"os/exec"
@@ -36,6 +37,7 @@ type ApplyOptions struct {
 	SessionUlClConfigFile string
 	FWConfigFile          string
 	NormalConfigFile      string
+	BFDConfigFile         string
 	Intf                  string
 	ConfigPath            string
 	Route                 bool
@@ -56,8 +58,10 @@ func ApplyCmd(options *ApplyOptions, restOptions *api.RESTOptions) *cobra.Comman
 				len(options.SessionUlClConfigFile) == 0 &&
 				len(options.FWConfigFile) == 0 &&
 				len(options.Intf) == 0 &&
-				len(options.NormalConfigFile) == 0 {
+				len(options.NormalConfigFile) == 0 &&
+				len(options.BFDConfigFile) == 0 {
 				fmt.Println("Provide valid options")
+				cmd.Help()
 				return
 			}
 			if len(options.IpConfigFile) > 0 {
@@ -90,6 +94,10 @@ func ApplyCmd(options *ApplyOptions, restOptions *api.RESTOptions) *cobra.Comman
 			if len(options.FWConfigFile) > 0 {
 				ApplyFWConfig(options.FWConfigFile, restOptions)
 				fmt.Printf("Configuration applied - %s\n", options.FWConfigFile)
+			}
+			if len(options.BFDConfigFile) > 0 {
+				ApplyBFDConfig(options.BFDConfigFile, restOptions)
+				fmt.Printf("Configuration applied - %s\n", options.BFDConfigFile)
 			}
 			if len(options.NormalConfigFile) > 0 {
 				if err := ApplyFileConfig(options.NormalConfigFile, restOptions); err != nil {
@@ -669,6 +677,33 @@ func ApplyFWConfig(file string, restOptions *api.RESTOptions) {
 	for _, fw := range resp.FWInfo {
 		fmt.Printf("fw: %v\n", fw)
 		resp, err := create.FirewallAPICall(restOptions, fw)
+		if err != nil {
+			fmt.Printf("Error: %s\n", err.Error())
+			return
+		}
+		defer resp.Body.Close()
+	}
+}
+
+func ApplyBFDConfig(file string, restOptions *api.RESTOptions) {
+	// open file
+	var resp api.BFDSessionGet
+	byteBuf, err := os.ReadFile(file)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	// Unmashal to Json
+	if err := json.Unmarshal(byteBuf, &resp); err != nil {
+		fmt.Printf("Error: Failed to unmarshal File: (%s)\n", err.Error())
+		return
+	}
+
+	// POST the dump
+	for _, b := range resp.BFDSessionAttr {
+		fmt.Printf("bfd: %v\n", b)
+		resp, err := set.SetBFDAPICall(restOptions, b)
 		if err != nil {
 			fmt.Printf("Error: %s\n", err.Error())
 			return
