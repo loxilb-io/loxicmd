@@ -68,12 +68,12 @@ ex) loxicmd delete firewall --firewallRule="sourceIP:1.2.3.2/32,destinationIP:2.
 				defer cancel()
 			}
 
-			qeury, err := MakefirewallDeleteQurey(o.FirewallRule)
+			query, err := MakefirewallDeleteQuery(o.FirewallRule)
 			if err != nil {
 				fmt.Printf("Error: Failed to delete Firewall")
 				return
 			}
-			resp, err := client.Firewall().Query(qeury).Delete(ctx)
+			resp, err := client.Firewall().Query(query).Delete(ctx)
 			if err != nil {
 				fmt.Printf("Error: Failed to delete Firewall")
 				return
@@ -92,12 +92,12 @@ ex) loxicmd delete firewall --firewallRule="sourceIP:1.2.3.2/32,destinationIP:2.
 	return deleteFirewallCmd
 }
 
-func MakefirewallDeleteQurey(FirewallRule []string) (map[string]string, error) {
+func MakefirewallDeleteQuery(FirewallRule []string) (map[string]string, error) {
 	query := map[string]string{}
 	for _, v := range FirewallRule {
 		firewallArgsPair := strings.Split(v, ":")
 		if len(firewallArgsPair) != 2 {
-			return nil, fmt.Errorf("Error: Failed to delete Firewall")
+			return nil, fmt.Errorf("error: Failed to delete Firewall")
 		}
 		query[firewallArgsPair[0]] = firewallArgsPair[1]
 	}

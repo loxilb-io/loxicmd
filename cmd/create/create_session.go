@@ -104,7 +104,7 @@ func ReadCreateSessionOptions(o *api.SessionMod, args []string) error {
 	if val := net.ParseIP(args[1]); val != nil {
 		o.Ip = val
 	} else {
-		return fmt.Errorf("Session IP '%s' is invalid format", args[1])
+		return fmt.Errorf("session IP '%s' is invalid format", args[1])
 	}
 	return nil
 }
@@ -112,27 +112,27 @@ func ReadCreateSessionOptions(o *api.SessionMod, args []string) error {
 func GetNetworkTunnelPairList(o *api.SessionMod, networkTunnel string, An bool) error {
 	networkTunnelPair := strings.Split(networkTunnel, ":")
 	if len(networkTunnelPair) != 2 {
-		return fmt.Errorf("NetworkTunnel '%s' is invalid format", networkTunnel)
+		return fmt.Errorf("networkTunnel '%s' is invalid format", networkTunnel)
 	}
 
 	// 0 is TeID, 1 is TunnelIP
 	TeID, err := strconv.Atoi(networkTunnelPair[0])
 	if err != nil {
-		return fmt.Errorf("NetworkTunnel's TeID '%s' is invalid format", networkTunnelPair[0])
+		return fmt.Errorf("networkTunnel's TeID '%s' is invalid format", networkTunnelPair[0])
 	}
 	if An {
 		o.AnTun.TeID = uint32(TeID)
 		if val := net.ParseIP(networkTunnelPair[1]); val != nil {
 			o.AnTun.Addr = val
 		} else {
-			return fmt.Errorf("Tunnel IP '%s' is invalid format", networkTunnelPair[1])
+			return fmt.Errorf("tunnel IP '%s' is invalid format", networkTunnelPair[1])
 		}
 	} else {
 		o.CnTun.TeID = uint32(TeID)
 		if val := net.ParseIP(networkTunnelPair[1]); val != nil {
 			o.CnTun.Addr = val
 		} else {
-			return fmt.Errorf("Tunnel IP '%s' is invalid format", networkTunnelPair[1])
+			return fmt.Errorf("tunnel IP '%s' is invalid format", networkTunnelPair[1])
 		}
 	}
 

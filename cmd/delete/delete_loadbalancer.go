@@ -120,7 +120,6 @@ func NewDeleteLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 				}
 
 			}
-			return
 		},
 	}
 
