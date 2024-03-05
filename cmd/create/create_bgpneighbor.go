@@ -94,7 +94,7 @@ func ReadCreateBGPNeighborOptions(o *api.BGPNeighborMod, args []string) error {
 	if val := net.ParseIP(args[0]); val != nil {
 		o.IPaddress = args[0]
 	} else {
-		return fmt.Errorf("Peer IP '%s' is invalid format", args[0])
+		return fmt.Errorf("peer IP '%s' is invalid format", args[0])
 	}
 
 	RemoteAs, err := strconv.Atoi(args[1])

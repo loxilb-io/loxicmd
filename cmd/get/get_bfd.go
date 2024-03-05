@@ -84,13 +84,13 @@ func PrintGetBFDResult(resp *http.Response, o api.RESTOptions) {
 
 	// Table Init
 	table := TableInit()
-	
+
 	// Making data
 	for _, bfd := range BFDresp.BFDSessionAttr {
-		if (o.PrintOption == "wide") {
+		if o.PrintOption == "wide" {
 			table.SetHeader(BFD_WIDE_TITLE)
 			data = append(data, []string{bfd.Instance, bfd.RemoteIP, bfd.SourceIP,
-			 fmt.Sprintf("%d",bfd.Port), fmt.Sprintf("%d us",bfd.Interval), fmt.Sprintf("%d",bfd.RetryCount), bfd.State})
+			fmt.Sprintf("%d",bfd.Port), fmt.Sprintf("%d us",bfd.Interval), fmt.Sprintf("%d",bfd.RetryCount), bfd.State})
 		} else {
 			table.SetHeader(BFD_TITLE)
 			data = append(data, []string{bfd.Instance, bfd.RemoteIP, bfd.State})
@@ -141,13 +141,7 @@ func BFDdump(restOptions *api.RESTOptions, path string) (string, error) {
 		
 		bfds := api.BFDSessionGet{}
 		bfds.BFDSessionAttr = BFDresp.BFDSessionAttr
-		/*
-		for _, b := range BFDresp.BFDSessionAttr {
-			bfds.BFDSessionAttr = append(bfds.BFDSessionAttr, b)
-
-			data = append(data, []string{bfd.Instance, bfd.RemoteIP, bfd.SourceIP,
-				fmt.Sprintf("%d",bfd.Port), fmt.Sprintf("%d us",bfd.Interval), fmt.Sprintf("%d",bfd.RetryCount), bfd.State})
-		} */
+	
 		cfgResultByte, err := json.Marshal(bfds)
 		if err != nil {
 			fmt.Printf("Error: Failed to marshal BFD Cfg: (%s)\n", err.Error())

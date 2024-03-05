@@ -41,7 +41,7 @@ func NewSetBFDCmd(restOptions *api.RESTOptions) *cobra.Command {
 		Aliases: []string{"bfd-session"},
 		Run: func(cmd *cobra.Command, args []string) {
 			
-			// Make paramMod
+			// Make bfdMod
 			if err := ReadSetBfdOptions(&o, args); err != nil {
 				fmt.Printf("Error: %s\n", err.Error())
 				return
@@ -60,7 +60,7 @@ func NewSetBFDCmd(restOptions *api.RESTOptions) *cobra.Command {
 	}
 	SetBFDCmd.Flags().StringVarP(&o.Instance, "instance", "", "default", "Specify the cluster instance name")
 	SetBFDCmd.Flags().Uint64VarP(&o.Interval, "interval", "", 0, "Specify the BFD packet tx interval (in microseconds)")
-	SetBFDCmd.Flags().Uint8VarP(&o.RetryCount, "retryCount", "", 0, "Specify the mark num to segregate a load-balancer VIP service")
+	SetBFDCmd.Flags().Uint8VarP(&o.RetryCount, "retryCount", "", 0, "Specify the number of reties")
 
 	return SetBFDCmd
 }

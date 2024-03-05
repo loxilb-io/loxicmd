@@ -58,16 +58,16 @@ func ReadCreatePolicyOptions(o *CreatePolicyOptions, args []string) error {
 func GetRatePair(body *api.PolMod, RateBlock string) error {
 	RatePair := strings.Split(RateBlock, ":")
 	if len(RatePair) != 2 {
-		return errors.New("Lots ")
+		return errors.New("lots ")
 	}
 	Peak, err := strconv.Atoi(RatePair[0])
 	if err != nil {
-		return fmt.Errorf("Peak '%s' is not integer", RatePair[0])
+		return fmt.Errorf("peak '%s' is not integer", RatePair[0])
 	}
 
 	Commited, err := strconv.Atoi(RatePair[1])
 	if err != nil {
-		return fmt.Errorf("Commited '%s' is not integer", RatePair[1])
+		return fmt.Errorf("commited '%s' is not integer", RatePair[1])
 	}
 	body.Info.CommittedInfoRate = uint64(Commited)
 	body.Info.PeakInfoRate = uint64(Peak)
@@ -81,12 +81,12 @@ func GetBlockPair(body *api.PolMod, Block string) error {
 	}
 	Excess, err := strconv.Atoi(BlockPair[0])
 	if err != nil {
-		return fmt.Errorf("Excess '%s' is not integer", BlockPair[0])
+		return fmt.Errorf("excess '%s' is not integer", BlockPair[0])
 	}
 
 	Commited, err := strconv.Atoi(BlockPair[1])
 	if err != nil {
-		return fmt.Errorf("Commited '%s' is not integer", BlockPair[1])
+		return fmt.Errorf("commited '%s' is not integer", BlockPair[1])
 	}
 	body.Info.ExcessBlkSize = uint64(Excess)
 	body.Info.CommittedBlkSize = uint64(Commited)
