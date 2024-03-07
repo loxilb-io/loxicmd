@@ -68,7 +68,7 @@ ex) loxicmd delete bfd 32.32.32.2 --instance=default"
 
 			resp, err := client.BFDSession().SubResources(subResources).Query(qmap).Delete(ctx)
 			if err != nil {
-				fmt.Printf("Error: Failed to delete Firewall")
+				fmt.Printf("Error: Failed to delete bfd session")
 				return
 			}
 			defer resp.Body.Close()

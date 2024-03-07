@@ -73,6 +73,8 @@ func DeleteFileConfig(file string, restOptions *api.RESTOptions) error {
 		err = VxlanPeerDeleteWithFile(restOptions, byteBuf)
 	case "Vxlan", "vxlan":
 		err = VxlanDeleteWithFile(restOptions, byteBuf)
+	case "bfd", "BFD":
+		err = BFDDeleteWithFile(restOptions, byteBuf)
 	default:
 		fmt.Printf("Not Supported\n")
 	}
@@ -430,5 +432,31 @@ func VxlanPeerDeleteWithFile(restOptions *api.RESTOptions, byteBuf []byte) error
 		fmt.Printf("Error: Failed to delete Vxlan\n")
 		return err
 	}
+	return nil
+}
+
+func BFDDeleteWithFile(restOptions *api.RESTOptions, byteBuf []byte) error {
+	var c api.ConfigurationBFDFile
+	if err := yaml.Unmarshal(byteBuf, &c); err != nil {
+		return err
+	}
+	client, ctx, cancel := GetClientWithCtx(restOptions)
+	if restOptions.Timeout > 0 {
+		defer cancel()
+	}
+
+	subResources := []string{
+		"remoteIP", c.Spec.RemoteIP,
+	}
+
+	qmap := map[string]string{}
+	qmap["instance"] = c.Spec.Instance
+
+	resp, err := client.BFDSession().SubResources(subResources).Query(qmap).Delete(ctx)
+	if err != nil {
+		fmt.Printf("Error: Failed to delete bfd session")
+		return nil
+	}
+	defer resp.Body.Close()
 	return nil
 }

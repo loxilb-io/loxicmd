@@ -40,7 +40,7 @@ func NewSetBFDCmd(restOptions *api.RESTOptions) *cobra.Command {
 
 		Aliases: []string{"bfd-session"},
 		Run: func(cmd *cobra.Command, args []string) {
-			
+
 			// Make bfdMod
 			if err := ReadSetBfdOptions(&o, args); err != nil {
 				fmt.Printf("Error: %s\n", err.Error())
@@ -60,7 +60,7 @@ func NewSetBFDCmd(restOptions *api.RESTOptions) *cobra.Command {
 	}
 	SetBFDCmd.Flags().StringVarP(&o.Instance, "instance", "", "default", "Specify the cluster instance name")
 	SetBFDCmd.Flags().Uint64VarP(&o.Interval, "interval", "", 0, "Specify the BFD packet tx interval (in microseconds)")
-	SetBFDCmd.Flags().Uint8VarP(&o.RetryCount, "retryCount", "", 0, "Specify the number of reties")
+	SetBFDCmd.Flags().Uint8VarP(&o.RetryCount, "retryCount", "", 0, "Specify the number of retries")
 
 	return SetBFDCmd
 }
@@ -80,7 +80,6 @@ func ReadSetBfdOptions(o *api.BFDSessionInfo, args []string) error {
 
 	return nil
 }
-
 
 func SetBFDAPICall(restOptions *api.RESTOptions, bfdModel api.BFDSessionInfo) (*http.Response, error) {
 	client := api.NewLoxiClient(restOptions)
