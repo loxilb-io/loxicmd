@@ -16,6 +16,7 @@
 package dump
 
 import (
+	"errors"
 	"fmt"
 	"loxicmd/cmd/create"
 	"loxicmd/pkg/api"
@@ -71,8 +72,11 @@ func ApplyFileConfig(file string, restOptions *api.RESTOptions) error {
 		err = create.VxlanPeerCreateWithFile(restOptions, byteBuf)
 	case "Vxlan", "vxlan":
 		err = create.VxlanBridgeCreateWithFile(restOptions, byteBuf)
+	case "BFD", "bfd":
+		err = create.BFDCreateWithFile(restOptions, byteBuf)
 	default:
 		fmt.Printf("Not Supported\n")
+		return errors.New("not supported")
 	}
 	if err != nil {
 		fmt.Println(err.Error())

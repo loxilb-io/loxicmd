@@ -193,3 +193,14 @@ func VxlanBridgeCreateWithFile(restOptions *api.RESTOptions, byteBuf []byte) err
 	}
 	return nil
 }
+
+func BFDCreateWithFile(restOptions *api.RESTOptions, byteBuf []byte) error {
+	var c api.ConfigurationBFDFile
+	if err := yaml.Unmarshal(byteBuf, &c); err != nil {
+		return err
+	}
+	if _, err := CreateBFDAPICall(restOptions, c.Spec); err != nil {
+		return err
+	}
+	return nil
+}

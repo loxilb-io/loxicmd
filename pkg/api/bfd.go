@@ -28,24 +28,29 @@ type BFDSessionGet struct {
 
 type BFDSessionInfo struct {
 	// Instance name
-	Instance string `json:"instance,omitempty"`
+	Instance string `json:"instance" yaml:"instance"`
 
 	// RemoteIP - Remote IP for BFD session
-	RemoteIP string `json:"remoteIp,omitempty"`
+	RemoteIP string `json:"remoteIp" yaml:"remoteIp"`
 
 	// Interval - Tx Interval between BFD packets
-	SourceIP string `json:"sourceIp,omitempty"`
+	SourceIP string `json:"sourceIp" yaml:"sourceIp"`
 	
 	// Port - BFD session port
-	Port uint16 `json:"port,omitempty"`
+	Port uint16 `json:"port" yaml:"port"`
 	
 	// Interval - Tx Interval between BFD packets
-	Interval uint64 `json:"interval,omitempty"`
+	Interval uint64 `json:"interval" yaml:"interval"`
 
 	// RetryCount - Retry Count for detecting failure
-	RetryCount uint8 `json:"retryCount,omitempty"`
+	RetryCount uint8 `json:"retryCount" yaml:"retryCount"`
 
 	// Current BFD State
-	State string `json:"state,omitempty"`
+	State string `json:"state" yaml:"state"`
 }
 
+type ConfigurationBFDFile struct {
+	TypeMeta   `yaml:",inline"`
+	ObjectMeta `yaml:"metadata,omitempty"`
+	Spec       BFDSessionInfo `yaml:"spec"`
+}
