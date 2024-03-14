@@ -35,10 +35,10 @@ type BFDSessionInfo struct {
 
 	// Interval - Tx Interval between BFD packets
 	SourceIP string `json:"sourceIp" yaml:"sourceIp"`
-	
+
 	// Port - BFD session port
 	Port uint16 `json:"port" yaml:"port"`
-	
+
 	// Interval - Tx Interval between BFD packets
 	Interval uint64 `json:"interval" yaml:"interval"`
 

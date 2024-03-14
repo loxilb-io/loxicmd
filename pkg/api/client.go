@@ -42,7 +42,7 @@ const (
 	loxiParamResource           = "config/params"
 	loxiBGPNeighResource        = "config/bgp/neigh"
 	loxiStatusResource          = "status"
-	loxiBFDSessionResource		= "config/bfd"
+	loxiBFDSessionResource      = "config/bfd"
 )
 
 type LoxiClient struct {

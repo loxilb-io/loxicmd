@@ -46,14 +46,14 @@ func SaveCmd(saveOpts *SaveOptions, restOptions *api.RESTOptions) *cobra.Command
 			_ = cmd
 			_ = args
 			dpath := "/etc/loxilb/"
-			if (!saveOpts.SaveIpConfig && !saveOpts.SaveAllConfig && 
+			if !saveOpts.SaveIpConfig && !saveOpts.SaveAllConfig &&
 				!saveOpts.SaveLBConfig && !saveOpts.SaveSessionConfig &&
-			    !saveOpts.SaveUlClConfig && !saveOpts.SaveFWConfig &&
-			    !saveOpts.SaveEPConfig && !saveOpts.SaveBFDConfig) {
-					fmt.Println("Provide valid options")
-					cmd.Help()
-					return
-				}
+				!saveOpts.SaveUlClConfig && !saveOpts.SaveFWConfig &&
+				!saveOpts.SaveEPConfig && !saveOpts.SaveBFDConfig {
+				fmt.Println("Provide valid options")
+				cmd.Help()
+				return
+			}
 			if _, err := os.Stat(dpath); errors.Is(err, os.ErrNotExist) {
 				err := os.Mkdir(dpath, os.ModePerm)
 				if err != nil {

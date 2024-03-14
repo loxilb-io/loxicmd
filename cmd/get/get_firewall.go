@@ -94,7 +94,7 @@ func PrintGetFWResult(resp *http.Response, o api.RESTOptions) {
 		table.SetHeader(FIREWALL_TITLE)
 		data = append(data, []string{fwrule.Rule.SrcIP, fwrule.Rule.DstIP, fmt.Sprintf("%d", fwrule.Rule.SrcPortMin), fmt.Sprintf("%d", fwrule.Rule.SrcPortMax),
 			fmt.Sprintf("%d", fwrule.Rule.DstPortMin), fmt.Sprintf("%d", fwrule.Rule.DstPortMax), fmt.Sprintf("%d", fwrule.Rule.Proto),
-			fwrule.Rule.InPort, fmt.Sprintf("%d", fwrule.Rule.Pref), MakeFirewallOptionToString(fwrule.Opts)})
+			fwrule.Rule.InPort, fmt.Sprintf("%d", fwrule.Rule.Pref), MakeFirewallOptionToString(fwrule.Opts), fmt.Sprintf("%s", fwrule.Opts.Counter)})
 
 	}
 

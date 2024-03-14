@@ -72,7 +72,7 @@ ex) loxicmd delete bfd 32.32.32.2 --instance=default"
 				return
 			}
 			defer resp.Body.Close()
-			
+
 			fmt.Printf("Debug: response.StatusCode: %d\n", resp.StatusCode)
 			if resp.StatusCode == http.StatusOK {
 				PrintDeleteResult(resp, *restOptions)
@@ -81,6 +81,6 @@ ex) loxicmd delete bfd 32.32.32.2 --instance=default"
 		},
 	}
 	deleteBFDCmd.Flags().StringVarP(&o.Instance, "instance", "", "default", "Specify the cluster instance name")
-	
+
 	return deleteBFDCmd
 }

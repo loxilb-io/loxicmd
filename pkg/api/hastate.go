@@ -40,4 +40,3 @@ type HAStateInfo struct {
 	// Instance Virtual IP address
 	Vip string `json:"vip,omitempty"`
 }
-

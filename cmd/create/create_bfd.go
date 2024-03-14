@@ -17,13 +17,13 @@ package create
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"loxicmd/pkg/api"
 	"net"
 	"net/http"
 	"os"
 	"time"
-	"errors"
 
 	"github.com/spf13/cobra"
 )
@@ -45,7 +45,7 @@ ex) loxicmd create bfd 32.32.32.2 --instance=default --sourceIP=32.32.32.1 --int
 			}
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-		
+
 			// Make EndPointMod
 			if len(args) <= 0 {
 				fmt.Printf("create bfd needs remoteIP args\n")
@@ -62,7 +62,6 @@ ex) loxicmd create bfd 32.32.32.2 --instance=default --sourceIP=32.32.32.1 --int
 				fmt.Printf("Error: %s\n", err.Error())
 				return
 			}
-			
 
 			//fmt.Printf("Debug: response.StatusCode: %d\n", resp.StatusCode)
 			if resp.StatusCode == http.StatusOK {
