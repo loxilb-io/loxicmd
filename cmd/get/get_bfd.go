@@ -18,24 +18,24 @@ package get
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"loxicmd/pkg/api"
 	"net/http"
-	"time"
-	"strings"
 	"os"
 	"os/exec"
-	"errors"
+	"strings"
+	"time"
 
 	"github.com/spf13/cobra"
 )
 
 func NewGetBFDCmd(restOptions *api.RESTOptions) *cobra.Command {
 	var GetBFDCmd = &cobra.Command{
-		Use:     "bfd",
-		Short:   "Get all BFD sessions",
-		Long:    `It shows BFD Sessions in the LoxiLB`,
+		Use:   "bfd",
+		Short: "Get all BFD sessions",
+		Long:  `It shows BFD Sessions in the LoxiLB`,
 
 		Run: func(cmd *cobra.Command, args []string) {
 			client := api.NewLoxiClient(restOptions)
@@ -90,7 +90,7 @@ func PrintGetBFDResult(resp *http.Response, o api.RESTOptions) {
 		if o.PrintOption == "wide" {
 			table.SetHeader(BFD_WIDE_TITLE)
 			data = append(data, []string{bfd.Instance, bfd.RemoteIP, bfd.SourceIP,
-			fmt.Sprintf("%d",bfd.Port), fmt.Sprintf("%d us",bfd.Interval), fmt.Sprintf("%d",bfd.RetryCount), bfd.State})
+				fmt.Sprintf("%d", bfd.Port), fmt.Sprintf("%d us", bfd.Interval), fmt.Sprintf("%d", bfd.RetryCount), bfd.State})
 		} else {
 			table.SetHeader(BFD_TITLE)
 			data = append(data, []string{bfd.Instance, bfd.RemoteIP, bfd.State})
@@ -138,10 +138,10 @@ func BFDdump(restOptions *api.RESTOptions, path string) (string, error) {
 			fmt.Printf("Error: Failed to unmarshal HTTP response: (%s)\n", err.Error())
 			return "", err
 		}
-		
+
 		bfds := api.BFDSessionGet{}
 		bfds.BFDSessionAttr = BFDresp.BFDSessionAttr
-	
+
 		cfgResultByte, err := json.Marshal(bfds)
 		if err != nil {
 			fmt.Printf("Error: Failed to marshal BFD Cfg: (%s)\n", err.Error())

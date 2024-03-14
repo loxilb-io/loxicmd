@@ -40,11 +40,11 @@ var (
 	FILESYSTEM_TITLE        = []string{"fileSystem", "type", "size", "used", "avail", "usePercent", "mountedOn"}
 	MIRROR_TITLE            = []string{"Mirror Name", "Mirror info", "Target\nAttachment", "target\nName"}
 	MIRROR_WIDE_TITLE       = []string{"Mirror Name", "Mirror info", "Target\nAttachment", "target\nName", "Sync"}
-	FIREWALL_TITLE          = []string{"Source IP", "destination IP", "min SPort", "max SPort", "min DPort", "max DPort", "protocol", "port Name", "preference", "Option"}
+	FIREWALL_TITLE          = []string{"Source IP", "destination IP", "min SPort", "max SPort", "min DPort", "max DPort", "protocol", "port Name", "preference", "Option", "Counters"}
 	ENDPOINT_TITLE          = []string{"Host", "Name", "ptype", "port", "duration", "retries", "minDelay", "avgDelay", "maxDelay", "State"}
 	PARAM_TITLE             = []string{"Param Name", "Value"}
 	BGPNEIGHBOR_TITLE       = []string{"Peer", "AS", "UP/Down", "State"}
 	HASTATE_TITLE           = []string{"Instance", "HAState"}
 	BFD_TITLE               = []string{"Instance", "RemoteIP", "State"}
-	BFD_WIDE_TITLE          = []string{"Instance", "RemoteIP", "SourceIP", "Port", "Interval","Retry Count", "State"}
+	BFD_WIDE_TITLE          = []string{"Instance", "RemoteIP", "SourceIP", "Port", "Interval", "Retry Count", "State"}
 )

@@ -20,9 +20,9 @@ import (
 	"errors"
 	"fmt"
 	"loxicmd/pkg/api"
+	"net"
 	"net/http"
 	"time"
-	"net"
 
 	"github.com/spf13/cobra"
 )
@@ -31,9 +31,9 @@ import (
 func NewSetBFDCmd(restOptions *api.RESTOptions) *cobra.Command {
 	o := api.BFDSessionInfo{}
 	SetBFDCmd := &cobra.Command{
-		Use:     "bfd remoteIP [--instance=<instance>] [--interval=<interval>] [--retryCount=<count>]",
-		Short:   "bfd session configuration",
-		Long:    `bfd session congfigration
+		Use:   "bfd remoteIP [--instance=<instance>] [--interval=<interval>] [--retryCount=<count>]",
+		Short: "bfd session configuration",
+		Long: `bfd session congfigration
 --instance   - Cluster Instance name
 --interval   - BFD packet Tx interval value in microseconds
 --retryCount - Maximum number of retry to detect failure`,

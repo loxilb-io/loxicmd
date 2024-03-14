@@ -42,6 +42,9 @@ type FwOptArg struct {
 	Mark  int  `json:"fwMark" yaml:"fwMark"`
 	// Record - Record packets matching rule
 	Record bool `json:"record" yaml:"record"`
+
+	// Counter - Traffic counter
+	Counter string `json:"counter"`
 }
 
 // FwRuleArg - Information related to firewall rule
