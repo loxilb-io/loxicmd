@@ -99,6 +99,8 @@ func ModeToNum(sel string) int {
 		ret = 2
 	case "dsr":
 		ret = 3
+	case "fullproxy":
+		ret = 4
 	default:
 		ret = 0
 	}
@@ -121,6 +123,7 @@ func NewCreateLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 --mode value options
 	onearm - LB put LB-IP as srcIP
 	fullnat - LB put Service IP as scrIP
+	fullproxy - LB operating as a L7 proxy
 
 ex) loxicmd create lb 192.168.0.200 --tcp=80:32015 --endpoints=10.212.0.1:1,10.212.0.2:1,10.212.0.3:1
     loxicmd create lb 192.168.0.200 --tcp=80:32015 --name="http-service" --endpoints=10.212.0.1:1,10.212.0.2:1,10.212.0.3:1

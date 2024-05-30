@@ -91,6 +91,8 @@ func NumToMode(mode int) string {
 		ret = "fullnat"
 	case 3:
 		ret = "dsr"
+	case 4:
+		ret = "fullproxy"
 	default:
 		ret = "default"
 	}
