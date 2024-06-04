@@ -20,15 +20,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/spf13/cobra"
 	"io"
+	"loxicmd/pkg/api"
 	"net/http"
-	"os"
 	"strconv"
 	"time"
-
-	"loxicmd/pkg/api"
-
-	"github.com/spf13/cobra"
 )
 
 type DeleteLoadBalancerResult struct {
@@ -37,10 +34,10 @@ type DeleteLoadBalancerResult struct {
 
 func validation(args []string) error {
 	if len(args) > 1 {
-		fmt.Println("create lb command get so many args")
+		fmt.Println("delete lb command too many args")
 		fmt.Println(args)
 	} else if len(args) <= 0 {
-		return errors.New("delete lb need <EXTERNAL-IP> args")
+		return errors.New("delete lb needs <EXTERNAL-IP> arg")
 	}
 
 	return nil
@@ -53,27 +50,23 @@ func NewDeleteLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 	var icmpPortNumberList bool
 	var BGP bool
 	var Mark uint16
+	var Name string
 
 	var externalIP string
 	//var endpointList []string
 
 	var deleteLbCmd = &cobra.Command{
-		Use:   "lb <EXTERNAL-IP> [--tcp portNumber] [--udp portNumber] [--sctp portNumber] [--icmp portNumber] [--bgp] [--mark=<val>]",
+		Use:   "lb <EXTERNAL-IP> [--tcp portNumber] [--udp portNumber] [--sctp portNumber] [--icmp portNumber] [--bgp] [--mark=<val>] [--name=<service-name>]",
 		Short: "Delete a LoadBalancer",
 		Long:  `Delete a LoadBalancer.`,
 		PreRun: func(cmd *cobra.Command, args []string) {
-			if len(args) == 0 {
-				cmd.Help()
-				os.Exit(0)
-			}
+			//if len(args) == 0 {
+			//	cmd.Help()
+			//	os.Exit(0)
+			//}
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			if err := validation(args); err != nil {
-				fmt.Println("not valid EXTERNAL-IP")
-				return
-			}
-			externalIP = args[0]
-			PortNumberList := make(map[string][]int)
+
 			client := api.NewLoxiClient(restOptions)
 			ctx := context.TODO()
 			var cancel context.CancelFunc
@@ -81,6 +74,30 @@ func NewDeleteLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 				ctx, cancel = context.WithTimeout(ctx, time.Duration(restOptions.Timeout)*time.Second)
 				defer cancel()
 			}
+
+			if Name != "" {
+				subResources := []string{
+					"name", Name,
+				}
+				resp, err := client.LoadBalancer().SubResources(subResources).Delete(ctx)
+				if err != nil {
+					fmt.Printf("Error: Failed to delete LoadBalancer(Name: %s)\n", Name)
+					return
+				}
+				defer resp.Body.Close()
+				fmt.Printf("Debug: response.StatusCode: %d\n", resp.StatusCode)
+				if resp.StatusCode == http.StatusOK {
+					PrintDeleteResult(resp, *restOptions)
+				}
+				return
+			}
+
+			if err := validation(args); err != nil {
+				fmt.Println("not valid EXTERNAL-IP")
+				return
+			}
+			externalIP = args[0]
+			PortNumberList := make(map[string][]int)
 
 			if len(tcpPortNumberList) > 0 {
 				PortNumberList["tcp"] = tcpPortNumberList
@@ -129,6 +146,7 @@ func NewDeleteLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 	deleteLbCmd.Flags().BoolVarP(&icmpPortNumberList, "icmp", "", false, "ICMP port list can be specified as '<port>,<port>...'")
 	deleteLbCmd.Flags().BoolVarP(&BGP, "bgp", "", false, "BGP enable information'")
 	deleteLbCmd.Flags().Uint16VarP(&Mark, "mark", "", 0, "Specify the mark num to segregate a load-balancer VIP service")
+	deleteLbCmd.Flags().StringVarP(&Name, "name", "", Name, "Name for load balancer rule")
 	return deleteLbCmd
 }
 
