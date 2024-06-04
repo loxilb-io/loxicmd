@@ -76,6 +76,8 @@ func NumToSelect(sel int) string {
 		ret = "persist"
 	case 4:
 		ret = "lc"
+	case 5:
+		ret = "n2"
 	default:
 		ret = "rr"
 	}

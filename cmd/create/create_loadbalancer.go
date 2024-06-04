@@ -84,6 +84,8 @@ func SelectToNum(sel string) int {
 		ret = 3
 	case "lc":
 		ret = 4
+	case "n2":
+		ret = 5
 	default:
 		ret = 0
 	}
@@ -120,6 +122,7 @@ func NewCreateLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 	hash - select the lb end-points based on hashing
 	priority - select the lb based on weighted round-robin
 	persist - select the lb end-point based on sender
+	n2 - select the lb end-point base on N2 interface params (only available with fullproxy mode)
 --mode value options
 	onearm - LB put LB-IP as srcIP
 	fullnat - LB put Service IP as scrIP
