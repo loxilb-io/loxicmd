@@ -95,6 +95,8 @@ func NumToMode(mode int) string {
 		ret = "dsr"
 	case 4:
 		ret = "fullproxy"
+	case 5:
+		ret = "hostonearm"
 	default:
 		ret = "default"
 	}
