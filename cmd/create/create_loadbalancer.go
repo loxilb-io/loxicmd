@@ -40,6 +40,8 @@ type CreateLoadBalancerOptions struct {
 	Mode       string
 	BGP        bool
 	Monitor    bool
+	Attach     bool
+	Detach     bool
 	Timeout    uint32
 	Mark       uint16
 	SCTP       []string
@@ -115,7 +117,7 @@ func NewCreateLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 	o := CreateLoadBalancerOptions{}
 
 	var createLbCmd = &cobra.Command{
-		Use:   "lb IP [--select=<rr|hash|priority|persist>] [--tcp=<port>:<targetPort>] [--udp=<port>:<targetPort>] [--sctp=<port>:<targetPort>] [--icmp] [--mark=<val>] [--secips=<ip>,][--endpoints=<ip>:<weight>,] [--mode=<onearm|fullnat>] [--bgp] [--monitor] [--inatimeout=<to>] [--name=<service-name>]",
+		Use:   "lb IP [--select=<rr|hash|priority|persist>] [--tcp=<port>:<targetPort>] [--udp=<port>:<targetPort>] [--sctp=<port>:<targetPort>] [--icmp] [--mark=<val>] [--secips=<ip>,][--endpoints=<ip>:<weight>,] [--mode=<onearm|fullnat>] [--bgp] [--monitor] [--inatimeout=<to>] [--name=<service-name>] [--attachEP] [--detachEP]",
 		Short: "Create a LoadBalancer",
 		Long: `Create a LoadBalancer
 
@@ -141,6 +143,7 @@ ex) loxicmd create lb 192.168.0.200 --tcp=80:32015 --endpoints=10.212.0.1:1,10.2
 
 	loxicmd create lb  2001::1 --tcp=2020:8080 --endpoints=4ffe::1:1,5ffe::1:1,6ffe::1:1
 	loxicmd create lb  2001::1 --tcp=2020:8080 --endpoints=31.31.31.1:1,32.32.32.1:1,33.33.33.1:1
+	loxicmd create lb 10.10.10.254 --sctp=2020:8080 --endpoints=33.33.33.1:1 --attachEP
 	`,
 		PreRun: func(cmd *cobra.Command, args []string) {
 			if len(args) == 0 {
@@ -191,6 +194,12 @@ ex) loxicmd create lb 192.168.0.200 --tcp=80:32015 --endpoints=10.212.0.1:1,10.2
 				}
 				for port, targetPort := range portPair {
 					lbModel := api.LoadBalancerModel{}
+					oper := 0
+					if o.Attach {
+						oper = 1
+					} else if o.Detach {
+						oper = 2
+					}
 					lbService := api.LoadBalancerService{
 						ExternalIP: o.ExternalIP,
 						Protocol:   proto,
@@ -202,6 +211,7 @@ ex) loxicmd create lb 192.168.0.200 --tcp=80:32015 --endpoints=10.212.0.1:1,10.2
 						Timeout:    o.Timeout,
 						Block:      o.Mark,
 						Name:       o.Name,
+						Oper:       api.LbOP(oper),
 					}
 
 					if o.Mode == "dsr" && targetPort != port {
@@ -258,6 +268,8 @@ ex) loxicmd create lb 192.168.0.200 --tcp=80:32015 --endpoints=10.212.0.1:1,10.2
 	createLbCmd.Flags().Uint16VarP(&o.Mark, "mark", "", 0, "Specify the mark num to segregate a load-balancer VIP service")
 	createLbCmd.Flags().StringSliceVar(&o.Endpoints, "endpoints", o.Endpoints, "Endpoints is pairs that can be specified as '<endpointIP>:<Weight>'")
 	createLbCmd.Flags().StringVarP(&o.Name, "name", "", o.Name, "Name for load balancer rule")
+	createLbCmd.Flags().BoolVarP(&o.Attach, "attachEP", "", false, "Attach endpoints to the load balancer rule")
+	createLbCmd.Flags().BoolVarP(&o.Detach, "detachEP", "", false, "Detach endpoints from the load balancer rule")
 
 	return createLbCmd
 }
