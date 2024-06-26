@@ -27,6 +27,7 @@ type LoadBalancer struct {
 type EpSelect uint
 type LbMode int32
 type LbOP int32
+type LbSec int32
 
 type LbRuleModGet struct {
 	LbRules []LoadBalancerModel `json:"lbAttr"`
@@ -51,6 +52,7 @@ type LoadBalancerService struct {
 	Managed    bool     `json:"managed,omitempty" yaml:"managed"`
 	Name       string   `json:"name,omitempty" yaml:"name"`
 	Oper       LbOP     `json:"oper,omitempty"`
+	Security   LbSec    `json:"security,omitempty" yaml:"security"`
 }
 
 type LoadBalancerEndpoint struct {
