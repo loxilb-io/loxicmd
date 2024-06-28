@@ -45,6 +45,8 @@ type Routev4Get struct {
 	HardwareMark int `json:"hardwareMark" yaml:"hardwareMark"`
 	// statistic
 	Statistic RouteGetEntryStatistic `json:"statistic" yaml:"statistic"`
+	// Protocol type
+	Protocol string `json:"protocol" yaml:"protocol"`
 }
 
 type ConfigurationRouteFile struct {

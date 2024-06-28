@@ -28,13 +28,19 @@ import (
 	"github.com/spf13/cobra"
 )
 
+type CreateRouteStaticOptions struct {
+	StaticProto string
+}
+
 func NewCreateRouteCmd(restOptions *api.RESTOptions) *cobra.Command {
+	o := CreateRouteStaticOptions{}
 	var createRouteCmd = &cobra.Command{
-		Use:   "route <DestinationIPNet> <gateway>",
+		Use:   "route <DestinationIPNet> <gateway> --proto=<protocol>",
 		Short: "Create a Route",
-		Long: `Create a Route using LoxiLB. It is working as "ip route add <DestinationIPNet> via <gateway>"
+		Long: `Create a Route using LoxiLB. It is working as "ip route add <DestinationIPNet> via <gateway> proto <protocol>"
 	
-ex) loxicmd create route 192.168.212.0/24 172.17.0.254
+ex) loxicmd create route 192.168.212.0/24 172.17.0.254 --proto=static
+    loxicmd create route 192.168.212.0/24 172.17.0.254
 `,
 		PreRun: func(cmd *cobra.Command, args []string) {
 			if len(args) == 0 {
@@ -45,7 +51,7 @@ ex) loxicmd create route 192.168.212.0/24 172.17.0.254
 		Run: func(cmd *cobra.Command, args []string) {
 			var RouteMod api.Routev4Get
 			// Make RouteMod
-			if err := ReadCreateRouteOptions(&RouteMod, args); err != nil {
+			if err := ReadCreateRouteOptions(&RouteMod, args, o); err != nil {
 				fmt.Printf("Error: %s\n", err.Error())
 				return
 			}
@@ -63,11 +69,11 @@ ex) loxicmd create route 192.168.212.0/24 172.17.0.254
 
 		},
 	}
-
+	createRouteCmd.Flags().StringVarP(&o.StaticProto, "proto", "", "", "Proto static mode")
 	return createRouteCmd
 }
 
-func ReadCreateRouteOptions(o *api.Routev4Get, args []string) error {
+func ReadCreateRouteOptions(o *api.Routev4Get, args []string, opts CreateRouteStaticOptions) error {
 	if len(args) > 3 {
 		return errors.New("create Route command get so many args")
 	} else if len(args) <= 1 {
@@ -84,6 +90,11 @@ func ReadCreateRouteOptions(o *api.Routev4Get, args []string) error {
 	} else {
 		return fmt.Errorf("gateway IP '%s' is invalid format", args[1])
 	}
+
+	if opts.StaticProto == "static" {
+		o.Protocol = opts.StaticProto
+	}
+
 	return nil
 }
 
