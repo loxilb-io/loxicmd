@@ -34,6 +34,7 @@ type SaveOptions struct {
 	SaveEPConfig      bool
 	SaveBFDConfig     bool
 	SaveAllConfig     bool
+	ConfigPath        string
 }
 
 // saveCmd represents the save command
@@ -46,6 +47,9 @@ func SaveCmd(saveOpts *SaveOptions, restOptions *api.RESTOptions) *cobra.Command
 			_ = cmd
 			_ = args
 			dpath := "/etc/loxilb/"
+			if saveOpts.ConfigPath != "" {
+				dpath = saveOpts.ConfigPath
+			}
 			if !saveOpts.SaveIpConfig && !saveOpts.SaveAllConfig &&
 				!saveOpts.SaveLBConfig && !saveOpts.SaveSessionConfig &&
 				!saveOpts.SaveUlClConfig && !saveOpts.SaveFWConfig &&
@@ -57,7 +61,7 @@ func SaveCmd(saveOpts *SaveOptions, restOptions *api.RESTOptions) *cobra.Command
 			if _, err := os.Stat(dpath); errors.Is(err, os.ErrNotExist) {
 				err := os.Mkdir(dpath, os.ModePerm)
 				if err != nil {
-					fmt.Println("Can't create config dir /etc/loxilb/")
+					fmt.Println("Can't create config dir %v", dpath)
 					return
 				}
 			}

@@ -102,13 +102,15 @@ loxicmd aim to provide all of the configuation for the loxilb.`,
 	saveCmd.Flags().BoolVarP(&saveOptions.SaveFWConfig, "firewall", "", false, "Saves firewall configuration")
 	saveCmd.Flags().BoolVarP(&saveOptions.SaveEPConfig, "endpoint", "", false, "Saves endpoint configuration")
 	saveCmd.Flags().BoolVarP(&saveOptions.SaveBFDConfig, "bfd", "", false, "Saves BFD configuration")
+	saveCmd.Flags().StringVarP(&saveOptions.ConfigPath, "config-path", "c", "", "config file patch setting")
 
 	saveCmd.MarkFlagsMutuallyExclusive("all", "ip", "lb", "session", "ulcl", "firewall", "endpoint", "bfd")
 
 	applyCmd.Flags().StringVarP(&applyOptions.IpConfigFile, "ip", "i", "", "IP config file to apply")
 	applyCmd.Flags().StringVarP(&applyOptions.Intf, "per-intf", "", "", "Apply configuration only for specific interface")
 	applyCmd.Flags().BoolVarP(&applyOptions.Route, "ipv4route", "r", false, "Apply route configuration only for specific interface")
-	applyCmd.Flags().StringVarP(&applyOptions.ConfigPath, "config-path", "c", "/opt/loxilb/ipconfig/", "Configuration path only for applying per interface config")
+
+	applyCmd.Flags().StringVarP(&applyOptions.ConfigPath, "config-path", "c", "/etc/loxilb/ipconfig/", "Configuration path only for applying per interface config")
 	applyCmd.Flags().StringVarP(&applyOptions.LBConfigFile, "lb", "l", "", "Load Balancer config file to apply")
 	applyCmd.Flags().StringVarP(&applyOptions.SessionConfigFile, "session", "", "", "Session config file to apply")
 	applyCmd.Flags().StringVarP(&applyOptions.SessionUlClConfigFile, "ulcl", "", "", "Ulcl config file to apply")
