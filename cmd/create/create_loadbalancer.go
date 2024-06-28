@@ -39,6 +39,7 @@ type CreateLoadBalancerOptions struct {
 	ICMP       bool
 	Mode       string
 	BGP        bool
+	Security   string
 	Monitor    bool
 	Attach     bool
 	Detach     bool
@@ -113,11 +114,24 @@ func ModeToNum(sel string) int {
 	return ret
 }
 
+func SecStringToNum(sec string) int {
+	var ret int
+	switch sec {
+	case "https":
+		ret = 1
+	case "tls":
+		ret = 1
+	default:
+		ret = 0
+	}
+	return ret
+}
+
 func NewCreateLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 	o := CreateLoadBalancerOptions{}
 
 	var createLbCmd = &cobra.Command{
-		Use:   "lb IP [--select=<rr|hash|priority|persist>] [--tcp=<port>:<targetPort>] [--udp=<port>:<targetPort>] [--sctp=<port>:<targetPort>] [--icmp] [--mark=<val>] [--secips=<ip>,][--endpoints=<ip>:<weight>,] [--mode=<onearm|fullnat>] [--bgp] [--monitor] [--inatimeout=<to>] [--name=<service-name>] [--attachEP] [--detachEP]",
+		Use:   "lb IP [--select=<rr|hash|priority|persist>] [--tcp=<port>:<targetPort>] [--udp=<port>:<targetPort>] [--sctp=<port>:<targetPort>] [--icmp] [--mark=<val>] [--secips=<ip>,][--endpoints=<ip>:<weight>,] [--mode=<onearm|fullnat>] [--bgp] [--monitor] [--inatimeout=<to>] [--name=<service-name>] [--attachEP] [--detachEP] [--security=<https|none>]",
 		Short: "Create a LoadBalancer",
 		Long: `Create a LoadBalancer
 
@@ -134,6 +148,7 @@ func NewCreateLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 	hostonearm - LB operating in host one-arm
 
 ex) loxicmd create lb 192.168.0.200 --tcp=80:32015 --endpoints=10.212.0.1:1,10.212.0.2:1,10.212.0.3:1
+    loxicmd create lb 192.168.0.200 --tcp=80:32015 --endpoints=10.212.0.1:1,10.212.0.2:1,10.212.0.3:1 --security=https
     loxicmd create lb 192.168.0.200 --tcp=80:32015 --name="http-service" --endpoints=10.212.0.1:1,10.212.0.2:1,10.212.0.3:1
 	loxicmd create lb 192.168.0.200 --udp=80:32015 --endpoints=10.212.0.1:1,10.212.0.2:1,10.212.0.3:1 --mark=10
 	loxicmd create lb 192.168.0.200 --tcp=80:32015 --udp=80:32015 --endpoints=10.212.0.1:1,10.212.0.2:1,10.212.0.3:1
@@ -212,6 +227,7 @@ ex) loxicmd create lb 192.168.0.200 --tcp=80:32015 --endpoints=10.212.0.1:1,10.2
 						Block:      o.Mark,
 						Name:       o.Name,
 						Oper:       api.LbOP(oper),
+						Security:   api.LbSec(SecStringToNum(o.Security)),
 					}
 
 					if o.Mode == "dsr" && targetPort != port {
@@ -270,6 +286,7 @@ ex) loxicmd create lb 192.168.0.200 --tcp=80:32015 --endpoints=10.212.0.1:1,10.2
 	createLbCmd.Flags().StringVarP(&o.Name, "name", "", o.Name, "Name for load balancer rule")
 	createLbCmd.Flags().BoolVarP(&o.Attach, "attachEP", "", false, "Attach endpoints to the load balancer rule")
 	createLbCmd.Flags().BoolVarP(&o.Detach, "detachEP", "", false, "Detach endpoints from the load balancer rule")
+	createLbCmd.Flags().StringVarP(&o.Security, "security", "", o.Security, "Security mode for load balancer rule")
 
 	return createLbCmd
 }
