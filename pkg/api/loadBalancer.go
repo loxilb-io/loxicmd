@@ -51,6 +51,7 @@ type LoadBalancerService struct {
 	Block      uint16   `json:"block"          yaml:"block"`
 	Managed    bool     `json:"managed,omitempty" yaml:"managed"`
 	Name       string   `json:"name,omitempty" yaml:"name"`
+	Snat       bool     `json:"snat,omitempty"`
 	Oper       LbOP     `json:"oper,omitempty"`
 	Security   LbSec    `json:"security,omitempty" yaml:"security"`
 }

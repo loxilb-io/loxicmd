@@ -42,7 +42,10 @@ type FwOptArg struct {
 	Mark  int  `json:"fwMark" yaml:"fwMark"`
 	// Record - Record packets matching rule
 	Record bool `json:"record" yaml:"record"`
-
+	// DoSNAT - Do snat on matching rule
+	DoSnat bool   `json:"doSnat"`
+	ToIP   string `json:"toIP"`
+	ToPort uint16 `json:"toPort"`
 	// Counter - Traffic counter
 	Counter string `json:"counter"`
 }

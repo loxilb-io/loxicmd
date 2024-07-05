@@ -111,6 +111,8 @@ func MakeFirewallOptionToString(t api.FwOptArg) (ret string) {
 		ret = "Trap"
 	} else if t.Rdr {
 		ret = fmt.Sprintf("Redirect(%s)", t.RdrPort)
+	} else if t.DoSnat {
+		ret = fmt.Sprintf("Snat(%s:%d)", t.ToIP, t.ToPort)
 	}
 	if t.Record {
 		ret += fmt.Sprintf(",Record")

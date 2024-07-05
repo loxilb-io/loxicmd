@@ -17,6 +17,7 @@ package create
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"loxicmd/pkg/api"
 	"net/http"
@@ -31,6 +32,7 @@ import (
 type CreateFirewallOptions struct {
 	FirewallRule []string
 	Redirect     []string
+	SnatArgs     []string
 	Allow        bool
 	Drop         bool
 	Trap         bool
@@ -64,6 +66,8 @@ ex) loxicmd create firewall --firewallRule="sourceIP:1.2.3.2/32,destinationIP:2.
     loxicmd create firewall --firewallRule="sourceIP:1.2.3.2/32,destinationIP:2.3.1.2/32,preference:200" --drop
 	loxicmd create firewall --firewallRule="sourceIP:1.2.3.2/32,destinationIP:2.3.1.2/32,preference:200" --trap
 	loxicmd create firewall --firewallRule="sourceIP:1.2.3.2/32,destinationIP:2.3.1.2/32,preference:200" --redirect=hs1
+	loxicmd create firewall --firewallRule="sourceIP:1.2.3.2/32,destinationIP:2.3.1.2/32,preference:200" --snat=10.10.10.1,3030
+	loxicmd create firewall --firewallRule="sourceIP:1.2.3.2/32,destinationIP:2.3.1.2/32,preference:200" --snat=10.10.10.1 (Do not change sourceport)
 `,
 		Aliases: []string{"Firewall", "fw", "firewalls"},
 		PreRun: func(cmd *cobra.Command, args []string) {
@@ -107,6 +111,7 @@ ex) loxicmd create firewall --firewallRule="sourceIP:1.2.3.2/32,destinationIP:2.
 	createFirewallCmd.Flags().BoolVarP(&o.Record, "record", "", false, "Record/Dump any matching rule")
 	createFirewallCmd.Flags().BoolVarP(&o.Trap, "trap", "", false, " Trap anything matching rule")
 	createFirewallCmd.Flags().IntVarP(&o.Mark, "setmark", "", 0, " Add a fw mark")
+	createFirewallCmd.Flags().StringSliceVar(&o.SnatArgs, "snat", o.SnatArgs, "SNAT any matching rule")
 	createFirewallCmd.MarkFlagRequired("firewallRule")
 	return createFirewallCmd
 }
@@ -175,6 +180,21 @@ func GetFWOptionPairList(FirewallMods *api.FwRuleMod, o CreateFirewallOptions) e
 	} else if len(o.Redirect) != 0 {
 		FirewallMods.Opts.Rdr = true
 		FirewallMods.Opts.RdrPort = o.Redirect[0]
+	} else if len(o.SnatArgs) != 0 {
+		if len(o.SnatArgs) > 2 {
+			return errors.New("invalid snat-args")
+		}
+		FirewallMods.Opts.DoSnat = true
+		FirewallMods.Opts.ToIP = o.SnatArgs[0]
+		if len(o.SnatArgs) > 1 {
+			sPort, err := strconv.Atoi(o.SnatArgs[1])
+			if err != nil {
+				return errors.New("invalid snat-args")
+			}
+			FirewallMods.Opts.ToPort = uint16(sPort)
+		} else {
+			FirewallMods.Opts.ToPort = 0
+		}
 	}
 	FirewallMods.Opts.Record = o.Record
 	FirewallMods.Opts.Mark = o.Mark
