@@ -51,12 +51,13 @@ func NewDeleteLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 	var BGP bool
 	var Mark uint16
 	var Name string
+	var Path string
 
 	var externalIP string
 	//var endpointList []string
 
 	var deleteLbCmd = &cobra.Command{
-		Use:   "lb <EXTERNAL-IP> [--tcp portNumber] [--udp portNumber] [--sctp portNumber] [--icmp portNumber] [--bgp] [--mark=<val>] [--name=<service-name>]",
+		Use:   "lb <EXTERNAL-IP> [--tcp portNumber] [--udp portNumber] [--sctp portNumber] [--icmp portNumber] [--bgp] [--mark=<val>] [--name=<service-name>] [--path=<url>]",
 		Short: "Delete a LoadBalancer",
 		Long:  `Delete a LoadBalancer.`,
 		PreRun: func(cmd *cobra.Command, args []string) {
@@ -115,6 +116,7 @@ func NewDeleteLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 			for proto, portNum := range PortNumberList {
 				for _, port := range portNum {
 					subResources := []string{
+						"urlpath", Path,
 						"externalipaddress", externalIP,
 						"port", strconv.Itoa(port),
 						"protocol", proto,
@@ -147,6 +149,8 @@ func NewDeleteLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 	deleteLbCmd.Flags().BoolVarP(&BGP, "bgp", "", false, "BGP enable information'")
 	deleteLbCmd.Flags().Uint16VarP(&Mark, "mark", "", 0, "Specify the mark num to segregate a load-balancer VIP service")
 	deleteLbCmd.Flags().StringVarP(&Name, "name", "", Name, "Name for load balancer rule")
+	deleteLbCmd.Flags().StringVarP(&Path, "path", "", Path, "Ingress URL Path")
+
 	return deleteLbCmd
 }
 
