@@ -113,6 +113,9 @@ func NewDeleteLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 				PortNumberList["icmp"] = []int{0}
 			}
 			fmt.Printf("PortNumberList: %v\n", PortNumberList)
+			if Path == "" {
+				Path = "any"
+			}
 			for proto, portNum := range PortNumberList {
 				for _, port := range portNum {
 					subResources := []string{
