@@ -54,7 +54,7 @@ type LoadBalancerService struct {
 	Snat       bool     `json:"snat,omitempty"`
 	Oper       LbOP     `json:"oper,omitempty"`
 	Security   LbSec    `json:"security,omitempty" yaml:"security"`
-	Path       string   `json:"path,omitempty" yaml:"path"`
+	Host       string   `json:"host,omitempty" yaml:"path"`
 }
 
 type LoadBalancerEndpoint struct {
