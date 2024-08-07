@@ -91,6 +91,8 @@ func NumToSecurty(sec int) string {
 		ret = ""
 	case 1:
 		ret = "https"
+	case 2:
+		ret = "e2ehttps"
 	default:
 		ret = ""
 	}

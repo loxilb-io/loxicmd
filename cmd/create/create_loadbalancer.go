@@ -122,6 +122,10 @@ func SecStringToNum(sec string) int {
 		ret = 1
 	case "tls":
 		ret = 1
+	case "e2ehttps":
+		ret = 2
+	case "e2etls":
+		ret = 2
 	default:
 		ret = 0
 	}
@@ -132,7 +136,7 @@ func NewCreateLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 	o := CreateLoadBalancerOptions{}
 
 	var createLbCmd = &cobra.Command{
-		Use:   "lb IP [--select=<rr|hash|priority|persist>] [--tcp=<port>:<targetPort>] [--udp=<port>:<targetPort>] [--sctp=<port>:<targetPort>] [--icmp] [--mark=<val>] [--secips=<ip>,][--endpoints=<ip>:<weight>,] [--mode=<onearm|fullnat>] [--bgp] [--monitor] [--inatimeout=<to>] [--name=<service-name>] [--attachEP] [--detachEP] [--security=<https|none>] [--host=<url>]",
+		Use:   "lb IP [--select=<rr|hash|priority|persist>] [--tcp=<port>:<targetPort>] [--udp=<port>:<targetPort>] [--sctp=<port>:<targetPort>] [--icmp] [--mark=<val>] [--secips=<ip>,][--endpoints=<ip>:<weight>,] [--mode=<onearm|fullnat>] [--bgp] [--monitor] [--inatimeout=<to>] [--name=<service-name>] [--attachEP] [--detachEP] [--security=<https|e2ehttps|none>] [--host=<url>]",
 		Short: "Create a LoadBalancer",
 		Long: `Create a LoadBalancer
 
