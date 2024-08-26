@@ -225,7 +225,7 @@ func Lbdump(restOptions *api.RESTOptions, path string) (string, error) {
 	lbresp := api.LbRuleModGet{}
 	dresp := api.LbRuleModGet{}
 	// File Open
-	fileP := []string{"lbconfig_", ".txt"}
+	fileP := []string{"/tmp/lbconfig_", ".txt"}
 	t := time.Now()
 	file := strings.Join(fileP, t.Local().Format("2006-01-02_15:04:05"))
 	f, err := os.Create(file)
@@ -233,7 +233,7 @@ func Lbdump(restOptions *api.RESTOptions, path string) (string, error) {
 		fmt.Printf("Can't create dump file\n")
 		os.Exit(1)
 	}
-	defer f.Close()
+	defer os.Remove(f.Name())
 
 	// API Call
 	client := api.NewLoxiClient(restOptions)
