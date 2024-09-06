@@ -514,7 +514,7 @@ func GetBonds() {
 func Nlpdump(dpath string) (string, error) {
 	var ret int
 	var err error
-	fileP := []string{"ipconfig_", ".txt"}
+	fileP := []string{"/tmp/ipconfig_", ".txt"}
 	t := time.Now()
 	file := strings.Join(fileP, t.Local().Format("2006-01-02_15:04:05"))
 	f, err = os.Create(file)
@@ -523,9 +523,9 @@ func Nlpdump(dpath string) (string, error) {
 		os.Exit(1)
 	}
 
-	defer f.Close()
+	defer os.Remove(f.Name())
 
-	path = "ipconfig_" + t.Local().Format("2006-01-02_15:04:05") + "/"
+	path = "/tmp/" + "ipconfig_" + t.Local().Format("2006-01-02_15:04:05") + "/"
 	//fmt.Printf("Creating intf config dir : %s\n", path)
 	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
 		err := os.Mkdir(path, os.ModePerm)
@@ -533,6 +533,8 @@ func Nlpdump(dpath string) (string, error) {
 			fmt.Println("Can't create config dir")
 		}
 	}
+
+	defer os.RemoveAll(path)
 
 	/*Get bridge info first */
 	GetBridges()
