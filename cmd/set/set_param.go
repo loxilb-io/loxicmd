@@ -61,16 +61,16 @@ func NewSetLogLevelCmd(restOptions *api.RESTOptions) *cobra.Command {
 
 func ReadSetLogLevelOptions(o *api.ParamDump, args []string) error {
 	if len(args) > 1 {
-		return errors.New("Set log-level command get so many args")
+		return errors.New("set log-level command get so many args")
 	} else if len(args) < 1 {
-		return errors.New("Set log-level need <log-level> args")
+		return errors.New("set log-level need <log-level> args")
 	}
 
 	// Validate Log level option
 	if IsValidLogLevel(args[0]) {
 		o.LogLevel = args[0]
 	} else {
-		return errors.New("Set log-level in the debug,info,error,warning,notice,critical,emergency,alert.")
+		return errors.New("set log-level in the trace,debug,info,error,warning,notice,critical,emergency,alert")
 	}
 
 	return nil
@@ -79,6 +79,7 @@ func ReadSetLogLevelOptions(o *api.ParamDump, args []string) error {
 func IsValidLogLevel(loglevel string) bool {
 	switch loglevel {
 	case
+		"trace",
 		"debug",
 		"info",
 		"error",
