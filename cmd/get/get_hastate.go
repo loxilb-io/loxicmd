@@ -79,6 +79,8 @@ func PrintGetHAStateResult(resp *http.Response, o api.RESTOptions) {
 		return
 	}
 
+	HAStateresp.Sort()
+
 	// Table Init
 	table := TableInit()
 	table.SetHeader(HASTATE_TITLE)
