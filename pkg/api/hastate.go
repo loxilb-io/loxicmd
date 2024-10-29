@@ -15,6 +15,10 @@
  */
 package api
 
+import (
+	"sort"
+)
+
 type HAState struct {
 	CommonAPI
 }
@@ -39,4 +43,10 @@ type HAStateInfo struct {
 
 	// Instance Virtual IP address
 	Vip string `json:"vip,omitempty"`
+}
+
+func (haState HAStateGet) Sort() {
+	sort.Slice(haState.HAStateAttr, func(i, j int) bool {
+		return haState.HAStateAttr[i].Instance < haState.HAStateAttr[j].Instance
+	})
 }
