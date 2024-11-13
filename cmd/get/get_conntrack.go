@@ -84,7 +84,7 @@ func PrintGetCTResult(resp *http.Response, o api.RESTOptions) {
 
 	// Table Init
 	table := TableInit()
-	table.SetHeader([]string{"Service Name", "destIP", "srcIP", "dport", "sport", "proto", "state", "act", "packets", "bytes"})
+	table.SetHeader([]string{"Service Name", "destIP", "srcIP", "dport", "sport", "proto", "ident", "state", "act", "packets", "bytes"})
 	// Making load balance data
 	data = makeConntrackData(o, ctresp)
 
@@ -104,6 +104,7 @@ func makeConntrackData(o api.RESTOptions, ctresp api.CtInformationGet) (data [][
 			fmt.Sprintf("%d", conntrack.Dport),
 			fmt.Sprintf("%d", conntrack.Sport),
 			conntrack.Proto,
+			conntrack.Ident,
 			conntrack.CState,
 			conntrack.CAct,
 			fmt.Sprintf("%v", conntrack.Pkts),

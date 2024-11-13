@@ -78,6 +78,8 @@ func NumToSelect(sel int) string {
 		ret = "lc"
 	case 5:
 		ret = "n2"
+	case 6:
+		ret = "n3"
 	default:
 		ret = "rr"
 	}
