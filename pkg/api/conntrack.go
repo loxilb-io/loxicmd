@@ -34,6 +34,7 @@ type ConntrackInformation struct {
 	Dport    uint16 `json:"destinationPort"`
 	Sport    uint16 `json:"sourcePort"`
 	Proto    string `json:"protocol"`
+	Ident    string `json:"ident"`
 	CState   string `json:"conntrackState"`
 	CAct     string `json:"conntrackAct"`
 	Pkts     uint64 `json:"packets"`
