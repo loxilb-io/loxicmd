@@ -37,7 +37,7 @@ type CreateFirewallOptions struct {
 	Drop         bool
 	Trap         bool
 	Record       bool
-	Mark         int
+	Mark         uint32
 }
 
 func NewCreateFirewallCmd(restOptions *api.RESTOptions) *cobra.Command {
@@ -110,7 +110,7 @@ ex) loxicmd create firewall --firewallRule="sourceIP:1.2.3.2/32,destinationIP:2.
 	createFirewallCmd.Flags().BoolVarP(&o.Drop, "drop", "", false, "Drop any matching rule")
 	createFirewallCmd.Flags().BoolVarP(&o.Record, "record", "", false, "Record/Dump any matching rule")
 	createFirewallCmd.Flags().BoolVarP(&o.Trap, "trap", "", false, " Trap anything matching rule")
-	createFirewallCmd.Flags().IntVarP(&o.Mark, "setmark", "", 0, " Add a fw mark")
+	createFirewallCmd.Flags().Uint32VarP(&o.Mark, "setmark", "", 0, " Add a fw mark")
 	createFirewallCmd.Flags().StringSliceVar(&o.SnatArgs, "snat", o.SnatArgs, "SNAT any matching rule")
 	createFirewallCmd.MarkFlagRequired("firewallRule")
 	return createFirewallCmd
@@ -197,7 +197,7 @@ func GetFWOptionPairList(FirewallMods *api.FwRuleMod, o CreateFirewallOptions) e
 		}
 	}
 	FirewallMods.Opts.Record = o.Record
-	FirewallMods.Opts.Mark = o.Mark
+	FirewallMods.Opts.Mark = uint32(o.Mark)
 
 	return nil
 }

@@ -48,7 +48,7 @@ type LoadBalancerService struct {
 	BGP        bool     `json:"BGP"            yaml:"BGP"`
 	Monitor    bool     `json:"Monitor"        yaml:"Monitor"`
 	Timeout    uint32   `json:"inactiveTimeOut" yaml:"inactiveTimeOut"`
-	Block      uint16   `json:"block"          yaml:"block"`
+	Block      uint32   `json:"block"          yaml:"block"`
 	Managed    bool     `json:"managed,omitempty" yaml:"managed"`
 	Name       string   `json:"name,omitempty" yaml:"name"`
 	Snat       bool     `json:"snat,omitempty"`

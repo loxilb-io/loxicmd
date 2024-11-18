@@ -38,8 +38,8 @@ type FwOptArg struct {
 	Rdr     bool   `json:"redirect" yaml:"redirect"`
 	RdrPort string `json:"redirectPortName" yaml:"redirectPortName"`
 	// Allow - Allow any matching rule
-	Allow bool `json:"allow" yaml:"allow"`
-	Mark  int  `json:"fwMark" yaml:"fwMark"`
+	Allow bool   `json:"allow" yaml:"allow"`
+	Mark  uint32 `json:"fwMark" yaml:"fwMark"`
 	// Record - Record packets matching rule
 	Record bool `json:"record" yaml:"record"`
 	// DoSNAT - Do snat on matching rule
