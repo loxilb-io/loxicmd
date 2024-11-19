@@ -36,25 +36,26 @@ type LbRuleModGet struct {
 type LoadBalancerModel struct {
 	Service      LoadBalancerService    `json:"serviceArguments" yaml:"serviceArguments"`
 	SecondaryIPs []LoadBalancerSecIp    `json:"secondaryIPs" yaml:"secondaryIPs"`
+	SrcIPs       []LbAllowedSrcIPArg    `json:"allowedSources" yaml:"allowedSources"`
 	Endpoints    []LoadBalancerEndpoint `json:"endpoints" yaml:"endpoints"`
 }
 
 type LoadBalancerService struct {
-	ExternalIP string   `json:"externalIP" yaml:"externalIP"`
-	Port       uint16   `json:"port"           yaml:"port" `
-	Protocol   string   `json:"protocol"       yaml:"protocol"`
-	Sel        EpSelect `json:"sel"            yaml:"sel"`
-	Mode       LbMode   `json:"mode"           yaml:"mode"`
-	BGP        bool     `json:"BGP"            yaml:"BGP"`
-	Monitor    bool     `json:"Monitor"        yaml:"Monitor"`
-	Timeout    uint32   `json:"inactiveTimeOut" yaml:"inactiveTimeOut"`
-	Block      uint32   `json:"block"          yaml:"block"`
-	Managed    bool     `json:"managed,omitempty" yaml:"managed"`
-	Name       string   `json:"name,omitempty" yaml:"name"`
+	ExternalIP string   `json:"externalIP"         yaml:"externalIP"`
+	Port       uint16   `json:"port"               yaml:"port" `
+	Protocol   string   `json:"protocol"           yaml:"protocol"`
+	Sel        EpSelect `json:"sel"                yaml:"sel"`
+	Mode       LbMode   `json:"mode"               yaml:"mode"`
+	BGP        bool     `json:"BGP"                yaml:"BGP"`
+	Monitor    bool     `json:"Monitor"            yaml:"Monitor"`
+	Timeout    uint32   `json:"inactiveTimeOut"    yaml:"inactiveTimeOut"`
+	Block      uint32   `json:"block"              yaml:"block"`
+	Managed    bool     `json:"managed,omitempty"  yaml:"managed"`
+	Name       string   `json:"name,omitempty"     yaml:"name"`
 	Snat       bool     `json:"snat,omitempty"`
 	Oper       LbOP     `json:"oper,omitempty"`
 	Security   LbSec    `json:"security,omitempty" yaml:"security"`
-	Host       string   `json:"host,omitempty" yaml:"path"`
+	Host       string   `json:"host,omitempty"     yaml:"path"`
 }
 
 type LoadBalancerEndpoint struct {
@@ -67,6 +68,11 @@ type LoadBalancerEndpoint struct {
 
 type LoadBalancerSecIp struct {
 	SecondaryIP string `json:"secondaryIP" yaml:"secondaryIP"`
+}
+
+type LbAllowedSrcIPArg struct {
+	// Prefix - Allowed Prefix
+	Prefix string `json:"prefix" yaml:"prefix"`
 }
 
 type ConfigurationLBFile struct {
