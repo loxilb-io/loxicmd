@@ -118,7 +118,7 @@ func MakeFirewallOptionToString(t api.FwOptArg) (ret string) {
 		ret += fmt.Sprintf(",Record")
 	}
 	if t.Mark != 0 {
-		ret += fmt.Sprintf(",FwMark(%d)", t.Mark)
+		ret += fmt.Sprintf(",FwMark(%v)", t.Mark)
 	}
 	return ret
 }
