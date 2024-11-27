@@ -56,6 +56,7 @@ type LoadBalancerService struct {
 	Oper       LbOP     `json:"oper,omitempty"`
 	Security   LbSec    `json:"security,omitempty" yaml:"security"`
 	Host       string   `json:"host,omitempty"     yaml:"path"`
+	PpV2       bool     `json:"proxyprotocolv2"    yaml:"proxyprotocolv2"`
 }
 
 type LoadBalancerEndpoint struct {

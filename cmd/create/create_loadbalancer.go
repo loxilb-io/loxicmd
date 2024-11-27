@@ -52,6 +52,7 @@ type CreateLoadBalancerOptions struct {
 	Name           string
 	Host           string
 	AllowedSources []string
+	PPv2En         bool
 }
 
 type CreateLoadBalancerResult struct {
@@ -139,7 +140,7 @@ func NewCreateLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 	o := CreateLoadBalancerOptions{}
 
 	var createLbCmd = &cobra.Command{
-		Use:   "lb IP [--select=<rr|hash|priority|persist>] [--tcp=<port>:<targetPort>] [--udp=<port>:<targetPort>] [--sctp=<port>:<targetPort>] [--icmp] [--mark=<val>] [--secips=<ip>,] [--sources=<ip>,] [--endpoints=<ip>:<weight>,] [--mode=<onearm|fullnat>] [--bgp] [--monitor] [--inatimeout=<to>] [--name=<service-name>] [--attachEP] [--detachEP] [--security=<https|e2ehttps|none>] [--host=<url>]",
+		Use:   "lb IP [--select=<rr|hash|priority|persist>] [--tcp=<port>:<targetPort>] [--udp=<port>:<targetPort>] [--sctp=<port>:<targetPort>] [--icmp] [--mark=<val>] [--secips=<ip>,] [--sources=<ip>,] [--endpoints=<ip>:<weight>,] [--mode=<onearm|fullnat>] [--bgp] [--monitor] [--inatimeout=<to>] [--name=<service-name>] [--attachEP] [--detachEP] [--security=<https|e2ehttps|none>] [--host=<url>] [--ppv2en]",
 		Short: "Create a LoadBalancer",
 		Long: `Create a LoadBalancer
 
@@ -170,6 +171,7 @@ ex) loxicmd create lb 192.168.0.200 --tcp=80:32015 --endpoints=10.212.0.1:1,10.2
 	loxicmd create lb  2001::1 --tcp=2020:8080 --endpoints=4ffe::1:1,5ffe::1:1,6ffe::1:1
 	loxicmd create lb  2001::1 --tcp=2020:8080 --endpoints=31.31.31.1:1,32.32.32.1:1,33.33.33.1:1
 	loxicmd create lb 10.10.10.254 --sctp=2020:8080 --endpoints=33.33.33.1:1 --attachEP
+	loxicmd create lb 100.100.100.1 --tcp=8080:80 --endpoints=10.10.10.1:1 --ppv2en
 	`,
 		PreRun: func(cmd *cobra.Command, args []string) {
 			if len(args) == 0 {
@@ -240,6 +242,7 @@ ex) loxicmd create lb 192.168.0.200 --tcp=80:32015 --endpoints=10.212.0.1:1,10.2
 						Oper:       api.LbOP(oper),
 						Security:   api.LbSec(SecStringToNum(o.Security)),
 						Host:       o.Host,
+						PpV2:       o.PPv2En,
 					}
 
 					if o.Mode == "dsr" && targetPort != port {
@@ -308,6 +311,7 @@ ex) loxicmd create lb 192.168.0.200 --tcp=80:32015 --endpoints=10.212.0.1:1,10.2
 	createLbCmd.Flags().StringVarP(&o.Security, "security", "", o.Security, "Security mode for load balancer rule")
 	createLbCmd.Flags().StringVarP(&o.Host, "host", "", o.Host, "Ingress Host URL Path")
 	createLbCmd.Flags().StringSliceVar(&o.AllowedSources, "sources", o.AllowedSources, "Allowed sources for this rule as '<allowedSources>'")
+	createLbCmd.Flags().BoolVarP(&o.PPv2En, "ppv2en", "", false, "Enable proxy procotol v2")
 
 	return createLbCmd
 }
