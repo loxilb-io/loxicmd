@@ -37,6 +37,7 @@ type CreateFirewallOptions struct {
 	Drop         bool
 	Trap         bool
 	Record       bool
+	Egress       bool
 	Mark         uint32
 }
 
@@ -44,7 +45,7 @@ func NewCreateFirewallCmd(restOptions *api.RESTOptions) *cobra.Command {
 	o := CreateFirewallOptions{}
 
 	var createFirewallCmd = &cobra.Command{
-		Use:   "firewall --firewallRule=<ruleKey>:<ruleValue>, [--allow] [--drop] [--trap] [--record] [--redirect=<PortName>] [--setmark=<FwMark>]",
+		Use:   "firewall --firewallRule=<ruleKey>:<ruleValue>, [--allow] [--drop] [--trap] [--record] [--egress] [--redirect=<PortName>] [--setmark=<FwMark>]",
 		Short: "Create a Firewall",
 		Long: `Create a Firewall using LoxiLB
 
@@ -68,6 +69,7 @@ ex) loxicmd create firewall --firewallRule="sourceIP:1.2.3.2/32,destinationIP:2.
     loxicmd create firewall --firewallRule="sourceIP:1.2.3.2/32,destinationIP:2.3.1.2/32,preference:200" --redirect=hs1
     loxicmd create firewall --firewallRule="sourceIP:1.2.3.2/32,destinationIP:2.3.1.2/32,preference:200" --snat=10.10.10.1,3030
     loxicmd create firewall --firewallRule="sourceIP:1.2.3.2/32,destinationIP:2.3.1.2/32,preference:200" --snat=10.10.10.1 (Do not change sourceport)
+	loxicmd create firewall --firewallRule="sourceIP:1.2.3.2/32,destinationIP:2.3.1.2/32,preference:200" --snat=10.10.10.1,3030 --egress (Egress rules match for non-k8s traffic)
 `,
 		Aliases: []string{"Firewall", "fw", "firewalls"},
 		PreRun: func(cmd *cobra.Command, args []string) {
@@ -112,6 +114,7 @@ ex) loxicmd create firewall --firewallRule="sourceIP:1.2.3.2/32,destinationIP:2.
 	createFirewallCmd.Flags().BoolVarP(&o.Trap, "trap", "", false, " Trap anything matching rule")
 	createFirewallCmd.Flags().Uint32VarP(&o.Mark, "setmark", "", 0, " Add a fw mark")
 	createFirewallCmd.Flags().StringSliceVar(&o.SnatArgs, "snat", o.SnatArgs, "SNAT any matching rule")
+	createFirewallCmd.Flags().BoolVarP(&o.Egress, "egress", "", false, "Specify that this an egress rule (to be used with snat)")
 	createFirewallCmd.MarkFlagRequired("firewallRule")
 	return createFirewallCmd
 }
@@ -195,6 +198,7 @@ func GetFWOptionPairList(FirewallMods *api.FwRuleMod, o CreateFirewallOptions) e
 		} else {
 			FirewallMods.Opts.ToPort = 0
 		}
+		FirewallMods.Opts.OnDefault = o.Egress
 	}
 	FirewallMods.Opts.Record = o.Record
 	FirewallMods.Opts.Mark = uint32(o.Mark)

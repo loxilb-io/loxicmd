@@ -53,6 +53,7 @@ type CreateLoadBalancerOptions struct {
 	Host           string
 	AllowedSources []string
 	PPv2En         bool
+	Egress         bool
 }
 
 type CreateLoadBalancerResult struct {
@@ -140,7 +141,7 @@ func NewCreateLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 	o := CreateLoadBalancerOptions{}
 
 	var createLbCmd = &cobra.Command{
-		Use:   "lb IP [--select=<rr|hash|priority|persist>] [--tcp=<port>:<targetPort>] [--udp=<port>:<targetPort>] [--sctp=<port>:<targetPort>] [--icmp] [--mark=<val>] [--secips=<ip>,] [--sources=<ip>,] [--endpoints=<ip>:<weight>,] [--mode=<onearm|fullnat>] [--bgp] [--monitor] [--inatimeout=<to>] [--name=<service-name>] [--attachEP] [--detachEP] [--security=<https|e2ehttps|none>] [--host=<url>] [--ppv2en]",
+		Use:   "lb IP [--select=<rr|hash|priority|persist>] [--tcp=<port>:<targetPort>] [--udp=<port>:<targetPort>] [--sctp=<port>:<targetPort>] [--icmp] [--mark=<val>] [--secips=<ip>,] [--sources=<ip>,] [--endpoints=<ip>:<weight>,] [--mode=<onearm|fullnat>] [--bgp] [--monitor] [--inatimeout=<to>] [--name=<service-name>] [--attachEP] [--detachEP] [--security=<https|e2ehttps|none>] [--host=<url>] [--ppv2en] [--egress]",
 		Short: "Create a LoadBalancer",
 		Long: `Create a LoadBalancer
 
@@ -158,9 +159,10 @@ func NewCreateLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 	hostonearm - LB operating in host one-arm
 
 ex) loxicmd create lb 192.168.0.200 --tcp=80:32015 --endpoints=10.212.0.1:1,10.212.0.2:1,10.212.0.3:1
-    loxicmd create lb 192.168.0.200 --tcp=80:32015 --endpoints=10.212.0.1:1,10.212.0.2:1,10.212.0.3:1 --security=https
+	loxicmd create lb 192.168.0.200 --tcp=5000:5201-5300 --endpoints=10.212.0.1:1,10.212.0.2:1,10.212.0.3:1
+	loxicmd create lb 192.168.0.200 --tcp=80:32015 --endpoints=10.212.0.1:1,10.212.0.2:1,10.212.0.3:1 --security=https
 	loxicmd create lb 192.168.0.200 --tcp=80:32015 --endpoints=10.212.0.1:1,10.212.0.2:1,10.212.0.3:1 --host=loxilb.io
-    loxicmd create lb 192.168.0.200 --tcp=80:32015 --name="http-service" --endpoints=10.212.0.1:1,10.212.0.2:1,10.212.0.3:1
+	loxicmd create lb 192.168.0.200 --tcp=80:32015 --name="http-service" --endpoints=10.212.0.1:1,10.212.0.2:1,10.212.0.3:1
 	loxicmd create lb 192.168.0.200 --udp=80:32015 --endpoints=10.212.0.1:1,10.212.0.2:1,10.212.0.3:1 --mark=10
 	loxicmd create lb 192.168.0.200 --tcp=80:32015 --udp=80:32015 --endpoints=10.212.0.1:1,10.212.0.2:1,10.212.0.3:1
 	loxicmd create lb 192.168.0.200 --select=hash --tcp=80:32015 --endpoints=10.212.0.1:1,10.212.0.2:1,10.212.0.3:1
@@ -215,12 +217,17 @@ ex) loxicmd create lb 192.168.0.200 --tcp=80:32015 --endpoints=10.212.0.1:1,10.2
 				return
 			}
 			for proto, portPairList := range ProtoPortpair {
-				portPair, err := GetPortPairList(portPairList)
+				portTargetPorts, err := GetPortPairList(portPairList)
 				if err != nil {
 					fmt.Printf("Error: %s\n", err.Error())
 					return
 				}
-				for port, targetPort := range portPair {
+				if len(portTargetPorts) <= 0 {
+					fmt.Printf("portPair: None specified\n")
+					return
+				}
+
+				for port := range portTargetPorts {
 					lbModel := api.LoadBalancerModel{}
 					oper := 0
 					if o.Attach {
@@ -243,21 +250,24 @@ ex) loxicmd create lb 192.168.0.200 --tcp=80:32015 --endpoints=10.212.0.1:1,10.2
 						Security:   api.LbSec(SecStringToNum(o.Security)),
 						Host:       o.Host,
 						PpV2:       o.PPv2En,
-					}
-
-					if o.Mode == "dsr" && targetPort != port {
-						fmt.Printf("Error: No port-translation in dsr mode\n")
-						return
+						Egress:     o.Egress,
 					}
 
 					lbModel.Service = lbService
 					for endpoint, weight := range endpointPair {
-						ep := api.LoadBalancerEndpoint{
-							EndpointIP: endpoint,
-							TargetPort: targetPort,
-							Weight:     weight,
+						targetPorts := portTargetPorts[port]
+						for _, targetPort := range targetPorts {
+							if o.Mode == "dsr" && targetPort != port {
+								fmt.Printf("Error: No port-translation in dsr mode\n")
+								return
+							}
+							ep := api.LoadBalancerEndpoint{
+								EndpointIP: endpoint,
+								TargetPort: targetPort,
+								Weight:     weight,
+							}
+							lbModel.Endpoints = append(lbModel.Endpoints, ep)
 						}
-						lbModel.Endpoints = append(lbModel.Endpoints, ep)
 					}
 
 					for _, sip := range o.SecIPs {
@@ -289,7 +299,6 @@ ex) loxicmd create lb 192.168.0.200 --tcp=80:32015 --endpoints=10.212.0.1:1,10.2
 					}
 				}
 			}
-
 		},
 	}
 
@@ -312,6 +321,7 @@ ex) loxicmd create lb 192.168.0.200 --tcp=80:32015 --endpoints=10.212.0.1:1,10.2
 	createLbCmd.Flags().StringVarP(&o.Host, "host", "", o.Host, "Ingress Host URL Path")
 	createLbCmd.Flags().StringSliceVar(&o.AllowedSources, "sources", o.AllowedSources, "Allowed sources for this rule as '<allowedSources>'")
 	createLbCmd.Flags().BoolVarP(&o.PPv2En, "ppv2en", "", false, "Enable proxy procotol v2")
+	createLbCmd.Flags().BoolVarP(&o.Egress, "egress", "", false, "Specify egress rule")
 
 	return createLbCmd
 }
@@ -340,8 +350,8 @@ func PrintCreateResult(resp *http.Response, o api.RESTOptions) {
 	fmt.Printf("%s\n", result.Result)
 }
 
-func GetPortPairList(portPairStrList []string) (map[uint16]uint16, error) {
-	result := make(map[uint16]uint16)
+func GetPortPairList(portPairStrList []string) (map[uint16][]uint16, error) {
+	result := make(map[uint16][]uint16)
 	for _, portPairStr := range portPairStrList {
 		portPair := strings.Split(portPairStr, ":")
 		if len(portPair) != 2 {
@@ -353,14 +363,38 @@ func GetPortPairList(portPairStrList []string) (map[uint16]uint16, error) {
 			return nil, fmt.Errorf("port '%s' is not integer", portPair[0])
 		}
 
-		targetPort, err := strconv.Atoi(portPair[1])
-		if err != nil {
-			return nil, fmt.Errorf("targetPort '%s' is not integer", portPair[1])
+		startTP := 0
+		endTP := 0
+
+		targetPortRange := strings.Split(portPair[1], "-")
+		if len(targetPortRange) > 2 {
+			continue
+		} else if len(targetPortRange) == 2 {
+			startTP, err = strconv.Atoi(targetPortRange[0])
+			if err != nil {
+				return nil, fmt.Errorf("targetPort0 '%s' is not integer", targetPortRange[0])
+			}
+			endTP, err = strconv.Atoi(targetPortRange[1])
+			if err != nil {
+				return nil, fmt.Errorf("targetPort1 '%s' is not integer", targetPortRange[1])
+			}
+			if endTP < startTP {
+				return nil, fmt.Errorf("targetPort2 '%s' <  targetPort2 '%s'", targetPortRange[1], targetPortRange[0])
+			}
+		} else {
+			startTP, err = strconv.Atoi(targetPortRange[0])
+			if err != nil {
+				return nil, fmt.Errorf("targetPort0 '%s' is not integer", targetPortRange[0])
+			}
+			endTP = startTP
 		}
 
-		result[uint16(port)] = uint16(targetPort)
-	}
+		result[uint16(port)] = make([]uint16, 0)
 
+		for targetPort := startTP; targetPort <= endTP; targetPort++ {
+			result[uint16(port)] = append(result[uint16(port)], uint16(targetPort))
+		}
+	}
 	return result, nil
 }
 
