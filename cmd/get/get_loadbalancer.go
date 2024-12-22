@@ -101,7 +101,7 @@ func NumToSecurty(sec int) string {
 	return ret
 }
 
-func NumToMode(mode int, ppv2 bool) string {
+func NumToMode(mode int, ppv2 bool, egress bool) string {
 	var ret string
 	switch mode {
 	case 1:
@@ -119,6 +119,9 @@ func NumToMode(mode int, ppv2 bool) string {
 	}
 	if ppv2 {
 		ret += ":ppv2"
+	}
+	if egress {
+		ret += ":egress"
 	}
 	return ret
 }
@@ -191,7 +194,7 @@ func PrintGetLbResult(resp *http.Response, o api.RESTOptions) {
 				for i, eps := range lbrule.Endpoints {
 					if i == 0 {
 
-						data = append(data, []string{lbrule.Service.ExternalIP, secIPs, sources, lbrule.Service.Host, fmt.Sprintf("%d", lbrule.Service.Port), protocolStr, lbrule.Service.Name, fmt.Sprintf("%d", lbrule.Service.Block), NumToSelect(int(lbrule.Service.Sel)), NumToMode(int(lbrule.Service.Mode), lbrule.Service.PpV2),
+						data = append(data, []string{lbrule.Service.ExternalIP, secIPs, sources, lbrule.Service.Host, fmt.Sprintf("%d", lbrule.Service.Port), protocolStr, lbrule.Service.Name, fmt.Sprintf("%d", lbrule.Service.Block), NumToSelect(int(lbrule.Service.Sel)), NumToMode(int(lbrule.Service.Mode), lbrule.Service.PpV2, lbrule.Service.Egress),
 							eps.EndpointIP, fmt.Sprintf("%d", eps.TargetPort), fmt.Sprintf("%d", eps.Weight), eps.State, eps.Counter})
 					} else {
 						data = append(data, []string{"", "", "", "", "", "", "", "", "", "", eps.EndpointIP, fmt.Sprintf("%d", eps.TargetPort), fmt.Sprintf("%d", eps.Weight), eps.State, eps.Counter})
@@ -200,7 +203,7 @@ func PrintGetLbResult(resp *http.Response, o api.RESTOptions) {
 			} else {
 				for i, eps := range lbrule.Endpoints {
 					if i == 0 {
-						data = append(data, []string{lbrule.Service.ExternalIP, secIPs, sources, lbrule.Service.Host, fmt.Sprintf("%d", lbrule.Service.Port), protocolStr, lbrule.Service.Name, fmt.Sprintf("%d", lbrule.Service.Block), NumToSelect(int(lbrule.Service.Sel)), NumToMode(int(lbrule.Service.Mode), lbrule.Service.PpV2),
+						data = append(data, []string{lbrule.Service.ExternalIP, secIPs, sources, lbrule.Service.Host, fmt.Sprintf("%d", lbrule.Service.Port), protocolStr, lbrule.Service.Name, fmt.Sprintf("%d", lbrule.Service.Block), NumToSelect(int(lbrule.Service.Sel)), NumToMode(int(lbrule.Service.Mode), lbrule.Service.PpV2, lbrule.Service.Egress),
 							eps.EndpointIP, fmt.Sprintf("%d", eps.TargetPort), fmt.Sprintf("%d", eps.Weight), "-", eps.Counter})
 					} else {
 						data = append(data, []string{"", "", "", "", "", "", "", "", "", "", eps.EndpointIP, fmt.Sprintf("%d", eps.TargetPort), fmt.Sprintf("%d", eps.Weight), "-", eps.Counter})
@@ -209,7 +212,7 @@ func PrintGetLbResult(resp *http.Response, o api.RESTOptions) {
 			}
 		} else {
 			table.SetHeader(LOADBALANCER_TITLE)
-			data = append(data, []string{lbrule.Service.ExternalIP, fmt.Sprintf("%d", lbrule.Service.Port), protocolStr, lbrule.Service.Name, fmt.Sprintf("%d", lbrule.Service.Block), NumToSelect(int(lbrule.Service.Sel)), NumToMode(int(lbrule.Service.Mode), lbrule.Service.PpV2), fmt.Sprintf("%d", len(lbrule.Endpoints)), BoolToMon(lbrule.Service.Monitor)})
+			data = append(data, []string{lbrule.Service.ExternalIP, fmt.Sprintf("%d", lbrule.Service.Port), protocolStr, lbrule.Service.Name, fmt.Sprintf("%d", lbrule.Service.Block), NumToSelect(int(lbrule.Service.Sel)), NumToMode(int(lbrule.Service.Mode), lbrule.Service.PpV2, lbrule.Service.Egress), fmt.Sprintf("%d", len(lbrule.Endpoints)), BoolToMon(lbrule.Service.Monitor)})
 		}
 	}
 

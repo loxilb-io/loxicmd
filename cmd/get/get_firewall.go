@@ -115,10 +115,13 @@ func MakeFirewallOptionToString(t api.FwOptArg) (ret string) {
 		ret = fmt.Sprintf("Snat(%s:%d)", t.ToIP, t.ToPort)
 	}
 	if t.Record {
-		ret += fmt.Sprintf(",Record")
+		ret += ",Record"
 	}
 	if t.Mark != 0 {
 		ret += fmt.Sprintf(",FwMark(%v)", t.Mark)
+	}
+	if t.OnDefault {
+		ret += ",Egr"
 	}
 	return ret
 }

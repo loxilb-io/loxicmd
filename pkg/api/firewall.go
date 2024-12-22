@@ -46,6 +46,8 @@ type FwOptArg struct {
 	DoSnat bool   `json:"doSnat"`
 	ToIP   string `json:"toIP"`
 	ToPort uint16 `json:"toPort"`
+	// OnDefault - Trigger only on default cases
+	OnDefault bool `json:"onDefault"`
 	// Counter - Traffic counter
 	Counter string `json:"counter"`
 }
