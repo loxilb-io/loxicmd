@@ -42,7 +42,8 @@ type LoadBalancerModel struct {
 
 type LoadBalancerService struct {
 	ExternalIP string   `json:"externalIP"         yaml:"externalIP"`
-	Port       uint16   `json:"port"               yaml:"port" `
+	Port       uint16   `json:"port"               yaml:"port"`
+	PortMax    uint16   `json:"portMax,omitempty"  yaml:"portmax"`
 	Protocol   string   `json:"protocol"           yaml:"protocol"`
 	Sel        EpSelect `json:"sel"                yaml:"sel"`
 	Mode       LbMode   `json:"mode"               yaml:"mode"`
