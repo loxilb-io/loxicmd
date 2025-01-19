@@ -141,7 +141,7 @@ func NewCreateLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 	o := CreateLoadBalancerOptions{}
 
 	var createLbCmd = &cobra.Command{
-		Use:   "lb IP [--select=<rr|hash|priority|persist>] [--tcp=<port>:<targetPort>] [--udp=<port>:<targetPort>] [--sctp=<port>:<targetPort>] [--icmp] [--mark=<val>] [--secips=<ip>,] [--sources=<ip>,] [--endpoints=<ip>:<weight>,] [--mode=<onearm|fullnat>] [--bgp] [--monitor] [--inatimeout=<to>] [--name=<service-name>] [--attachEP] [--detachEP] [--security=<https|e2ehttps|none>] [--host=<url>] [--ppv2en] [--egress]",
+		Use:   "lb IP [--select=<rr|hash|priority|persist>] [--tcp=<ports>:<targetPorts>] [--udp=<ports>:<targetPorts>] [--sctp=<ports>:<targetPorts>] [--icmp] [--mark=<val>] [--secips=<ip>,] [--sources=<ip>,] [--endpoints=<ip>:<weight>,] [--mode=<onearm|fullnat>] [--bgp] [--monitor] [--inatimeout=<to>] [--name=<service-name>] [--attachEP] [--detachEP] [--security=<https|e2ehttps|none>] [--host=<url>] [--ppv2en] [--egress]",
 		Short: "Create a LoadBalancer",
 		Long: `Create a LoadBalancer
 
@@ -158,7 +158,9 @@ func NewCreateLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 	fullproxy - LB operating as a L7 proxy
 	hostonearm - LB operating in host one-arm
 
-ex) loxicmd create lb 192.168.0.200 --tcp=80:32015 --endpoints=10.212.0.1:1,10.212.0.2:1,10.212.0.3:1
+ex)
+	loxicmd create lb 192.168.0.200 --tcp=80:32015 --endpoints=10.212.0.1:1,10.212.0.2:1,10.212.0.3:1
+	loxicmd create lb 192.168.0.200 --tcp=8080-8081:32015 --endpoints=10.212.0.1:1,10.212.0.2:1,10.212.0.3:1
 	loxicmd create lb 192.168.0.200 --tcp=5000:5201-5300 --endpoints=10.212.0.1:1,10.212.0.2:1,10.212.0.3:1
 	loxicmd create lb 192.168.0.200 --tcp=80:32015 --endpoints=10.212.0.1:1,10.212.0.2:1,10.212.0.3:1 --security=https
 	loxicmd create lb 192.168.0.200 --tcp=80:32015 --endpoints=10.212.0.1:1,10.212.0.2:1,10.212.0.3:1 --host=loxilb.io
@@ -222,81 +224,100 @@ ex) loxicmd create lb 192.168.0.200 --tcp=80:32015 --endpoints=10.212.0.1:1,10.2
 					fmt.Printf("Error: %s\n", err.Error())
 					return
 				}
-				if len(portTargetPorts) <= 0 {
+				if len(portTargetPorts) <= 0 || len(portTargetPorts) > 2 {
 					fmt.Printf("portPair: None specified\n")
 					return
 				}
 
-				for port := range portTargetPorts {
-					lbModel := api.LoadBalancerModel{}
-					oper := 0
-					if o.Attach {
-						oper = 1
-					} else if o.Detach {
-						oper = 2
-					}
-					lbService := api.LoadBalancerService{
-						ExternalIP: o.ExternalIP,
-						Protocol:   proto,
-						Port:       port,
-						Sel:        api.EpSelect(SelectToNum(o.Select)),
-						BGP:        o.BGP,
-						Monitor:    o.Monitor,
-						Mode:       api.LbMode(ModeToNum(o.Mode)),
-						Timeout:    o.Timeout,
-						Block:      o.Mark,
-						Name:       o.Name,
-						Oper:       api.LbOP(oper),
-						Security:   api.LbSec(SecStringToNum(o.Security)),
-						Host:       o.Host,
-						PpV2:       o.PPv2En,
-						Egress:     o.Egress,
-					}
+				startSPort := uint16(0)
+				endSPort := uint16(0)
+				first := false
 
-					lbModel.Service = lbService
-					for endpoint, weight := range endpointPair {
-						targetPorts := portTargetPorts[port]
-						for _, targetPort := range targetPorts {
-							if o.Mode == "dsr" && targetPort != port {
-								fmt.Printf("Error: No port-translation in dsr mode\n")
-								return
-							}
-							ep := api.LoadBalancerEndpoint{
-								EndpointIP: endpoint,
-								TargetPort: targetPort,
-								Weight:     weight,
-							}
-							lbModel.Endpoints = append(lbModel.Endpoints, ep)
+				for sPort := range portTargetPorts {
+					if !first {
+						startSPort = sPort
+						first = true
+					} else {
+						if sPort > startSPort {
+							endSPort = sPort
+						} else {
+							endSPort = startSPort
+							startSPort = sPort
 						}
 					}
+				}
 
-					for _, sip := range o.SecIPs {
-						sp := api.LoadBalancerSecIp{
-							SecondaryIP: sip,
+				lbModel := api.LoadBalancerModel{}
+				oper := 0
+				if o.Attach {
+					oper = 1
+				} else if o.Detach {
+					oper = 2
+				}
+				lbService := api.LoadBalancerService{
+					ExternalIP: o.ExternalIP,
+					Protocol:   proto,
+					Port:       startSPort,
+					PortMax:    endSPort,
+					Sel:        api.EpSelect(SelectToNum(o.Select)),
+					BGP:        o.BGP,
+					Monitor:    o.Monitor,
+					Mode:       api.LbMode(ModeToNum(o.Mode)),
+					Timeout:    o.Timeout,
+					Block:      o.Mark,
+					Name:       o.Name,
+					Oper:       api.LbOP(oper),
+					Security:   api.LbSec(SecStringToNum(o.Security)),
+					Host:       o.Host,
+					PpV2:       o.PPv2En,
+					Egress:     o.Egress,
+				}
+
+				lbModel.Service = lbService
+				for endpoint, weight := range endpointPair {
+					targetPorts := portTargetPorts[startSPort]
+					for _, targetPort := range targetPorts {
+						if o.Mode == "dsr" && targetPort != startSPort {
+							fmt.Printf("Error: No port-translation in dsr mode\n")
+							return
 						}
-						lbModel.SecondaryIPs = append(lbModel.SecondaryIPs, sp)
-					}
-
-					for _, sip := range o.AllowedSources {
-						sp := api.LbAllowedSrcIPArg{
-							Prefix: sip,
+						ep := api.LoadBalancerEndpoint{
+							EndpointIP: endpoint,
+							TargetPort: targetPort,
+							Weight:     weight,
 						}
-						lbModel.SrcIPs = append(lbModel.SrcIPs, sp)
+						lbModel.Endpoints = append(lbModel.Endpoints, ep)
 					}
+				}
 
-					resp, err := LoadbalancerAPICall(restOptions, lbModel)
-					if err != nil {
-						fmt.Printf("Error: %s\n", err.Error())
-						return
+				for _, sip := range o.SecIPs {
+					sp := api.LoadBalancerSecIp{
+						SecondaryIP: sip,
 					}
+					lbModel.SecondaryIPs = append(lbModel.SecondaryIPs, sp)
+				}
 
-					defer resp.Body.Close()
-
-					fmt.Printf("Debug: response.StatusCode: %d\n", resp.StatusCode)
-					if resp.StatusCode == http.StatusOK {
-						PrintCreateResult(resp, *restOptions)
-						return
+				for _, sip := range o.AllowedSources {
+					sp := api.LbAllowedSrcIPArg{
+						Prefix: sip,
 					}
+					lbModel.SrcIPs = append(lbModel.SrcIPs, sp)
+				}
+
+				resp, err := LoadbalancerAPICall(restOptions, lbModel)
+				if err != nil {
+					fmt.Printf("Error: %s\n", err.Error())
+					return
+				}
+
+				defer resp.Body.Close()
+
+				//fmt.Printf("Debug: request: %v\n", lbModel)
+
+				fmt.Printf("Debug: response.StatusCode: %d\n", resp.StatusCode)
+				if resp.StatusCode == http.StatusOK {
+					PrintCreateResult(resp, *restOptions)
+					return
 				}
 			}
 		},
@@ -357,12 +378,20 @@ func GetPortPairList(portPairStrList []string) (map[uint16][]uint16, error) {
 		if len(portPair) != 2 {
 			continue
 		}
+
+		servicePorts := strings.Split(portPair[0], "-")
+
 		// 0 is port, 1 is targetPort
-		port, err := strconv.Atoi(portPair[0])
-		if err != nil {
-			return nil, fmt.Errorf("port '%s' is not integer", portPair[0])
+		var portList []int
+		for _, servicePort := range servicePorts {
+			port, err := strconv.Atoi(servicePort)
+			if err != nil {
+				return nil, fmt.Errorf("port '%s' is not integer", servicePort)
+			}
+			portList = append(portList, port)
 		}
 
+		var err error
 		startTP := 0
 		endTP := 0
 
@@ -389,10 +418,12 @@ func GetPortPairList(portPairStrList []string) (map[uint16][]uint16, error) {
 			endTP = startTP
 		}
 
-		result[uint16(port)] = make([]uint16, 0)
+		for _, port := range portList {
+			result[uint16(port)] = make([]uint16, 0)
 
-		for targetPort := startTP; targetPort <= endTP; targetPort++ {
-			result[uint16(port)] = append(result[uint16(port)], uint16(targetPort))
+			for targetPort := startTP; targetPort <= endTP; targetPort++ {
+				result[uint16(port)] = append(result[uint16(port)], uint16(targetPort))
+			}
 		}
 	}
 	return result, nil

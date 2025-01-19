@@ -20,12 +20,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/spf13/cobra"
 	"io"
 	"loxicmd/pkg/api"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
+
+	"github.com/spf13/cobra"
 )
 
 type DeleteLoadBalancerResult struct {
@@ -44,9 +46,9 @@ func validation(args []string) error {
 }
 
 func NewDeleteLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
-	var tcpPortNumberList []int
-	var udpPortNumberList []int
-	var sctpPortNumberList []int
+	var tcpPortNumberList string
+	var udpPortNumberList string
+	var sctpPortNumberList string
 	var icmpPortNumberList bool
 	var BGP bool
 	var Mark uint16
@@ -98,57 +100,80 @@ func NewDeleteLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 				return
 			}
 			externalIP = args[0]
-			PortNumberList := make(map[string][]int)
+			PortNumberList := make(map[string][]string)
 
 			if len(tcpPortNumberList) > 0 {
-				PortNumberList["tcp"] = tcpPortNumberList
+				PortNumberList["tcp"] = strings.Split(tcpPortNumberList, "-")
+				if len(PortNumberList["tcp"]) > 2 {
+					fmt.Printf("Error: Too many ports in list to delete LoadBalancer(ExternalIP: %s, tcp, Port:%s)\n", externalIP, tcpPortNumberList)
+				}
 			}
 			if len(udpPortNumberList) > 0 {
-				PortNumberList["udp"] = udpPortNumberList
+				PortNumberList["udp"] = strings.Split(udpPortNumberList, "-")
+				if len(PortNumberList["udp"]) > 2 {
+					fmt.Printf("Error: Too many ports in list to delete LoadBalancer(ExternalIP: %s, udp, Port:%s)\n", externalIP, udpPortNumberList)
+				}
 			}
 			if len(sctpPortNumberList) > 0 {
-				PortNumberList["sctp"] = sctpPortNumberList
+				PortNumberList["sctp"] = strings.Split(sctpPortNumberList, "-")
+				if len(PortNumberList["sctp"]) > 2 {
+					fmt.Printf("Error: Too many ports in list to delete LoadBalancer(ExternalIP: %s, sctp, Port:%s)\n", externalIP, sctpPortNumberList)
+					return
+				}
 			}
 			if icmpPortNumberList {
-				PortNumberList["icmp"] = []int{0}
+				PortNumberList["icmp"] = []string{"0", "0"}
 			}
 			fmt.Printf("PortNumberList: %v\n", PortNumberList)
 			if Host == "" {
 				Host = "any"
 			}
 			for proto, portNum := range PortNumberList {
-				for _, port := range portNum {
-					subResources := []string{
-						"hosturl", Host,
-						"externalipaddress", externalIP,
-						"port", strconv.Itoa(port),
-						"protocol", proto,
-					}
-					qmap := map[string]string{}
-					qmap["bgp"] = fmt.Sprintf("%v", BGP)
-					qmap["block"] = fmt.Sprintf("%v", Mark)
-					fmt.Printf("subResources: %v\n", subResources)
-					resp, err := client.LoadBalancer().SubResources(subResources).Query(qmap).Delete(ctx)
-					if err != nil {
-						fmt.Printf("Error: Failed to delete LoadBalancer(ExternalIP: %s, Protocol:%s, Port:%d)\n", externalIP, proto, portNum)
-						return
-					}
-					defer resp.Body.Close()
-					fmt.Printf("Debug: response.StatusCode: %d\n", resp.StatusCode)
-					if resp.StatusCode == http.StatusOK {
-						PrintDeleteResult(resp, *restOptions)
-						return
-					}
+				sPortMin := portNum[0]
+				sPortMax := "0"
+				if len(portNum) > 1 {
+					sPortMax = portNum[1]
 				}
-
+				_, err := strconv.Atoi(sPortMin)
+				if err != nil {
+					fmt.Printf("Error: Invalid port in list to delete LoadBalancer(ExternalIP: %s,Port:%s)\n", externalIP, sPortMin)
+					return
+				}
+				_, err = strconv.Atoi(sPortMax)
+				if err != nil {
+					fmt.Printf("Error: Invalid port in list to delete LoadBalancer(ExternalIP: %s,Port:%s)\n", externalIP, sPortMax)
+					return
+				}
+				subResources := []string{
+					"hosturl", Host,
+					"externalipaddress", externalIP,
+					"port", sPortMin,
+					"portmax", sPortMax,
+					"protocol", proto,
+				}
+				qmap := map[string]string{}
+				qmap["bgp"] = fmt.Sprintf("%v", BGP)
+				qmap["block"] = fmt.Sprintf("%v", Mark)
+				fmt.Printf("subResources: %v\n", subResources)
+				resp, err := client.LoadBalancer().SubResources(subResources).Query(qmap).Delete(ctx)
+				if err != nil {
+					fmt.Printf("Error: Failed to delete LoadBalancer(ExternalIP: %s, Protocol:%s, Port:%v)\n", externalIP, proto, portNum)
+					return
+				}
+				defer resp.Body.Close()
+				fmt.Printf("Debug: response.StatusCode: %d\n", resp.StatusCode)
+				if resp.StatusCode == http.StatusOK {
+					PrintDeleteResult(resp, *restOptions)
+					return
+				}
 			}
 		},
 	}
 
-	deleteLbCmd.Flags().IntSliceVar(&tcpPortNumberList, "tcp", tcpPortNumberList, "TCP port list can be specified as '<port>,<port>...'")
-	deleteLbCmd.Flags().IntSliceVar(&udpPortNumberList, "udp", udpPortNumberList, "UDP port list can be specified as '<port>,<port>...'")
-	deleteLbCmd.Flags().IntSliceVar(&sctpPortNumberList, "sctp", sctpPortNumberList, "SCTP port list can be specified as '<port>,<port>...'")
-	deleteLbCmd.Flags().BoolVarP(&icmpPortNumberList, "icmp", "", false, "ICMP port list can be specified as '<port>,<port>...'")
+	deleteLbCmd.Flags().StringVar(&tcpPortNumberList, "tcp", tcpPortNumberList, "TCP port list can be specified as '<portMin>-<portMax>'")
+	deleteLbCmd.Flags().StringVar(&udpPortNumberList, "udp", udpPortNumberList, "UDP port list can be specified as '<portMin>-<portMax>...'")
+	deleteLbCmd.Flags().StringVar(&sctpPortNumberList, "sctp", sctpPortNumberList, "SCTP port list can be specified as '<portMin>-<portMax>...'")
+	deleteLbCmd.Flags().BoolVarP(&icmpPortNumberList, "icmp", "", false, "ICMP port list can't be specified'")
 	deleteLbCmd.Flags().BoolVarP(&BGP, "bgp", "", false, "BGP enable information'")
 	deleteLbCmd.Flags().Uint16VarP(&Mark, "mark", "", 0, "Specify the mark num to segregate a load-balancer VIP service")
 	deleteLbCmd.Flags().StringVarP(&Name, "name", "", Name, "Name for load balancer rule")
