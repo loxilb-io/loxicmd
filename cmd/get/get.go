@@ -69,6 +69,7 @@ func GetCmd(restOptions *api.RESTOptions) *cobra.Command {
 	GetCmd.AddCommand(NewGetBGPNeighborCmd(restOptions))
 	GetCmd.AddCommand(NewGetHaStateCmd(restOptions))
 	GetCmd.AddCommand(NewGetBFDCmd(restOptions))
+	GetCmd.AddCommand(NewGetVersionCmd(restOptions))
 
 	return GetCmd
 }

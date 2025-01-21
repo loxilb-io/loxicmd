@@ -47,4 +47,5 @@ var (
 	HASTATE_TITLE           = []string{"Instance", "HAState"}
 	BFD_TITLE               = []string{"Instance", "RemoteIP", "State"}
 	BFD_WIDE_TITLE          = []string{"Instance", "RemoteIP", "SourceIP", "Port", "Interval", "Retry Count", "State"}
+	LBVERSION_TITLE         = []string{"LoxiLB Version", "LoxiLB Build Info"}
 )

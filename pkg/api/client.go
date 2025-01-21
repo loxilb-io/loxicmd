@@ -43,6 +43,7 @@ const (
 	loxiBGPNeighResource        = "config/bgp/neigh"
 	loxiStatusResource          = "status"
 	loxiBFDSessionResource      = "config/bfd"
+	loxiVersionResource         = "version"
 )
 
 type LoxiClient struct {
@@ -315,6 +316,18 @@ func (l *LoxiClient) BFDSession() *BFDSession {
 				provider:   loxiProvider,
 				apiVersion: loxiApiVersion,
 				resource:   loxiBFDSessionResource,
+			},
+		},
+	}
+}
+func (l *LoxiClient) LBVersion() *LBVersion {
+	return &LBVersion{
+		CommonAPI: CommonAPI{
+			restClient: &l.restClient,
+			requestInfo: RequestInfo{
+				provider:   loxiProvider,
+				apiVersion: loxiApiVersion,
+				resource:   loxiVersionResource,
 			},
 		},
 	}

@@ -30,7 +30,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var Version string = ""
+var Version string = "0.9.7-beta"
 var BuildInfo string = ""
 
 var VersionCmd = &cobra.Command{
@@ -39,7 +39,7 @@ var VersionCmd = &cobra.Command{
 	Long:  `It shows Loxicmd version.`,
 
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("%s %s\n", Version, BuildInfo)
+		fmt.Printf("Loxicmd version: %s\nLoxicmd build info: %s\n", Version, BuildInfo)
 	},
 }
 
