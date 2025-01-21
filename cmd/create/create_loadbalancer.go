@@ -152,6 +152,8 @@ func NewCreateLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 	persist - select the lb end-point based on sender
 	n2 - select the lb end-point base on N2 interface params (only available with fullproxy mode)
 	n3 - select the lb end-point base on N3 interface params
+	lc - select the lb end-point base on least connection
+
 --mode value options
 	onearm - LB put LB-IP as srcIP
 	fullnat - LB put Service IP as scrIP
