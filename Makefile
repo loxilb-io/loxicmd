@@ -6,7 +6,7 @@ SHELL := /bin/bash
 loxilbid=$(shell docker ps -f name=$(dock) | grep -w $(dock) | cut  -d " "  -f 1 | grep -iv  "CONTAINER")
 
 build: 
-	@go build -o ${bin} -ldflags="-X 'loxicmd/cmd.BuildInfo=${shell date '+%Y_%m_%d'}-${shell git branch --show-current}-$(shell git show --pretty=format:%h --no-patch)' -X 'loxicmd/cmd.Version=${shell git describe --tags --abbrev=0}'"
+	@go build -o ${bin} -ldflags="-X 'loxicmd/cmd.BuildInfo=${shell date '+%Y_%m_%d'}-${shell git branch --show-current}-$(shell git show --pretty=format:%h --no-patch)'"
 
 test: 
 	go test
