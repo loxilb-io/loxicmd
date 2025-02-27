@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package api
+package api
 
- type LBVersion struct {
-	 CommonAPI
- }
- 
- type LBVersionGet struct {
-	 BuildInfo string `json:"buildInfo"`
-	 Version   string `json:"version"`
- }
- 
+type LBVersion struct {
+	CommonAPI
+}
+
+type LBVersionGet struct {
+	BuildInfo string `json:"buildInfo"`
+	Version   string `json:"version"`
+}
