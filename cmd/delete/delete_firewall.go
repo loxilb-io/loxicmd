@@ -96,10 +96,16 @@ func MakefirewallDeleteQuery(FirewallRule []string) (map[string]string, error) {
 	query := map[string]string{}
 	for _, v := range FirewallRule {
 		firewallArgsPair := strings.Split(v, ":")
-		if len(firewallArgsPair) != 2 {
-			return nil, fmt.Errorf("error: Failed to delete Firewall")
+		if len(firewallArgsPair) < 2 {
+			return nil, fmt.Errorf("error: Failed to delete Firewall - format error")
 		}
-		query[firewallArgsPair[0]] = firewallArgsPair[1]
+		value := firewallArgsPair[1]
+		if firewallArgsPair[0] == "sourceIP" || firewallArgsPair[0] == "destinationIP" {
+			if len(firewallArgsPair) > 2 {
+				value = strings.Join(firewallArgsPair[1:], ":")
+			}
+		}
+		query[firewallArgsPair[0]] = value
 	}
 	return query, nil
 }

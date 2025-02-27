@@ -65,8 +65,9 @@ ex) loxicmd create firewall --firewallRule="sourceIP:1.2.3.2/32,destinationIP:2.
     loxicmd create firewall --firewallRule="sourceIP:1.2.3.2/32,destinationIP:2.3.1.2/32,preference:200" --allow --record
     loxicmd create firewall --firewallRule="sourceIP:1.2.3.2/32,destinationIP:2.3.1.2/32,preference:200" --allow --setmark=10
     loxicmd create firewall --firewallRule="sourceIP:1.2.3.2/32,destinationIP:2.3.1.2/32,preference:200" --drop
+	loxicmd create firewall --firewallRule="sourceIP:3ffe::1/128" --drop
     loxicmd create firewall --firewallRule="sourceIP:1.2.3.2/32,destinationIP:2.3.1.2/32,preference:200" --trap
-    loxicmd create firewall --firewallRule="sourceIP:1.2.3.2/32,destinationIP:2.3.1.2/32,preference:200" --redirect=hs1
+    loxicmd create firewall --firewallRule="sourceIP:1.2.3.2/32,destinationIP:2.3.1.2/32,preference:200" --redirect=eth1
     loxicmd create firewall --firewallRule="sourceIP:1.2.3.2/32,destinationIP:2.3.1.2/32,preference:200" --snat=10.10.10.1,3030
     loxicmd create firewall --firewallRule="sourceIP:1.2.3.2/32,destinationIP:2.3.1.2/32,preference:200" --snat=10.10.10.1 (Do not change sourceport)
 	loxicmd create firewall --firewallRule="sourceIP:1.2.3.2/32,destinationIP:2.3.1.2/32,preference:200" --snat=10.10.10.1,3030 --egress (Egress rules match for non-k8s traffic)
@@ -122,7 +123,7 @@ ex) loxicmd create firewall --firewallRule="sourceIP:1.2.3.2/32,destinationIP:2.
 func GetFirewallRulePairList(o *api.FwRuleMod, FWrule []string) error {
 	for _, FirewallArg := range FWrule {
 		FirewallArgsPair := strings.Split(FirewallArg, ":")
-		if len(FirewallArgsPair) != 2 {
+		if len(FirewallArgsPair) < 2 {
 			return fmt.Errorf("FirewallArgs '%s' is invalid format", FWrule)
 		} else if FirewallArgsPair[0] == "protocol" {
 			protocol, err := strconv.Atoi(FirewallArgsPair[1])
@@ -131,9 +132,17 @@ func GetFirewallRulePairList(o *api.FwRuleMod, FWrule []string) error {
 			}
 			o.Rule.Proto = uint8(protocol)
 		} else if FirewallArgsPair[0] == "sourceIP" {
-			o.Rule.SrcIP = FirewallArgsPair[1]
+			if len(FirewallArgsPair) > 2 {
+				o.Rule.SrcIP = strings.Join(FirewallArgsPair[1:], ":")
+			} else {
+				o.Rule.SrcIP = FirewallArgsPair[1]
+			}
 		} else if FirewallArgsPair[0] == "destinationIP" {
-			o.Rule.DstIP = FirewallArgsPair[1]
+			if len(FirewallArgsPair) > 2 {
+				o.Rule.DstIP = strings.Join(FirewallArgsPair[1:], ":")
+			} else {
+				o.Rule.DstIP = FirewallArgsPair[1]
+			}
 		} else if FirewallArgsPair[0] == "portName" {
 			o.Rule.InPort = FirewallArgsPair[1]
 		} else if FirewallArgsPair[0] == "minSourcePort" {
