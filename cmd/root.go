@@ -30,7 +30,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var Version string = "0.9.7-beta"
+var Version string = "0.9.8.3-beta"
 var BuildInfo string = ""
 
 var VersionCmd = &cobra.Command{
