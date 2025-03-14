@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"os"
 	"path"
 )
 
@@ -66,6 +67,7 @@ type RESTOptions struct {
 	ServerPort  int16
 	Timeout     int16
 	ServiceName string
+	Token       string
 }
 
 type RESTClient struct {
@@ -86,9 +88,10 @@ func (r *RESTClient) GET(ctx context.Context, getURL string) (*http.Response, er
 	if err != nil {
 		return nil, err
 	}
-
+	r.getTokens()
 	// move RESTOptions
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", r.Options.Token)
 	return r.Client.Do(req)
 }
 
@@ -97,9 +100,10 @@ func (r *RESTClient) POST(ctx context.Context, postURL string, body []byte) (*ht
 	if err != nil {
 		return nil, err
 	}
-
+	r.getTokens()
 	// move RESTOptions
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", r.Options.Token)
 	return r.Client.Do(req)
 }
 
@@ -108,8 +112,19 @@ func (r *RESTClient) DELETE(ctx context.Context, deleteURL string) (*http.Respon
 	if err != nil {
 		return nil, err
 	}
-
+	r.getTokens()
 	// move RESTOptions
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", r.Options.Token)
 	return r.Client.Do(req)
+}
+
+func (r *RESTClient) getTokens() {
+	if r.Options.Token == "" {
+		token, err := os.ReadFile("/tmp/loxilbtoken")
+		if err != nil {
+			return
+		}
+		r.Options.Token = string(token)
+	}
 }
