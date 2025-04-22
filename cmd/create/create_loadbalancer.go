@@ -157,6 +157,7 @@ func NewCreateLoadBalancerCmd(restOptions *api.RESTOptions) *cobra.Command {
 --mode value options
 	onearm - LB put LB-IP as srcIP
 	fullnat - LB put Service IP as scrIP
+	dsr - LB in DSR mode allows return traffic to bypass the load balancer (only available with hash select)
 	fullproxy - LB operating as a L7 proxy
 	hostonearm - LB operating in host one-arm
 
@@ -170,7 +171,7 @@ ex)
 	loxicmd create lb 192.168.0.200 --udp=80:32015 --endpoints=10.212.0.1:1,10.212.0.2:1,10.212.0.3:1 --mark=10
 	loxicmd create lb 192.168.0.200 --tcp=80:32015 --udp=80:32015 --endpoints=10.212.0.1:1,10.212.0.2:1,10.212.0.3:1
 	loxicmd create lb 192.168.0.200 --select=hash --tcp=80:32015 --endpoints=10.212.0.1:1,10.212.0.2:1,10.212.0.3:1
-	loxicmd create lb 192.168.0.200 --tcp=80:32015 --endpoints=10.212.0.1:1,10.212.0.2:1,10.212.0.3:1 --mode=dsr
+	loxicmd create lb 192.168.0.200 --tcp=80:80 --endpoints=10.212.0.1:1,10.212.0.2:1,10.212.0.3:1 --mode=dsr --select=hash
 	loxicmd create lb 192.168.0.200 --sctp=37412:38412 --secips=192.168.0.201,192.168.0.202 --endpoints=10.212.0.1:1,10.212.0.2:1,10.212.0.3:1
 	loxicmd create lb 192.168.0.200 --tcp=80:32015 --endpoints=10.212.0.1:1,10.212.0.2:1,10.212.0.3:1 --sources=10.10.10.1/32
 
