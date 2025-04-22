@@ -30,7 +30,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var Version string = "0.9.7-beta"
+var Version string = "0.9.8.3-beta"
 var BuildInfo string = ""
 
 var VersionCmd = &cobra.Command{
@@ -85,6 +85,7 @@ loxicmd aim to provide all of the configuation for the loxilb.`,
 	rootCmd.PersistentFlags().StringVarP(&restOptions.PrintOption, "output", "o", "", "Set output layer (ex.) wide, json)")
 	rootCmd.PersistentFlags().StringVarP(&restOptions.ServerIP, "apiserver", "s", "127.0.0.1", "Set API server IP address")
 	rootCmd.PersistentFlags().Int16VarP(&restOptions.ServerPort, "port", "p", 11111, "Set API server port number")
+	rootCmd.PersistentFlags().StringVarP(&restOptions.Token, "token", "", "", "Set Token for the API server")
 
 	rootCmd.AddCommand(get.GetCmd(restOptions))
 	rootCmd.AddCommand(create.CreateCmd(restOptions))

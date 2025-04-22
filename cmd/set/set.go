@@ -29,6 +29,10 @@ type SetResult struct {
 	Result string `json:"result"`
 }
 
+type SetOptions struct {
+	Provider string
+}
+
 // SetParamCmd represents the Set command
 func SetParamCmd(restOptions *api.RESTOptions) *cobra.Command {
 	SetParamCmd := &cobra.Command{
@@ -42,6 +46,10 @@ func SetParamCmd(restOptions *api.RESTOptions) *cobra.Command {
 	}
 	SetParamCmd.AddCommand(NewSetLogLevelCmd(restOptions))
 	SetParamCmd.AddCommand(NewSetBFDCmd(restOptions))
+	SetParamCmd.AddCommand(NewSetLogInCmd(restOptions))
+	SetParamCmd.AddCommand(NewSetLogOutCmd(restOptions))
+	SetParamCmd.AddCommand(NewSetRefreshTokenCmd(restOptions))
+
 	return SetParamCmd
 }
 

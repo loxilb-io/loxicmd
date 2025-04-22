@@ -1,12 +1,15 @@
 module loxicmd
 
-go 1.18
+go 1.23.0
+
+toolchain go1.23.7
 
 require (
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/spf13/cobra v1.5.0
 	github.com/vishvananda/netlink v1.1.0
-	golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a
+	golang.org/x/sys v0.31.0
+	golang.org/x/term v0.30.0
 	gopkg.in/yaml.v2 v2.4.0
 )
 

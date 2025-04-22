@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 NetLOX Inc
+ * Copyright (c) 2025 LoxiLB Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,16 @@
  */
 package api
 
-type LBVersion struct {
+type Login struct {
 	CommonAPI
 }
 
-type LBVersionGet struct {
-	BuildInfo string `json:"buildInfo"`
-	Version   string `json:"version"`
+type LoginModel struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type TokenModel struct {
+	Token        string `json:"token"`
+	RefreshToken string `json:"refreshtoken"`
 }

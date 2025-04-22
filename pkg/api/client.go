@@ -44,6 +44,7 @@ const (
 	loxiStatusResource          = "status"
 	loxiBFDSessionResource      = "config/bfd"
 	loxiVersionResource         = "version"
+	loxiLoginResource           = "auth/login"
 )
 
 type LoxiClient struct {
@@ -328,6 +329,18 @@ func (l *LoxiClient) LBVersion() *LBVersion {
 				provider:   loxiProvider,
 				apiVersion: loxiApiVersion,
 				resource:   loxiVersionResource,
+			},
+		},
+	}
+}
+func (l *LoxiClient) Login() *Login {
+	return &Login{
+		CommonAPI: CommonAPI{
+			restClient: &l.restClient,
+			requestInfo: RequestInfo{
+				provider:   loxiProvider,
+				apiVersion: loxiApiVersion,
+				resource:   loxiLoginResource,
 			},
 		},
 	}
