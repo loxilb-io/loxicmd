@@ -56,9 +56,12 @@ func ReadCreatePolicyOptions(o *CreatePolicyOptions, args []string) error {
 }
 
 func GetRatePair(body *api.PolMod, RateBlock string) error {
+	if RateBlock == "" {
+		return nil
+	}
 	RatePair := strings.Split(RateBlock, ":")
 	if len(RatePair) != 2 {
-		return errors.New("lots ")
+		return errors.New("lots of args for rate")
 	}
 	Peak, err := strconv.Atoi(RatePair[0])
 	if err != nil {
@@ -75,9 +78,12 @@ func GetRatePair(body *api.PolMod, RateBlock string) error {
 }
 
 func GetBlockPair(body *api.PolMod, Block string) error {
+	if Block == "" {
+		return nil
+	}
 	BlockPair := strings.Split(Block, ":")
 	if len(BlockPair) != 2 {
-		return errors.New("error")
+		return errors.New("error in block size args")
 	}
 	Excess, err := strconv.Atoi(BlockPair[0])
 	if err != nil {
@@ -96,7 +102,7 @@ func GetBlockPair(body *api.PolMod, Block string) error {
 func GetTargetPair(body *api.PolMod, Block string) error {
 	BlockPair := strings.Split(Block, ":")
 	if len(BlockPair) != 2 {
-		return errors.New("error")
+		return errors.New("error in target args")
 	}
 
 	AttachMent, err := strconv.Atoi(BlockPair[1])
@@ -134,7 +140,7 @@ Policy type(pol-type) 0 : TrTCM,  1 : SrTCM
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			if err := ReadCreatePolicyOptions(&o, args); err != nil {
-				fmt.Printf("Error: %s\n", err.Error())
+				fmt.Printf("Read parameter error %s\n", err.Error())
 				return
 			}
 			// Make body
@@ -142,21 +148,20 @@ Policy type(pol-type) 0 : TrTCM,  1 : SrTCM
 
 			body.Ident = o.Ident
 			if err := GetRatePair(&body, o.Rate); err != nil {
-				fmt.Printf("Error: %s\n", err.Error())
+				fmt.Printf("Rate Error: %s\n", err.Error())
 				return
 			}
 			if err := GetBlockPair(&body, o.Block); err != nil {
-				fmt.Printf("Error: %s\n", err.Error())
+				fmt.Printf("Block Error: %s\n", err.Error())
 				return
 			}
 
 			if err := GetTargetPair(&body, o.Target); err != nil {
-				fmt.Printf("Error: %s\n", err.Error())
+				fmt.Printf("Target Error: %s\n", err.Error())
 				return
 			}
 			body.Info.ColorAware = o.Color
 			body.Info.PolType = o.PolType
-
 			resp, err := PolicyAPICall(restOptions, body)
 			if err != nil {
 				fmt.Printf("Error: %s\n", err.Error())
@@ -185,7 +190,7 @@ Policy type(pol-type) 0 : TrTCM,  1 : SrTCM
 func PrintCreatePolResult(resp *http.Response, o api.RESTOptions) {
 	result := CreatePolicyResult{}
 	resultByte, err := io.ReadAll(resp.Body)
-	fmt.Printf("Debug: response.Body: %s\n", string(resultByte))
+	//fmt.Printf("Debug: response.Body: %s\n", string(resultByte))
 
 	if err != nil {
 		fmt.Printf("Error: Failed to read HTTP response: (%s)\n", err.Error())
