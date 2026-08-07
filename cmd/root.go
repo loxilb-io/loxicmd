@@ -30,7 +30,16 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var Version string = "0.9.8.3-beta"
+// Version - loxicmd version as reported by `loxicmd version`.
+//
+// This value is only a development placeholder and is deliberately not a
+// release number: the git tag is the source of truth for released builds,
+// which stamp it at link time via the Makefile's VERSION variable:
+//
+//	-ldflags "-X 'loxicmd/cmd.Version=<ver>'"
+//
+// A build reporting this placeholder is a build from source, not a release.
+var Version string = "0.9.8-dev"
 var BuildInfo string = ""
 
 var VersionCmd = &cobra.Command{
