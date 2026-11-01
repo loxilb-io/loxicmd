@@ -1,0 +1,82 @@
+{
+    "ctAttr": [
+        {
+            "destinationIP": "20.20.20.1",
+            "sourceIP": "10.0.0.1",
+            "destinationPort": 80,
+            "sourcePort": 1000,
+            "protocol": "tcp",
+            "ident": "0",
+            "conntrackState": "est",
+            "conntrackAct": "fdnat-10.0.0.1:80:w1",
+            "packets": 1,
+            "bytes": 100,
+            "servName": ""
+        },
+        {
+            "destinationIP": "20.20.20.1",
+            "sourceIP": "10.0.0.1",
+            "destinationPort": 80,
+            "sourcePort": 1000,
+            "protocol": "udp",
+            "ident": "0",
+            "conntrackState": "est",
+            "conntrackAct": "fdnat-10.0.0.1:80:w1",
+            "packets": 2,
+            "bytes": 200,
+            "servName": ""
+        },
+        {
+            "destinationIP": "20.20.20.1",
+            "sourceIP": "10.0.0.1",
+            "destinationPort": 80,
+            "sourcePort": 1000,
+            "protocol": "sctp",
+            "ident": "0",
+            "conntrackState": "est",
+            "conntrackAct": "fdnat-10.0.0.1:80:w1",
+            "packets": 3,
+            "bytes": 300,
+            "servName": ""
+        },
+        {
+            "destinationIP": "20.20.20.1",
+            "sourceIP": "10.0.0.1",
+            "destinationPort": 0,
+            "sourcePort": 0,
+            "protocol": "icmp",
+            "ident": "4321",
+            "conntrackState": "bi-est",
+            "conntrackAct": "fdnat-10.0.0.1:80:w1",
+            "packets": 3,
+            "bytes": 300,
+            "servName": ""
+        },
+        {
+            "destinationIP": "2001:db8:1::102",
+            "sourceIP": "2001:db8:1::10",
+            "destinationPort": 0,
+            "sourcePort": 0,
+            "protocol": "icmp6",
+            "ident": "0",
+            "conntrackState": "est",
+            "conntrackAct": "fdnat-10.0.0.1:80:w1",
+            "packets": 4,
+            "bytes": 400,
+            "servName": ""
+        },
+        {
+            "destinationIP": "20.20.20.1",
+            "sourceIP": "10.0.0.1",
+            "destinationPort": 80,
+            "sourcePort": 1000,
+            "protocol": "unknown",
+            "ident": "0",
+            "conntrackState": "est",
+            "conntrackAct": "fdnat-10.0.0.1:80:w1",
+            "packets": 5,
+            "bytes": 500,
+            "servName": ""
+        }
+    ]
+}

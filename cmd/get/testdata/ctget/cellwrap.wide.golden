@@ -1,0 +1,6 @@
+|          SERVICE NAME          |   DESTIP   |  SRCIP   | DPORT | SPORT | PROTO | IDENT | STATE |              ACT               | PACKETS | BYTES |
+|--------------------------------|------------|----------|-------|-------|-------|-------|-------|--------------------------------|---------|-------|
+| web                            | 20.20.20.1 | 10.0.0.1 |    80 |  1000 | tcp   |     0 | est   | fdnat-10.0.0.1:80:w1           |       1 |   100 |
+| a service name long enough for | 20.20.20.1 | 10.0.0.2 |    80 |  1000 | tcp   |     0 | est   | fdnat-10.0.0.1:80:w1 and       |       2 |   200 |
+| the table to wrap it           |            |          |       |       |       |       |       | another action past the width  |         |       |
+|                                |            |          |       |       |       |       |       | of a column                    |         |       |

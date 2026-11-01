@@ -46,8 +46,24 @@ func (ct ConntrackInformation) Key() string {
 	return fmt.Sprintf("%s|%s|%05d|%05d|%s", ct.Dip, ct.Sip, ct.Dport, ct.Sport, ct.Proto)
 }
 
+// Sort orders by Key. Each key is made once: at 200 K entries, making it per
+// comparison was seconds of Sprintf. sort.Slice stays, and the rows move with
+// their keys, so equal keys keep the order they always had.
 func (ctresp CtInformationGet) Sort() {
-	sort.Slice(ctresp.CtInfo, func(i, j int) bool {
-		return ctresp.CtInfo[i].Key() < ctresp.CtInfo[j].Key()
+	type keyedRow struct {
+		key string
+		idx int
+	}
+	rows := make([]keyedRow, len(ctresp.CtInfo))
+	for i := range ctresp.CtInfo {
+		rows[i] = keyedRow{ctresp.CtInfo[i].Key(), i}
+	}
+	sort.Slice(rows, func(i, j int) bool {
+		return rows[i].key < rows[j].key
 	})
+	sorted := make([]ConntrackInformation, len(rows))
+	for i := range rows {
+		sorted[i] = ctresp.CtInfo[rows[i].idx]
+	}
+	copy(ctresp.CtInfo, sorted)
 }

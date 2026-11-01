@@ -17,6 +17,7 @@ package get
 
 import (
 	"fmt"
+	"io"
 	"os"
 
 	"loxicmd/pkg/api"
@@ -75,8 +76,12 @@ func GetCmd(restOptions *api.RESTOptions) *cobra.Command {
 }
 
 func TableInit() *tablewriter.Table {
+	return tableInitTo(os.Stdout)
+}
+
+func tableInitTo(out io.Writer) *tablewriter.Table {
 	// Table Init
-	table := tablewriter.NewWriter(os.Stdout)
+	table := tablewriter.NewWriter(out)
 	table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
 	table.SetCenterSeparator("|")
 	return table

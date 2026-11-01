@@ -1,0 +1,17 @@
+{
+    "ctAttr": [
+        {
+            "destinationIP": "20.20.20.1",
+            "sourceIP": "10.0.0.1",
+            "destinationPort": 80,
+            "sourcePort": 1000,
+            "protocol": "tcp",
+            "ident": "0",
+            "conntrackState": "est",
+            "conntrackAct": "fdnat-10.0.0.1:80:w1",
+            "packets": 184467440737095516,
+            "bytes": 18446744073709551600,
+            "servName": ""
+        }
+    ]
+}
