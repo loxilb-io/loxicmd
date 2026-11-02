@@ -1,0 +1,30 @@
+{
+    "ctAttr": [
+        {
+            "destinationIP": "20.20.20.1",
+            "sourceIP": "10.0.0.1",
+            "destinationPort": 80,
+            "sourcePort": 1000,
+            "protocol": "tcp",
+            "ident": "0",
+            "conntrackState": "est",
+            "conntrackAct": "fdnat-10.0.0.1:80:w1",
+            "packets": 1,
+            "bytes": 100,
+            "servName": "web"
+        },
+        {
+            "destinationIP": "20.20.20.1",
+            "sourceIP": "10.0.0.2",
+            "destinationPort": 80,
+            "sourcePort": 1000,
+            "protocol": "tcp",
+            "ident": "0",
+            "conntrackState": "est",
+            "conntrackAct": "fdnat-10.0.0.1:80:w1 and another action past the width of a column",
+            "packets": 2,
+            "bytes": 200,
+            "servName": "a service name long enough for the table to wrap it"
+        }
+    ]
+}

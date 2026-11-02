@@ -16,12 +16,14 @@
 package get
 
 import (
+	"bufio"
 	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"loxicmd/pkg/api"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -82,8 +84,12 @@ func PrintGetCTResult(resp *http.Response, o api.RESTOptions) {
 
 	ctresp.Sort()
 
+	// The table writes a cell at a time: unbuffered, that is a write per cell
+	out := bufio.NewWriterSize(os.Stdout, 1<<20)
+	defer out.Flush()
+
 	// Table Init
-	table := TableInit()
+	table := tableInitTo(out)
 	table.SetHeader([]string{"Service Name", "destIP", "srcIP", "dport", "sport", "proto", "ident", "state", "act", "packets", "bytes"})
 	// Making load balance data
 	data = makeConntrackData(o, ctresp)
